@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BPC Slug + Traffic Explorer v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;font-size:13px;background:#f5f5f3;color:#1a1a1a;padding:20px}
+h1{font-size:17px;font-weight:500;margin-bottom:3px}
+.sub{color:#777;font-size:12px;margin-bottom:18px}
+.card{background:#fff;border:1px solid #e0e0de;border-radius:10px;padding:18px;margin-bottom:14px}
+.drop-zone{border:2px dashed #c8c8c4;border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:background .15s}
+.drop-zone:hover,.drop-zone.over{background:#f0f4f9;border-color:#3c608a}
+.drop-zone p{color:#555;font-size:13px;margin-bottom:6px;font-weight:500}
+.drop-zone .hint{font-size:11px;color:#999;line-height:1.6}
+.pill{display:inline-block;background:#e8eff7;color:#1a5490;font-size:10px;padding:2px 8px;border-radius:10px;margin:2px 2px 0 0;font-weight:500}
+.pill.gold{background:#fdf3dc;color:#7a5000}
+label{display:block;font-size:11px;font-weight:500;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+select,input[type=text],input[type=number],input[type=date]{width:100%;padding:7px 9px;border:1px solid #d0d0ce;border-radius:6px;font-size:12px;background:#fafaf9;color:#1a1a1a}
+select:focus,input:focus{outline:2px solid #3c608a;outline-offset:1px;border-color:transparent}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.filter-group{display:flex;flex-direction:column}
+.filter-disabled select,.filter-disabled input{opacity:.35;pointer-events:none}
+.filter-disabled label::after{content:' (not in export)';color:#bbb;font-weight:400;text-transform:none;letter-spacing:0}
+button{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid}
+.btn-p{background:#3c608a;color:#fff;border-color:#3c608a}
+.btn-p:hover{background:#2f4f73}
+.btn-s{background:#fff;color:#3c608a;border-color:#3c608a}
+.btn-s:hover{background:#f0f4f9}
+.btn-sm{background:#f5f5f3;color:#333;border-color:#d0d0ce;font-size:11px;padding:5px 11px}
+.btn-sm:hover{background:#e8e8e6}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.copy-hint{font-size:11px;color:#aaa;margin-left:auto}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:#f5f5f3;border-radius:7px;padding:10px 12px}
+.stat-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.stat-val{font-size:20px;font-weight:500;color:#1a1a1a}
+.tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{position:sticky;top:0;background:#fff;border-bottom:1.5px solid #e0e0de;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap;cursor:pointer;user-select:none;z-index:1}
+thead th:hover{background:#f5f5f3}
+thead th.sorted{color:#3c608a}
+.arr{font-size:10px;margin-left:3px;color:#ccc}
+thead th.sorted .arr{color:#3c608a}
+tbody tr:hover{background:#fafaf9}
+td{padding:6px 10px;border-bottom:1px solid #f0f0ee;vertical-align:middle}
+td.path-cell{font-family:monospace;font-size:11px;white-space:normal;word-break:break-all;min-width:220px;max-width:360px}
+.num{text-align:right;white-space:nowrap}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap}
+.b-article{background:#e8eff7;color:#1a5490}
+.b-explainer{background:#e8f4ee;color:#1a6640}
+.b-report{background:#fdf3dc;color:#7a5000}
+.b-issue-brief{background:#f3ecf9;color:#5a2d82}
+.b-press-release{background:#fde8ec;color:#8c1a28}
+.b-testimony-letter,.b-testimony{background:#fff0e0;color:#7a4000}
+.b-event{background:#e8f7f9;color:#0d5c6b}
+.b-policy-area{background:#efefef;color:#444}
+.b-other{background:#f0f0f0;color:#666}
+.bar{display:inline-block;height:7px;background:#3c608a;border-radius:2px;vertical-align:middle;opacity:.6;min-width:1px;margin-right:4px}
+.schema-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#555;background:#f5f5f3;border:1px solid #e0e0de;border-radius:6px;padding:4px 10px}
+.schema-tag.on{background:#e8eff7;border-color:#b5d4f4;color:#1a5490}
+.schema-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+#loadMsg{color:#3c608a;font-size:12px;min-height:16px;margin-top:6px}
+.row-count{font-size:12px;color:#666}
+.how-to{background:#f9f5ff;border:1px solid #d8c8f0;border-radius:8px;padding:14px 16px;font-size:12px;color:#444;line-height:1.7;margin-bottom:14px}
+.how-to strong{color:#1a1a1a}
+.how-to code{background:#ede8f8;padding:1px 5px;border-radius:3px;font-size:11px;color:#5a2d82}
+</style>
+</head>
+<body>
+<h1>BPC Slug + Traffic Explorer</h1>
+<p class="sub">Supports standard GA4 Pages export <em>and</em> Exploration exports with <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px">policy_area · content_type · publish_date · content_age_bucket</code></p>
+
+<div class="how-to" id="howTo">
+  <strong>To get the richest export from GA4 Explorations:</strong><br>
+  Exploration → Free Form → Rows: <code>Page path + screen class</code> → add custom dimensions: <code>policy_area</code> <code>content_type</code> <code>publish_date</code> <code>content_age_bucket</code> → Metrics: Views, Sessions, Total users, Engaged sessions, Bounce rate, Average session duration → Export as CSV. Drop it below. The tool also accepts the standard Pages &amp; Screens CSV — it auto-detects which columns are present.
+</div>
+
+<div class="card" id="uploadCard">
+  <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileIn').click()">
+    <p>Drop GA4 CSV here or click to upload</p>
+    <p class="hint">Standard Pages &amp; Screens report OR Exploration export with custom dimensions</p>
+  </div>
+  <input type="file" id="fileIn" accept=".csv,.tsv,.txt" style="display:none" onchange="handleFile(this.files[0])">
+  <div id="loadMsg"></div>
+</div>
+
+<div id="mainUI" style="display:none">
+
+  <div class="card" style="padding-bottom:14px">
+    <div style="font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Detected columns</div>
+    <div class="schema-row" id="schemaRow"></div>
+  </div>
+
+  <div class="card">
+    <div class="filters" id="filterGrid">
+      <div class="filter-group" id="fg-policy">
+        <label>Policy area</label>
+        <select id="fPolicy" onchange="applyFilters()"><option value="">All</option></select>
+      </div>
+      <div class="filter-group" id="fg-ctype">
+        <label>Content type</label>
+        <select id="fType" onchange="applyFilters()"><option value="">All types</option></select>
+      </div>
+      <div class="filter-group" id="fg-age">
+        <label>Content age</label>
+        <select id="fAge" onchange="applyFilters()">
+          <option value="">Any age</option>
+          <option value="0-30 days">0–30 days</option>
+          <option value="31-90 days">31–90 days</option>
+          <option value="91-180 days">91–180 days</option>
+          <option value="181-365 days">181–365 days</option>
+          <option value="365+ days">365+ days</option>
+        </select>
+      </div>
+      <div class="filter-group" id="fg-pubafter">
+        <label>Published after</label>
+        <input type="date" id="fPubAfter" onchange="applyFilters()">
+      </div>
+      <div class="filter-group" id="fg-pubbefore">
+        <label>Published before</label>
+        <input type="date" id="fPubBefore" onchange="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Keyword in path</label>
+        <input type="text" id="fKeyword" placeholder="housing, tariff, budget…" oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Min views</label>
+        <input type="number" id="fMinViews" value="0" min="0" oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Exclude path contains</label>
+        <input type="text" id="fExclude" placeholder="wp-content, /feed, ?" oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Sort by</label>
+        <select id="fSort" onchange="applyFilters()">
+          <option value="views">Views ↓</option>
+          <option value="sessions">Sessions ↓</option>
+          <option value="users">Users ↓</option>
+          <option value="engaged">Engaged sessions ↓</option>
+          <option value="bounce">Bounce rate ↑</option>
+          <option value="duration">Avg duration ↓</option>
+          <option value="publish_date">Publish date ↓</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Max results</label>
+        <select id="fMax" onchange="applyFilters()">
+          <option value="50">50</option>
+          <option value="100" selected>100</option>
+          <option value="250">250</option>
+          <option value="500">500</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-s" onclick="resetFilters()">Reset</button>
+      <span class="copy-hint" id="copyHint">Copy visible →</span>
+      <button class="btn-sm" onclick="copyAs('slugs')">Slugs</button>
+      <button class="btn-sm" onclick="copyAs('paths')">Paths</button>
+      <button class="btn-sm" onclick="copyAs('full')">Full URLs</button>
+      <button class="btn-sm" onclick="copyAs('tsv')">TSV</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stat-row" id="statRow"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span class="row-count" id="rowCount"></span>
+      <span style="font-size:11px;color:#bbb">sorted by <span id="sortLabel" style="color:#3c608a;font-weight:500"></span></span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="resultsTable">
+        <thead id="tHead"></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let rawData = [], filtered = [], schema = {};
+let sortCol = 'views', sortDir = -1;
+
+const PATH_TYPE = {
+  'article':'article','explainer':'explainer','report':'report',
+  'issue-brief':'issue-brief','press-release':'press-release',
+  'testimony-letter':'testimony-letter','event':'event',
+  'policy-area':'policy-area','policy-areas':'policy-area','blog':'article'
+};
+const BADGE = {
+  'article':'b-article','explainer':'b-explainer','report':'b-report',
+  'issue-brief':'b-issue-brief','press-release':'b-press-release',
+  'testimony-letter':'b-testimony-letter','event':'b-event',
+  'policy-area':'b-policy-area','other':'b-other'
+};
+const LABEL = {
+  'article':'Article','explainer':'Explainer','report':'Report',
+  'issue-brief':'Issue Brief','press-release':'Press Release',
+  'testimony-letter':'Testimony','event':'Event',
+  'policy-area':'Policy Area','other':'Other'
+};
+
+function inferType(path) {
+  const seg = (path||'').split('/').filter(Boolean)[0]||'';
+  return PATH_TYPE[seg]||'other';
+}
+
+const COL_ALIASES = {
+  path:      ['page path and screen class','page path','pagepath','page_path'],
+  views:     ['views','pageviews','screenviews'],
+  sessions:  ['sessions'],
+  users:     ['total users','users','totalusers'],
+  bounce:    ['bounce rate','bouncerate'],
+  duration:  ['average session duration','avg session duration','avgsessionduration'],
+  engaged:   ['engaged sessions','engagedsessions'],
+  policy:    ['policy_area','policy area','policyarea'],
+  ctype:     ['content_type','content type','contenttype'],
+  pub_date:  ['publish_date','publish date','publishdate'],
+  age_bucket:['content_age_bucket','content age bucket','contentage'],
+  age_days:  ['content_age_days','content age days']
+};
+
+function findCol(headers, key) {
+  const aliases = COL_ALIASES[key];
+  for (let i=0; i<headers.length; i++) {
+    const h = headers[i].toLowerCase().trim();
+    if (aliases.some(a => h === a || h.includes(a))) return i;
+  }
+  return -1;
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n');
+  let headerIdx = -1;
+  for (let i=0; i<lines.length; i++) {
+    const l = lines[i].toLowerCase();
+    if (l.includes('page path') || l.includes('pagepath') || l.startsWith('page path')) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx < 0) return null;
+
+  const sep = lines[headerIdx].includes('\t') ? '\t' : ',';
+  const splitRow = row => {
+    if (sep === '\t') return row.split('\t');
+    const out=[]; let cur='', inQ=false;
+    for (let c of row) {
+      if (c==='"') { inQ=!inQ; }
+      else if (c===',' && !inQ) { out.push(cur); cur=''; }
+      else cur+=c;
+    }
+    out.push(cur); return out;
+  };
+
+  const headers = splitRow(lines[headerIdx]).map(h=>h.trim().replace(/^"|"$/g,''));
+
+  const cols = {};
+  Object.keys(COL_ALIASES).forEach(k => { cols[k] = findCol(headers, k); });
+
+  const detectedSchema = {
+    hasPolicy:    cols.policy >= 0,
+    hasCtype:     cols.ctype >= 0,
+    hasPubDate:   cols.pub_date >= 0,
+    hasAgeBucket: cols.age_bucket >= 0,
+    hasAgeDays:   cols.age_days >= 0
+  };
+
+  const skipPrefixes = ['/wp-content/','/wp-admin/','/feed','/xmlrpc','/?page','/?p=','/page/'];
+  const rows = [];
+
+  for (let i=headerIdx+1; i<lines.length; i++) {
+    const l = lines[i].trim();
+    if (!l || l.startsWith('#')) continue;
+    const c = splitRow(l);
+    if (c.length < 3) continue;
+    const path = (c[cols.path]||'').trim().replace(/^"|"$/g,'');
+    if (!path || path==='(not set)') continue;
+    if (skipPrefixes.some(p=>path.startsWith(p))) continue;
+
+    const g = idx => idx>=0 ? (c[idx]||'').trim().replace(/^"|"$/g,'') : '';
+    const gn = idx => { const v=parseFloat(g(idx)); return isNaN(v)?0:v; };
+
+    const rawCtype = g(cols.ctype).toLowerCase() || inferType(path);
+    const contentType = rawCtype || inferType(path);
+
+    rows.push({
+      path,
+      views:      Math.round(gn(cols.views)),
+      sessions:   Math.round(gn(cols.sessions)),
+      users:      Math.round(gn(cols.users)),
+      bounce:     gn(cols.bounce),
+      duration:   gn(cols.duration),
+      engaged:    Math.round(gn(cols.engaged)),
+      type:       contentType,
+      policy:     g(cols.policy),
+      pub_date:   g(cols.pub_date),
+      age_bucket: g(cols.age_bucket),
+      age_days:   cols.age_days>=0 ? Math.round(gn(cols.age_days)) : null
+    });
+  }
+
+  return { rows, schema: detectedSchema };
+}
+
+function handleFile(file) {
+  if (!file) return;
+  document.getElementById('loadMsg').textContent = 'Parsing…';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const result = parseCSV(e.target.result);
+    if (!result) {
+      document.getElementById('loadMsg').textContent = 'Could not find a page path column — check the export format.';
+      return;
+    }
+    rawData = result.rows;
+    schema = result.schema;
+    document.getElementById('loadMsg').textContent =
+      `Loaded ${rawData.length.toLocaleString()} rows from "${file.name}"`;
+    document.getElementById('howTo').style.display = 'none';
+    document.getElementById('mainUI').style.display = 'block';
+    buildSchemaIndicators();
+    buildDynamicDropdowns();
+    toggleFilterAvailability();
+    applyFilters();
+  };
+  reader.readAsText(file);
+}
+
+function buildSchemaIndicators() {
+  const items = [
+    ['policy_area',    schema.hasPolicy,    'Filter by policy area'],
+    ['content_type',   schema.hasCtype,     'Actual content type (not inferred)'],
+    ['publish_date',   schema.hasPubDate,   'Date filtering enabled'],
+    ['content_age_bucket', schema.hasAgeBucket, 'Age bucket filtering'],
+    ['views / sessions / users', true,      'Always available'],
+  ];
+  document.getElementById('schemaRow').innerHTML = items.map(([name, on, tip]) =>
+    `<span class="schema-tag${on?' on':''}" title="${tip}">${on?'✓':'+'}  ${name}</span>`
+  ).join('');
+}
+
+function buildDynamicDropdowns() {
+  // Policy area
+  const policies = [...new Set(rawData.map(r=>r.policy).filter(Boolean))].sort();
+  const pSel = document.getElementById('fPolicy');
+  pSel.innerHTML = '<option value="">All areas</option>' +
+    policies.map(p=>`<option value="${p}">${p}</option>`).join('');
+
+  // Content type
+  const types = [...new Set(rawData.map(r=>r.type).filter(Boolean))].sort();
+  const tSel = document.getElementById('fType');
+  tSel.innerHTML = '<option value="">All types</option>' +
+    types.map(t=>`<option value="${t}">${LABEL[t]||t}</option>`).join('');
+}
+
+function toggleFilterAvailability() {
+  const map = {
+    'fg-policy':  schema.hasPolicy,
+    'fg-age':     schema.hasAgeBucket,
+    'fg-pubafter':schema.hasPubDate,
+    'fg-pubbefore':schema.hasPubDate
+  };
+  Object.entries(map).forEach(([id, on]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('filter-disabled', !on);
+  });
+}
+
+function applyFilters() {
+  const policy   = document.getElementById('fPolicy').value;
+  const type     = document.getElementById('fType').value;
+  const age      = schema.hasAgeBucket ? document.getElementById('fAge').value : '';
+  const pubAfter = schema.hasPubDate   ? document.getElementById('fPubAfter').value : '';
+  const pubBefore= schema.hasPubDate   ? document.getElementById('fPubBefore').value : '';
+  const kw       = document.getElementById('fKeyword').value.toLowerCase().trim();
+  const minViews = parseInt(document.getElementById('fMinViews').value)||0;
+  const excl     = document.getElementById('fExclude').value.toLowerCase().trim();
+  const sortBy   = document.getElementById('fSort').value;
+  const maxR     = document.getElementById('fMax').value;
+
+  const sortMap  = {views:'views',sessions:'sessions',users:'users',
+    engaged:'engaged',bounce:'bounce',duration:'duration',publish_date:'pub_date'};
+  sortCol = sortMap[sortBy]||'views';
+  sortDir = sortBy==='bounce' ? 1 : -1;
+
+  filtered = rawData.filter(r => {
+    if (policy && r.policy !== policy) return false;
+    if (type   && r.type   !== type)   return false;
+    if (age    && r.age_bucket !== age) return false;
+    if (pubAfter  && r.pub_date && r.pub_date < pubAfter)  return false;
+    if (pubBefore && r.pub_date && r.pub_date > pubBefore) return false;
+    if (kw && !r.path.toLowerCase().includes(kw)) return false;
+    if (r.views < minViews) return false;
+    if (excl) {
+      const parts = excl.split(',').map(x=>x.trim()).filter(Boolean);
+      if (parts.some(p=>r.path.toLowerCase().includes(p))) return false;
+    }
+    return true;
+  });
+
+  filtered.sort((a,b) => {
+    const av = a[sortCol]||0, bv = b[sortCol]||0;
+    if (typeof av === 'string') return sortDir * av.localeCompare(bv);
+    return sortDir * (av - bv);
+  });
+
+  if (maxR !== 'all') filtered = filtered.slice(0, parseInt(maxR));
+
+  document.getElementById('sortLabel').textContent = sortBy.replace(/_/g,' ');
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  const tv = filtered.reduce((s,r)=>s+r.views,0);
+  const tu = filtered.reduce((s,r)=>s+r.users,0);
+  const ab = filtered.length ? filtered.reduce((s,r)=>s+r.bounce,0)/filtered.length : 0;
+  const ad = filtered.length ? filtered.reduce((s,r)=>s+r.duration,0)/filtered.length : 0;
+  document.getElementById('statRow').innerHTML = [
+    ['Pages', filtered.length.toLocaleString()],
+    ['Total views', tv.toLocaleString()],
+    ['Total users', tu.toLocaleString()],
+    ['Avg bounce', (ab*100).toFixed(1)+'%'],
+    ['Avg duration', fmtDur(ad)]
+  ].map(([l,v])=>`<div class="stat"><div class="stat-label">${l}</div><div class="stat-val">${v}</div></div>`).join('');
+  document.getElementById('rowCount').textContent = `${filtered.length} rows`;
+}
+
+function renderTable() {
+  const mx = filtered.length ? Math.max(...filtered.map(r=>r.views))||1 : 1;
+
+  const extraCols = [
+    schema.hasPolicy    && 'policy',
+    schema.hasPubDate   && 'pub_date',
+    schema.hasAgeBucket && 'age_bucket'
+  ].filter(Boolean);
+
+  document.getElementById('tHead').innerHTML = `<tr>
+    <th style="width:28px">#</th>
+    <th onclick="colSort('type')">Type<span class="arr">↕</span></th>
+    <th>Path</th>
+    ${extraCols.map(c => `<th onclick="colSort('${c}')">${
+      c==='policy'?'Policy area':c==='pub_date'?'Published':c==='age_bucket'?'Age':c
+    }<span class="arr">↕</span></th>`).join('')}
+    <th onclick="colSort('views')" class="num${sortCol==='views'?' sorted':''}">Views<span class="arr">↕</span></th>
+    <th onclick="colSort('sessions')" class="num${sortCol==='sessions'?' sorted':''}">Sessions<span class="arr">↕</span></th>
+    <th onclick="colSort('users')" class="num${sortCol==='users'?' sorted':''}">Users<span class="arr">↕</span></th>
+    <th onclick="colSort('engaged')" class="num${sortCol==='engaged'?' sorted':''}">Engaged<span class="arr">↕</span></th>
+    <th onclick="colSort('bounce')" class="num${sortCol==='bounce'?' sorted':''}">Bounce<span class="arr">↕</span></th>
+    <th onclick="colSort('duration')" class="num${sortCol==='duration'?' sorted':''}">Dur<span class="arr">↕</span></th>
+  </tr>`;
+
+  document.getElementById('tBody').innerHTML = filtered.map((r,i) => {
+    const bc = BADGE[r.type]||'b-other';
+    const lbl = LABEL[r.type]||r.type;
+    const bw  = Math.max(1, Math.round((r.views/mx)*80));
+    return `<tr>
+      <td style="color:#bbb;font-size:11px">${i+1}</td>
+      <td><span class="badge ${bc}">${lbl}</span></td>
+      <td class="path-cell">${r.path}</td>
+      ${extraCols.map(c => {
+        if (c==='policy')     return `<td style="white-space:nowrap;font-size:11px">${r.policy||'—'}</td>`;
+        if (c==='pub_date')   return `<td style="white-space:nowrap;font-size:11px;color:#666">${r.pub_date||'—'}</td>`;
+        if (c==='age_bucket') return `<td style="white-space:nowrap;font-size:11px;color:#888">${r.age_bucket||'—'}</td>`;
+        return '<td>—</td>';
+      }).join('')}
+      <td class="num"><span class="bar" style="width:${bw}px"></span>${r.views.toLocaleString()}</td>
+      <td class="num">${r.sessions.toLocaleString()}</td>
+      <td class="num">${r.users.toLocaleString()}</td>
+      <td class="num">${r.engaged.toLocaleString()}</td>
+      <td class="num">${(r.bounce*100).toFixed(0)}%</td>
+      <td class="num">${fmtDur(r.duration)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function colSort(col) {
+  sortCol === col ? (sortDir *= -1) : (sortCol=col, sortDir=col==='bounce'?1:-1);
+  filtered.sort((a,b) => {
+    const av=a[sortCol]||0, bv=b[sortCol]||0;
+    if (typeof av==='string') return sortDir*av.localeCompare(bv);
+    return sortDir*(av-bv);
+  });
+  renderTable();
+}
+
+function resetFilters() {
+  ['fPolicy','fType','fAge','fSort'].forEach(id=>document.getElementById(id).value='');
+  ['fPubAfter','fPubBefore','fKeyword','fExclude'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fMinViews').value='0';
+  document.getElementById('fMax').value='100';
+  document.getElementById('fSort').value='views';
+  applyFilters();
+}
+
+function copyAs(mode) {
+  let text = '';
+  if (mode==='tsv') {
+    const extraH = [
+      schema.hasPolicy && 'Policy area',
+      schema.hasPubDate && 'Publish date',
+      schema.hasAgeBucket && 'Age bucket'
+    ].filter(Boolean);
+    text = ['Path','Slug','Type',...extraH,'Views','Sessions','Users','Engaged','Bounce%','Avg duration'].join('\t')+'\n';
+    filtered.forEach(r => {
+      const slug = r.path.split('/').filter(Boolean).pop()||'/';
+      const extra = [
+        schema.hasPolicy && (r.policy||''),
+        schema.hasPubDate && (r.pub_date||''),
+        schema.hasAgeBucket && (r.age_bucket||'')
+      ].filter(v=>v!==false);
+      text += [r.path, slug, r.type, ...extra, r.views, r.sessions, r.users, r.engaged,
+        (r.bounce*100).toFixed(1), Math.round(r.duration)].join('\t')+'\n';
+    });
+  } else {
+    filtered.forEach(r => {
+      const slug = r.path.split('/').filter(Boolean).pop()||'/';
+      if (mode==='slugs') text += slug+'\n';
+      else if (mode==='paths') text += r.path+'\n';
+      else if (mode==='full') text += 'https://bipartisanpolicy.org'+r.path+'\n';
+    });
+  }
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    const el = document.getElementById('copyHint');
+    el.textContent = `Copied ${filtered.length} rows ✓`;
+    el.style.color = '#1a7a4a';
+    setTimeout(()=>{ el.textContent='Copy visible →'; el.style.color=''; }, 2200);
+  });
+}
+
+function fmtDur(s) {
+  s = Math.round(s);
+  if (!s) return '—';
+  return s<60 ? s+'s' : Math.floor(s/60)+'m'+(s%60?(' '+(s%60)+'s'):'');
+}
+
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=>dz.classList.remove('over'));
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('over'); handleFile(e.dataTransfer.files[0]); });
+</script>
+</body>
+</html>

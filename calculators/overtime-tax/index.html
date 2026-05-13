@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ NO TAX ON OVERTIME CALCULATOR                                                ║
+║ Version: 1.0                                                                 ║
+║ Organization: Bipartisan Policy Center (BPC)                                ║
+║ Created: February 2026                                                       ║
+║ Last Updated: February 13, 2026                                             ║
+║                                                                              ║
+║ DESCRIPTION:                                                                 ║
+║ Interactive calculator for the overtime tax deduction enacted in the        ║
+║ One Big Beautiful Bill Act (H.R. 1, 2025). Calculates federal income tax    ║
+║ savings based on user's base wages, overtime wages, and filing status.      ║
+║                                                                              ║
+║ TAX DATA:                                                                    ║
+║ - 2025 Federal Tax Brackets (standard progressive rates)                    ║
+║ - Standard Deductions: $16,000 (single), $31,500 (married)                  ║
+║ - Overtime Deduction Caps: $12,500 (single), $25,000 (married)              ║
+║ - Phase-out Thresholds: $150,000 (single), $300,000 (married)               ║
+║ - Phase-out Rate: 10%                                                        ║
+║                                                                              ║
+║ VALIDATION:                                                                  ║
+║ ✓ Tested against Sally example from BPC explainer article                   ║
+║ ✓ Input: $30K base + $5K OT, single filer                                   ║
+║ ✓ Output: $600 savings ($2,042 → $1,442)                                    ║
+║                                                                              ║
+║ FEATURES:                                                                    ║
+║ - Accurate federal tax calculation using 2025 brackets                      ║
+║ - Automatic phase-out calculation for high earners                          ║
+║ - Side-by-side comparison table                                             ║
+║ - FLSA eligibility warnings                                                 ║
+║ - Mobile-responsive design                                                  ║
+║ - Schema.org structured data (SoftwareApplication + FAQPage)                ║
+║                                                                              ║
+║ DEPENDENCIES:                                                                ║
+║ None - Pure HTML/CSS/JavaScript (no external libraries)                     ║
+║                                                                              ║
+║ CHANGE LOG:                                                                  ║
+║ v1.0 (2026-02-13) - Initial release                                         ║
+║   - Core calculator functionality                                           ║
+║   - Tax calculation engine with 2025 brackets                               ║
+║   - Phase-out logic for high earners                                        ║
+║   - Responsive UI with comparison table                                     ║
+║   - Schema markup for SEO                                                   ║
+║                                                                              ║
+║ CONTACT:                                                                     ║
+║ Digital Director: Alex (alex@bipartisanpolicy.org)                          ║
+║ Organization: https://bipartisanpolicy.org                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Tax on Overtime Calculator | 2025 Tax Deduction</title>
+    <meta name="description" content="Calculate your tax savings from the 2025 overtime deduction. Free calculator shows exact savings based on your income and filing status.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+        
+        .calculator-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .calculator-header h1 {
+            font-size: 1.75rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .calculator-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .calculator-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .info-banner {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        
+        .info-banner p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+        
+        .input-prefix {
+            position: relative;
+        }
+        
+        .input-prefix::before {
+            content: '$';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .input-prefix input {
+            padding-left: 1.5rem;
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            background: #0052a3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,102,204,0.3);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .results-section {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .results-section.visible {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .savings-hero {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .savings-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .savings-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+        
+        .results-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table thead {
+            background: #f8f9fa;
+        }
+        
+        .results-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .results-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .results-table .label-col {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .results-table .amount-col {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .row-highlight {
+            background: #fffbf0;
+        }
+        
+        .row-total {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cta-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .cta-box p {
+            margin-bottom: 1rem;
+            color: #666;
+        }
+        
+        .cta-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #0066cc;
+            text-decoration: none;
+            border: 2px solid #0066cc;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .cta-link:hover {
+            background: #0066cc;
+            color: white;
+        }
+        
+        @media (max-width: 640px) {
+            .calculator-container {
+                padding: 1rem;
+            }
+            
+            .calculator-card {
+                padding: 1.5rem;
+            }
+            
+            .savings-amount {
+                font-size: 2.25rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1>💰 No Tax on Overtime Calculator</h1>
+            <p>Calculate your tax savings from the 2025 overtime deduction</p>
+        </div>
+        
+        <div class="calculator-card">
+            <div class="info-banner">
+                <p><strong>New for 2025:</strong> The One Big Beautiful Bill Act allows eligible workers to deduct overtime pay from their federal income taxes through 2028. Use this calculator to see how much you could save.</p>
+            </div>
+            
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="baseWages">Annual Base Wages</label>
+                    <div class="input-prefix">
+                        <input 
+                            type="number" 
+                            id="baseWages" 
+                            min="0" 
+                            step="1000" 
+                            placeholder="30000"
+                            required
+                        >
+                    </div>
+                    <div class="help-text">Your annual income from regular (non-overtime) hours</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="overtimeWages">Annual Overtime Wages</label>
+                    <div class="input-prefix">
+                        <input 
+                            type="number" 
+                            id="overtimeWages" 
+                            min="0" 
+                            step="100" 
+                            placeholder="5000"
+                            required
+                        >
+                    </div>
+                    <div class="help-text">Your annual income from overtime hours (time-and-a-half pay)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="filingStatus">Filing Status</label>
+                    <select id="filingStatus" required>
+                        <option value="">-- Select Filing Status --</option>
+                        <option value="single">Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                    </select>
+                    <div class="help-text">You must file jointly if married to claim this deduction</div>
+                </div>
+                
+                <button type="submit" class="calculate-btn">Calculate My Savings</button>
+            </form>
+        </div>
+        
+        <div id="results" class="results-section">
+            <div class="savings-hero">
+                <div class="savings-amount" id="savingsDisplay">$0</div>
+                <div class="savings-label">Estimated Annual Tax Savings</div>
+            </div>
+            
+            <div class="results-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="label-col">Income & Deductions</th>
+                            <th class="amount-col">Without Deduction</th>
+                            <th class="amount-col">With Deduction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="label-col">Base Wages</td>
+                            <td class="amount-col" id="base1">$0</td>
+                            <td class="amount-col" id="base2">$0</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Overtime Wages</td>
+                            <td class="amount-col" id="overtime1">$0</td>
+                            <td class="amount-col" id="overtime2">$0</td>
+                        </tr>
+                        <tr class="row-highlight">
+                            <td class="label-col"><strong>Adjusted Gross Income</strong></td>
+                            <td class="amount-col" id="agi1"><strong>$0</strong></td>
+                            <td class="amount-col" id="agi2"><strong>$0</strong></td>
+                        </tr>
+                        <tr style="border-top: 2px solid #dee2e6;">
+                            <td class="label-col">Standard Deduction</td>
+                            <td class="amount-col" id="stdDed1">$0</td>
+                            <td class="amount-col" id="stdDed2">$0</td>
+                        </tr>
+                        <tr class="row-highlight">
+                            <td class="label-col">Overtime Deduction</td>
+                            <td class="amount-col">$0</td>
+                            <td class="amount-col" id="overtimeDed">$0</td>
+                        </tr>
+                        <tr style="border-top: 2px solid #dee2e6;">
+                            <td class="label-col"><strong>Taxable Income</strong></td>
+                            <td class="amount-col" id="taxable1"><strong>$0</strong></td>
+                            <td class="amount-col" id="taxable2"><strong>$0</strong></td>
+                        </tr>
+                        <tr class="row-total">
+                            <td class="label-col"><strong>Federal Income Tax</strong></td>
+                            <td class="amount-col" id="tax1"><strong>$0</strong></td>
+                            <td class="amount-col" id="tax2"><strong>$0</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="phaseoutAlert" class="alert alert-warning" style="display: none;">
+                <strong>⚠️ Phase-out Applies</strong>
+                Your deduction is reduced because your income exceeds <span id="thresholdText">$150,000</span>. The deduction phases out at a 10% rate above this threshold.
+            </div>
+            
+            <div id="eligibilityAlert" class="alert alert-warning" style="display: none;">
+                <strong>⚠️ Eligibility Check Required</strong>
+                This deduction only applies to FLSA non-exempt workers. If you're salaried and exempt from overtime pay, you may not qualify even if you work extra hours.
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>💡 Important Notes:</strong>
+                <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                    <li>This deduction expires December 31, 2028 (unless extended by Congress)</li>
+                    <li>Federal payroll taxes (Social Security, Medicare) still apply to overtime wages</li>
+                    <li>State income taxes may vary - check your state's rules</li>
+                </ul>
+            </div>
+            
+            <div class="cta-box">
+                <p><strong>Want to understand the details?</strong></p>
+                <p>Learn about eligibility requirements, FLSA rules, and phase-out mechanics.</p>
+                <a href="#what-is-the-overtime-deduction" class="cta-link">Read Full Explanation →</a>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e9ecef; font-size: 0.75rem; color: #999; text-align: center;">
+                    Calculator v1.0 | Last updated: Feb 13, 2026 | <a href="https://bipartisanpolicy.org" style="color: #999;">Bipartisan Policy Center</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * BPC Overtime Tax Calculator v1.0
+         * Last updated: 2026-02-13
+         */
+        
+        const CALCULATOR_VERSION = '1.0';
+        const CALCULATOR_LAST_UPDATED = '2026-02-13';
+        
+        // Log version info (helpful for debugging)
+        console.log(`BPC Overtime Calculator v${CALCULATOR_VERSION} (${CALCULATOR_LAST_UPDATED})`);
+        
+        // 2025 Federal Tax Brackets
+        const TAX_BRACKETS_2025 = {
+            single: [
+                { limit: 11925, rate: 0.10 },
+                { limit: 48475, rate: 0.12 },
+                { limit: 103350, rate: 0.22 },
+                { limit: 197300, rate: 0.24 },
+                { limit: 250525, rate: 0.32 },
+                { limit: 626350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ],
+            married: [
+                { limit: 23850, rate: 0.10 },
+                { limit: 96950, rate: 0.12 },
+                { limit: 206700, rate: 0.22 },
+                { limit: 394600, rate: 0.24 },
+                { limit: 501050, rate: 0.32 },
+                { limit: 751600, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ]
+        };
+
+        // 2025 Standard Deductions (from Sally's example in article)
+        const STANDARD_DEDUCTION_2025 = {
+            single: 16000,
+            married: 31500
+        };
+
+        // Overtime Deduction Caps (from OBBB)
+        const OT_DEDUCTION_CAP = {
+            single: 12500,
+            married: 25000
+        };
+
+        // Phase-out thresholds
+        const PHASEOUT_THRESHOLD = {
+            single: 150000,
+            married: 300000
+        };
+
+        const PHASEOUT_RATE = 0.10;
+
+        /**
+         * Calculate federal income tax based on 2025 brackets
+         */
+        function calculateFederalTax(taxableIncome, filingStatus) {
+            if (taxableIncome <= 0) return 0;
+            
+            const brackets = TAX_BRACKETS_2025[filingStatus];
+            let tax = 0;
+            let previousLimit = 0;
+            
+            for (const bracket of brackets) {
+                if (taxableIncome <= bracket.limit) {
+                    tax += (taxableIncome - previousLimit) * bracket.rate;
+                    break;
+                } else {
+                    tax += (bracket.limit - previousLimit) * bracket.rate;
+                    previousLimit = bracket.limit;
+                }
+            }
+            
+            return Math.round(tax);
+        }
+
+        /**
+         * Format number as currency
+         */
+        function formatCurrency(amount) {
+            return '$' + Math.round(amount).toLocaleString('en-US');
+        }
+
+        /**
+         * Calculate overtime tax savings
+         */
+        function calculateOvertimeSavings(baseWages, overtimeWages, filingStatus) {
+            const totalIncome = baseWages + overtimeWages;
+            const standardDeduction = STANDARD_DEDUCTION_2025[filingStatus];
+            const maxOTDeduction = OT_DEDUCTION_CAP[filingStatus];
+            const phaseoutThreshold = PHASEOUT_THRESHOLD[filingStatus];
+            
+            // Calculate overtime deduction (before phase-out)
+            let overtimeDeduction = Math.min(overtimeWages, maxOTDeduction);
+            
+            // Apply phase-out if applicable
+            let isPhasedOut = false;
+            if (totalIncome > phaseoutThreshold) {
+                isPhasedOut = true;
+                const excess = totalIncome - phaseoutThreshold;
+                const reduction = excess * PHASEOUT_RATE;
+                overtimeDeduction = Math.max(0, overtimeDeduction - reduction);
+            }
+            
+            // Calculate tax scenarios
+            const taxableWithout = Math.max(0, totalIncome - standardDeduction);
+            const taxableWith = Math.max(0, totalIncome - standardDeduction - overtimeDeduction);
+            
+            const taxWithout = calculateFederalTax(taxableWithout, filingStatus);
+            const taxWith = calculateFederalTax(taxableWith, filingStatus);
+            
+            const savings = taxWithout - taxWith;
+            
+            return {
+                baseWages,
+                overtimeWages,
+                totalIncome,
+                standardDeduction,
+                overtimeDeduction,
+                taxableWithout,
+                taxableWith,
+                taxWithout,
+                taxWith,
+                savings,
+                isPhasedOut,
+                phaseoutThreshold
+            };
+        }
+
+        /**
+         * Update results display
+         */
+        function displayResults(results, filingStatus) {
+            // Update savings hero
+            document.getElementById('savingsDisplay').textContent = formatCurrency(results.savings);
+            
+            // Update comparison table
+            document.getElementById('base1').textContent = formatCurrency(results.baseWages);
+            document.getElementById('base2').textContent = formatCurrency(results.baseWages);
+            
+            document.getElementById('overtime1').textContent = formatCurrency(results.overtimeWages);
+            document.getElementById('overtime2').textContent = formatCurrency(results.overtimeWages);
+            
+            document.getElementById('agi1').textContent = formatCurrency(results.totalIncome);
+            document.getElementById('agi2').textContent = formatCurrency(results.totalIncome);
+            
+            document.getElementById('stdDed1').textContent = formatCurrency(results.standardDeduction);
+            document.getElementById('stdDed2').textContent = formatCurrency(results.standardDeduction);
+            
+            document.getElementById('overtimeDed').textContent = formatCurrency(results.overtimeDeduction);
+            
+            document.getElementById('taxable1').textContent = formatCurrency(results.taxableWithout);
+            document.getElementById('taxable2').textContent = formatCurrency(results.taxableWith);
+            
+            document.getElementById('tax1').textContent = formatCurrency(results.taxWithout);
+            document.getElementById('tax2').textContent = formatCurrency(results.taxWith);
+            
+            // Show/hide phase-out alert
+            const phaseoutAlert = document.getElementById('phaseoutAlert');
+            if (results.isPhasedOut) {
+                phaseoutAlert.style.display = 'block';
+                document.getElementById('thresholdText').textContent = formatCurrency(results.phaseoutThreshold);
+            } else {
+                phaseoutAlert.style.display = 'none';
+            }
+            
+            // Show eligibility warning for higher earners (likely salaried)
+            const eligibilityAlert = document.getElementById('eligibilityAlert');
+            if (results.baseWages > 50000) {
+                eligibilityAlert.style.display = 'block';
+            } else {
+                eligibilityAlert.style.display = 'none';
+            }
+            
+            // Show results section
+            const resultsSection = document.getElementById('results');
+            resultsSection.classList.add('visible');
+            
+            // Smooth scroll to results
+            setTimeout(() => {
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        /**
+         * Form submission handler
+         */
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const baseWages = parseFloat(document.getElementById('baseWages').value);
+            const overtimeWages = parseFloat(document.getElementById('overtimeWages').value);
+            const filingStatus = document.getElementById('filingStatus').value;
+            
+            // Validate inputs
+            if (!baseWages || !overtimeWages || !filingStatus) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (baseWages < 0 || overtimeWages < 0) {
+                alert('Please enter positive numbers for wages');
+                return;
+            }
+            
+            // Calculate results
+            const results = calculateOvertimeSavings(baseWages, overtimeWages, filingStatus);
+            
+            // Display results
+            displayResults(results, filingStatus);
+        });
+
+        // Test with Sally's example on page load (for validation)
+        // Sally: $30K base + $5K OT, single = should show $600 savings
+        console.log('Test calculation (Sally example):');
+        console.log(calculateOvertimeSavings(30000, 5000, 'single'));
+        // Should output: savings: 600, taxWithout: 2042, taxWith: 1442
+    </script>
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "No Tax on Overtime Calculator",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "Calculate your tax savings from the 2025 overtime deduction under the One Big Beautiful Bill Act. Free calculator for FLSA non-exempt workers.",
+        "featureList": [
+            "Calculate exact tax savings from overtime deduction",
+            "Compare tax scenarios with and without deduction",
+            "Automatic phase-out calculation for high earners",
+            "FLSA eligibility warnings"
+        ],
+        "datePublished": "2025-02-13",
+        "inLanguage": "en-US",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Bipartisan Policy Center",
+            "url": "https://bipartisanpolicy.org"
+        }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+            "@type": "Question",
+            "name": "How much will I save with the overtime deduction?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Your savings depend on your total income and filing status. Most workers earning $30,000-$100,000 will save $500-$2,500 annually. Higher earners may see reduced benefits due to phase-out rules. Use the calculator above for your exact savings."
+            }
+        }, {
+            "@type": "Question",
+            "name": "Who qualifies for the overtime deduction?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Only FLSA non-exempt workers who receive overtime pay qualify. Generally, this includes hourly workers and those earning under $35,568 annually. Salaried exempt employees do not qualify even if they work extra hours."
+            }
+        }, {
+            "@type": "Question",
+            "name": "When does the overtime deduction expire?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The overtime deduction expires December 31, 2028 unless extended by Congress. It applies to tax years 2025, 2026, 2027, and 2028."
+            }
+        }]
+    }
+    </script>
+</body>
+</html>

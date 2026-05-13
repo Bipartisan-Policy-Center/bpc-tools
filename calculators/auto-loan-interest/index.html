@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Auto Loan Interest Deduction Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Faustina', Georgia, serif;
+      background: #eef2f7;
+      color: #1a202c;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #3c608a;
+      color: white;
+      padding: 2.25rem 1.5rem 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.88;
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 2rem auto 0;
+      padding: 0 1rem 3rem;
+    }
+
+    /* ---- Cards ---- */
+    .card {
+      background: white;
+      border-radius: 4px;
+      padding: 1.6rem 1.875rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+      border: 1px solid #dde4ec;
+    }
+    .card-title {
+      font-size: 1.0rem;
+      font-weight: 700;
+      color: #3c608a;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 2px solid #e5ecf4;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .step-badge {
+      background: #3c608a;
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ---- Form elements ---- */
+    .form-group { margin-bottom: 1.15rem; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.01em;
+    }
+    select, input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid #cbd5e0;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-family: 'Faustina', Georgia, serif;
+      color: #2d3748;
+      background: white;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23718096' d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2.25rem; }
+    select:focus, input:focus { outline: none; border-color: #3c608a; box-shadow: 0 0 0 3px rgba(60,96,138,0.12); }
+    input[readonly] { background: #f5f8fb; cursor: default; color: #4a5568; }
+    .input-hint { font-size: 0.8rem; color: #a0aec0; margin-top: 0.3rem; }
+
+    .prefix-input, .suffix-input { position: relative; }
+    .prefix-input .prefix { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: #718096; pointer-events: none; font-size: 0.93rem; }
+    .prefix-input input { padding-left: 1.65rem; }
+    .suffix-input .suffix { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); color: #718096; pointer-events: none; font-size: 0.93rem; }
+    .suffix-input input { padding-right: 1.9rem; }
+
+    /* ---- Eligibility questions ---- */
+    .elig-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .elig-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid #dde4ec;
+      border-radius: 4px;
+      background: #fafbfc;
+      transition: border-color 0.15s;
+    }
+    .elig-row.answered-yes { border-color: #68d391; background: #f0fff4; }
+    .elig-row.answered-no  { border-color: #f08084; background: #fff0f1; }
+    .elig-q { font-size: 0.875rem; color: #2d3748; }
+    .elig-q strong { color: #3c608a; }
+    .yn-group { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    .yn-btn {
+      padding: 0.3rem 0.8rem;
+      border: 1.5px solid #cbd5e0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: 'Faustina', Georgia, serif;
+      background: white;
+      color: #4a5568;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .yn-btn:hover { border-color: #a0bbce; }
+    .yn-btn.sel-yes { border-color: #38a169; background: #38a169; color: white; }
+    .yn-btn.sel-no  { border-color: #e43e47; background: #e43e47; color: white; }
+
+    /* ---- Interest toggle ---- */
+    .int-toggle {
+      display: flex;
+      border: 1.5px solid #dde4ec;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1.35rem;
+      background: #f5f8fb;
+    }
+    .tog-btn {
+      flex: 1;
+      padding: 0.7rem 0.75rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: 'Faustina', Georgia, serif;
+      color: #718096;
+      transition: all 0.15s;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .tog-btn.active { background: #3c608a; color: white; font-weight: 700; border-radius: 3px; }
+    .tog-btn:hover:not(.active) { color: #3c608a; background: #e5ecf4; }
+
+    .inp-section { display: none; }
+    .inp-section.active { display: block; }
+
+    /* ---- Loan grid & table ---- */
+    .loan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 520px) { .loan-grid { grid-template-columns: 1fr; } }
+
+    .amort-wrap { margin-top: 1.25rem; }
+    .amort-label { font-size: 0.82rem; color: #718096; margin-bottom: 0.5rem; }
+    .amort-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .amort-table th { background: #e5ecf4; padding: 0.5rem 0.75rem; text-align: left; font-weight: 700; color: #3c608a; border: 1px solid #c5d5e4; }
+    .amort-table td { padding: 0.45rem 0.75rem; border: 1px solid #dde4ec; }
+    .amort-table tr.even td { background: #f5f8fb; }
+    .amort-table tr.sel-row td { background: #e5ecf4; font-weight: 600; }
+    .amort-table tr:hover td { background: #e5ecf4; cursor: pointer; }
+    .use-btn {
+      padding: 0.25rem 0.65rem;
+      background: #3c608a;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: 'Faustina', Georgia, serif;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .use-btn:hover { background: #2d4a6b; }
+    .amort-note { font-size: 0.75rem; color: #a0aec0; margin-top: 0.4rem; }
+
+    /* ---- Calculate button ---- */
+    .calc-btn {
+      width: 100%;
+      padding: 0.925rem;
+      background: #3c608a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.0rem;
+      font-family: 'Faustina', Georgia, serif;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.025em;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(60,96,138,0.25);
+      margin-bottom: 0.25rem;
+    }
+    .calc-btn:hover { background: #2d4a6b; transform: translateY(-1px); box-shadow: 0 5px 16px rgba(60,96,138,0.35); }
+    .calc-btn:active { transform: none; background: #3c608a; }
+
+    /* ---- Results ---- */
+    #results { display: none; margin-top: 1.25rem; }
+
+    .result-card { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #dde4ec; }
+    .result-hdr { padding: 1.15rem 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
+    .result-hdr.eligible   { background: #276749; color: white; }
+    .result-hdr.ineligible { background: #e43e47; color: white; }
+    .result-hdr.partial    { background: #c98a00; color: white; }
+    .result-hdr h2 { font-size: 1.05rem; font-weight: 700; }
+    .result-hdr .hdr-icon { font-size: 1.35rem; }
+
+    .result-body { padding: 1.5rem 1.75rem; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.875rem; margin-bottom: 1.35rem; }
+    @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+    .stat-box { background: #f5f8fb; border: 1px solid #c5d5e4; border-radius: 4px; padding: 0.85rem 0.75rem; text-align: center; }
+    .stat-box.main { background: #eaf4f0; border-color: #68d391; }
+    .stat-val { font-size: 1.45rem; font-weight: 800; color: #3c608a; display: block; letter-spacing: -0.02em; }
+    .stat-val.green { color: #276749; }
+    .stat-lbl { font-size: 0.73rem; color: #718096; margin-top: 0.15rem; display: block; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+
+    .dtl-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    .dtl-table td { padding: 0.42rem 0.4rem; border-bottom: 1px solid #edf1f5; }
+    .dtl-table td:first-child { color: #718096; }
+    .dtl-table td:last-child { text-align: right; font-weight: 600; color: #2d3748; }
+    .dtl-table tr:last-child td { border-bottom: none; font-weight: 700; font-size: 0.93rem; }
+    .dtl-section-head td { font-size: 0.73rem; font-weight: 700; color: #3c608a; text-transform: uppercase; letter-spacing: 0.07em; padding-top: 1rem !important; padding-bottom: 0.2rem !important; background: none; border-bottom: 1.5px solid #e5ecf4 !important; }
+    .dtl-section-head td:last-child { color: #3c608a; }
+
+    .inel-reason { background: #fff0f1; border: 1.5px solid #f5c0c2; border-radius: 4px; padding: 0.6rem 0.9rem; font-size: 0.865rem; color: #8b1a1f; margin-bottom: 0.5rem; }
+
+    .result-note { background: #fffaeb; border-left: 4px solid #fcbb13; border-radius: 0 4px 4px 0; padding: 0.7rem 1rem; font-size: 0.8rem; color: #744210; margin-top: 1rem; line-height: 1.55; }
+
+    .phaseout-bar-wrap { margin: 1rem 0 0.25rem; }
+    .phaseout-bar-lbl { font-size: 0.8rem; color: #718096; margin-bottom: 0.3rem; display: flex; justify-content: space-between; }
+    .phaseout-bar { height: 9px; background: #dde4ec; border-radius: 5px; overflow: hidden; }
+    .phaseout-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+    .phaseout-fill.low  { background: #38a169; }
+    .phaseout-fill.mid  { background: #fcbb13; }
+    .phaseout-fill.high { background: #e43e47; }
+    .phaseout-bar-range { font-size: 0.75rem; color: #a0aec0; margin-top: 0.3rem; text-align: center; }
+
+    .divider { height: 1px; background: #edf1f5; margin: 1.1rem 0; }
+
+    .disclaimer { text-align: center; font-size: 0.76rem; color: #a0aec0; margin-top: 0.75rem; padding-bottom: 0.5rem; line-height: 1.6; }
+
+    /* ---- Collapsible details ---- */
+    .details-wrap { margin-top: 0.25rem; }
+    .details-toggle-btn {
+      width: 100%;
+      background: none;
+      border: 1.5px solid #dde4ec;
+      border-radius: 4px;
+      padding: 0.55rem 1rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      font-family: 'Faustina', Georgia, serif;
+      color: #3c608a;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+      margin-top: 0.5rem;
+    }
+    .details-toggle-btn:hover { background: #e5ecf4; border-color: #a0bbce; }
+    .details-toggle-btn .arrow { transition: transform 0.2s; font-style: normal; font-size: 0.75rem; }
+    .details-toggle-btn.open .arrow { transform: rotate(90deg); }
+    .details-content { display: none; margin-top: 0.75rem; }
+    .details-content.open { display: block; }
+
+    /* ---- Selected interest display ---- */
+    .sel-interest-box { background: #eaf4f0; border: 1.5px solid #68d391; border-radius: 4px; padding: 0.65rem 1rem; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.85rem; }
+    .sel-interest-box .amt { font-size: 1.1rem; font-weight: 700; color: #276749; }
+    .sel-interest-box .lbl { font-size: 0.82rem; color: #4a5568; }
+    .sel-interest-box .clr { margin-left: auto; font-size: 0.78rem; color: #e43e47; cursor: pointer; font-weight: 600; text-decoration: underline; }
+
+    /* ---- VIN link ---- */
+    a { color: #3c608a; }
+    a:hover { color: #2d4a6b; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>2026 Auto Loan Interest Deduction Calculator</h1>
+  <p>Estimate your federal income tax savings from the auto loan interest deduction. Reflects 2026 tax brackets, standard deductions, and deduction eligibility rules.</p>
+</header>
+
+<div class="container">
+
+  <!-- Step 1 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step-badge">1</span>
+      Your Tax Information
+    </div>
+
+    <div class="form-group">
+      <label for="filingStatus">Filing Status</label>
+      <select id="filingStatus">
+        <option value="">Select your filing status…</option>
+        <option value="Single">Single</option>
+        <option value="Head of Household">Head of Household</option>
+        <option value="Married Filing Jointly">Married Filing Jointly</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="magi">Modified Adjusted Gross Income (MAGI)</label>
+      <div class="prefix-input">
+        <span class="prefix">$</span>
+        <input type="text" id="magi" inputmode="numeric" placeholder="e.g., 75,000" oninput="commaInput(this)">
+      </div>
+      <p class="input-hint">For most taxpayers, MAGI is equal or close to Adjusted Gross Income (AGI) on your tax return.</p>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step-badge">2</span>
+      Vehicle Eligibility
+    </div>
+    <div class="elig-list">
+      <div class="elig-row" id="row-newCar">
+        <div class="elig-q">Is the vehicle <strong>new</strong> (not used or pre-owned)?</div>
+        <div class="yn-group">
+          <button class="yn-btn" onclick="setAnswer('newCar', true, this)">Yes</button>
+          <button class="yn-btn" onclick="setAnswer('newCar', false, this)">No</button>
+        </div>
+      </div>
+      <div class="elig-row" id="row-usAssembly">
+        <div class="elig-q">Did <strong>final assembly</strong> of the vehicle occur in the <strong>United States</strong>? <span style="font-weight:400;">(<a href="https://www.nhtsa.gov/vin-decoder" target="_blank" rel="noopener">Check your VIN here</a>)</span></div>
+        <div class="yn-group">
+          <button class="yn-btn" onclick="setAnswer('usAssembly', true, this)">Yes</button>
+          <button class="yn-btn" onclick="setAnswer('usAssembly', false, this)">No</button>
+        </div>
+      </div>
+      <div class="elig-row" id="row-weightUnder14k">
+        <div class="elig-q">Is the vehicle's gross weight <strong>under 14,000 pounds</strong>?</div>
+        <div class="yn-group">
+          <button class="yn-btn" onclick="setAnswer('weightUnder14k', true, this)">Yes</button>
+          <button class="yn-btn" onclick="setAnswer('weightUnder14k', false, this)">No</button>
+        </div>
+      </div>
+      <div class="elig-row" id="row-personalUse">
+        <div class="elig-q">Is <strong>more than 50%</strong> of the vehicle's use for <strong>personal use</strong> (not business)?</div>
+        <div class="yn-group">
+          <button class="yn-btn" onclick="setAnswer('personalUse', true, this)">Yes</button>
+          <button class="yn-btn" onclick="setAnswer('personalUse', false, this)">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step-badge">3</span>
+      Auto Loan Interest
+    </div>
+
+    <div class="int-toggle">
+      <button class="tog-btn active" id="togSimple" onclick="switchMode('simple')">
+        Simple &mdash; I know my interest paid
+      </button>
+      <button class="tog-btn" id="togComplex" onclick="switchMode('complex')">
+        Estimate &mdash; Calculate from loan details
+      </button>
+    </div>
+
+    <!-- Simple -->
+    <div class="inp-section active" id="secSimple">
+      <div class="form-group">
+        <label for="interestPaid">Total Auto Loan Interest Paid in 2026</label>
+        <div class="prefix-input">
+          <span class="prefix">$</span>
+          <input type="text" id="interestPaid" inputmode="numeric" placeholder="e.g., 2,500" oninput="commaInput(this)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Complex -->
+    <div class="inp-section" id="secComplex">
+      <div class="loan-grid">
+        <div class="form-group">
+          <label for="carPrice">Vehicle Purchase Price</label>
+          <div class="prefix-input">
+            <span class="prefix">$</span>
+            <input type="text" id="carPrice" inputmode="numeric" placeholder="e.g., 40,000" oninput="handleLoanInput(this)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="downPayment">Down Payment</label>
+          <div class="prefix-input">
+            <span class="prefix">$</span>
+            <input type="text" id="downPayment" inputmode="numeric" placeholder="Defaults to 20%" oninput="handleDpInput(this)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="loanTerm">Loan Term</label>
+          <select id="loanTerm" onchange="updateLoanCalc()">
+            <option value="">Select term…</option>
+            <option value="1">1 Year (12 months)</option>
+            <option value="2">2 Years (24 months)</option>
+            <option value="3">3 Years (36 months)</option>
+            <option value="4">4 Years (48 months)</option>
+            <option value="5">5 Years (60 months)</option>
+            <option value="6">6 Years (72 months)</option>
+            <option value="7">7 Years (84 months)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="interestRate">Annual Interest Rate</label>
+          <div class="suffix-input">
+            <input type="number" id="interestRate" placeholder="e.g., 5.0" min="0.01" max="35" step="0.1" oninput="updateLoanCalc()">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="amortWrap" style="display:none;">
+        <div class="amort-label">Estimated interest paid per loan year — click <em>Use</em> on the row that matches your 2026 loan year:</div>
+        <table class="amort-table">
+          <thead>
+            <tr>
+              <th>Loan Year</th>
+              <th>Est. Interest Paid</th>
+              <th>Monthly Payment</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="amortBody"></tbody>
+        </table>
+        <p class="amort-note">* Assumes a standard fixed-rate amortizing loan. Estimates are for illustration purposes only.</p>
+      </div>
+
+      <div id="selIntBox" style="display:none;"></div>
+      <input type="hidden" id="estimatedInterest" value="">
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate My Tax Savings &rarr;</button>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <p class="disclaimer">
+    For educational and estimation purposes only &mdash; not tax advice.<br>
+    Consult a qualified tax professional for guidance specific to your situation.
+  </p>
+</div>
+
+<script>
+/* ===================== TAX DATA ===================== */
+const BRACKETS = {
+  'Single': [
+    {rate:.10, upTo:12400},{rate:.12, upTo:50400},{rate:.22, upTo:105700},
+    {rate:.24, upTo:201775},{rate:.32, upTo:256225},{rate:.35, upTo:640600},
+    {rate:.37, upTo:Infinity}
+  ],
+  'Head of Household': [
+    {rate:.10, upTo:17700},{rate:.12, upTo:67450},{rate:.22, upTo:105700},
+    {rate:.24, upTo:201750},{rate:.32, upTo:256200},{rate:.35, upTo:640600},
+    {rate:.37, upTo:Infinity}
+  ],
+  'Married Filing Jointly': [
+    {rate:.10, upTo:24800},{rate:.12, upTo:100800},{rate:.22, upTo:211400},
+    {rate:.24, upTo:403550},{rate:.32, upTo:512450},{rate:.35, upTo:768700},
+    {rate:.37, upTo:Infinity}
+  ]
+};
+
+const STD_DED = {
+  'Single': 16100,
+  'Head of Household': 24150,
+  'Married Filing Jointly': 32200
+};
+
+const MAX_DED       = 10000;
+const PHASEOUT_RATE = 0.10;
+const PHASEOUT_MFJ  = 200000;
+const PHASEOUT_OTH  = 100000;
+
+/* ===================== STATE ===================== */
+const ans = { newCar: null, usAssembly: null, weightUnder14k: null, personalUse: null };
+let mode = 'simple';
+let selectedYear = null;
+let dpUserEdited = false;
+
+/* ===================== COMMA FORMATTING ===================== */
+function commaInput(el) {
+  const pos     = el.selectionStart;
+  const oldVal  = el.value;
+  const oldLen  = oldVal.length;
+
+  // Count commas before the cursor in the old value
+  const commasBefore = (oldVal.slice(0, pos).match(/,/g) || []).length;
+
+  // Strip everything except digits
+  const digits = oldVal.replace(/\D/g, '');
+  const formatted = digits ? Number(digits).toLocaleString('en-US') : '';
+  el.value = formatted;
+
+  // Count commas before the same digit position in the new value
+  const digitsBeforeCursor = pos - commasBefore;
+  let newPos = 0, digitsSeen = 0;
+  while (newPos < formatted.length && digitsSeen < digitsBeforeCursor) {
+    if (formatted[newPos] !== ',') digitsSeen++;
+    newPos++;
+  }
+  el.setSelectionRange(newPos, newPos);
+}
+
+// Parse a comma-formatted text input to a number
+function parseNum(id) {
+  return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+}
+
+/* ===================== ELIGIBILITY ===================== */
+function setAnswer(q, val, btn) {
+  ans[q] = val;
+  const row = document.getElementById('row-' + q);
+  const group = btn.closest('.yn-group');
+  group.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('sel-yes','sel-no'));
+  btn.classList.add(val ? 'sel-yes' : 'sel-no');
+  row.classList.remove('answered-yes','answered-no');
+  row.classList.add(val ? 'answered-yes' : 'answered-no');
+}
+
+/* ===================== MODE TOGGLE ===================== */
+function switchMode(m) {
+  mode = m;
+  document.getElementById('togSimple').classList.toggle('active', m === 'simple');
+  document.getElementById('togComplex').classList.toggle('active', m === 'complex');
+  document.getElementById('secSimple').classList.toggle('active', m === 'simple');
+  document.getElementById('secComplex').classList.toggle('active', m === 'complex');
+}
+
+/* ===================== LOAN CALCULATOR ===================== */
+function pmt(r, n, pv) {
+  if (r === 0) return pv / n;
+  return (r * pv) / (1 - Math.pow(1 + r, -n));
+}
+
+function yearInterest(annRate, termYrs, loan, yr) {
+  if (yr > termYrs) return 0;
+  const mr  = annRate / 12;
+  const nm  = termYrs * 12;
+  const pay = pmt(mr, nm, loan);
+  let bal = loan, int = 0;
+  const s = (yr - 1) * 12 + 1, e = yr * 12;
+  for (let m = 1; m <= e; m++) {
+    const ip = bal * mr;
+    bal -= (pay - ip);
+    if (m >= s) int += ip;
+  }
+  return int;
+}
+
+function handleDpInput(el) {
+  dpUserEdited = true;
+  commaInput(el);
+  updateLoanCalc();
+}
+
+function handleLoanInput(el) {
+  commaInput(el);
+  const price = parseNum('carPrice');
+  const dpEl  = document.getElementById('downPayment');
+  if (!dpUserEdited && price > 0) {
+    dpEl.value = Math.round(price * 0.20).toLocaleString('en-US');
+  }
+  updateLoanCalc();
+}
+
+function updateLoanCalc() {
+  const price   = parseNum('carPrice');
+  const dp      = parseNum('downPayment');
+  const termYrs = parseInt(document.getElementById('loanTerm').value) || 0;
+  const annRate = parseFloat(document.getElementById('interestRate').value) / 100 || 0;
+  const loan    = price - dp;
+
+  if (price <= 0 || termYrs <= 0 || annRate <= 0 || loan <= 0) {
+    document.getElementById('amortWrap').style.display = 'none';
+    return;
+  }
+
+  const mr   = annRate / 12;
+  const mpay = pmt(mr, termYrs * 12, loan);
+
+  const tbody = document.getElementById('amortBody');
+  tbody.innerHTML = '';
+  for (let y = 1; y <= termYrs; y++) {
+    const int  = yearInterest(annRate, termYrs, loan, y);
+    const tr   = document.createElement('tr');
+    const isSel = (y === selectedYear);
+    tr.className = (y % 2 === 0 ? 'even' : '') + (isSel ? ' sel-row' : '');
+    tr.innerHTML =
+      `<td>Year ${y}</td>` +
+      `<td>${dollar(int)}</td>` +
+      `<td>${dollar(mpay)}/mo</td>` +
+      `<td><button class="use-btn" onclick="useInterest(${int.toFixed(2)}, ${y})">Use</button></td>`;
+    tbody.appendChild(tr);
+  }
+  document.getElementById('amortWrap').style.display = 'block';
+}
+
+function useInterest(amt, yr) {
+  selectedYear = yr;
+  document.getElementById('estimatedInterest').value = amt.toFixed(2);
+  document.getElementById('selIntBox').innerHTML =
+    `<div class="sel-interest-box">
+       <span class="amt">${dollar(amt)}</span>
+       <span class="lbl">Year ${yr} interest selected for calculation</span>
+       <span class="clr" onclick="clearInterest()">Clear</span>
+     </div>`;
+  document.getElementById('selIntBox').style.display = 'block';
+  updateLoanCalc();
+}
+
+function clearInterest() {
+  selectedYear = null;
+  document.getElementById('estimatedInterest').value = '';
+  document.getElementById('selIntBox').style.display = 'none';
+  updateLoanCalc();
+}
+
+/* ===================== TAX MATH ===================== */
+function calcTax(income, fs) {
+  if (income <= 0) return 0;
+  let tax = 0, prev = 0;
+  for (const b of BRACKETS[fs]) {
+    if (income <= prev) break;
+    tax += (Math.min(income, b.upTo) - prev) * b.rate;
+    prev = b.upTo;
+  }
+  return tax;
+}
+
+function marginalRate(income, fs) {
+  if (income <= 0) return BRACKETS[fs][0].rate;
+  for (const b of BRACKETS[fs]) {
+    if (income <= b.upTo) return b.rate;
+  }
+  return 0.37;
+}
+
+/* ===================== DETAILS TOGGLE ===================== */
+function toggleDetails(btn) {
+  btn.classList.toggle('open');
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+  btn.querySelector('.arrow').textContent = btn.classList.contains('open') ? '▾' : '▸';
+  btn.querySelector('.lbl-txt').textContent = btn.classList.contains('open') ? 'Hide calculation details' : 'Show calculation details';
+}
+
+/* ===================== MAIN CALCULATE ===================== */
+function calculate() {
+  const fs   = document.getElementById('filingStatus').value;
+  const magi = parseNum('magi');
+
+  const errs = [];
+  if (!fs)          errs.push('Please select your filing status.');
+  if (magi <= 0)    errs.push('Please enter your MAGI.');
+  if (ans.newCar         === null) errs.push('Please answer the vehicle eligibility question about new vs. used.');
+  if (ans.usAssembly     === null) errs.push('Please answer the vehicle eligibility question about U.S. final assembly.');
+  if (ans.weightUnder14k === null) errs.push('Please answer the vehicle eligibility question about vehicle weight.');
+  if (ans.personalUse    === null) errs.push('Please answer the vehicle eligibility question about personal use.');
+
+  let interest = 0;
+  if (mode === 'simple') {
+    interest = parseNum('interestPaid');
+    if (interest <= 0) errs.push('Please enter the auto loan interest you paid.');
+  } else {
+    interest = parseFloat(document.getElementById('estimatedInterest').value) || 0;
+    if (interest <= 0) errs.push('Please use the loan calculator to select a year\'s estimated interest.');
+  }
+
+  if (errs.length) { alert(errs.join('\n')); return; }
+
+  // Eligibility
+  const inel = [];
+  if (!ans.newCar)         inel.push('The deduction applies only to <strong>new vehicles</strong> — used or pre-owned vehicles do not qualify.');
+  if (!ans.usAssembly)     inel.push('The deduction requires that <strong>final assembly occurred in the United States</strong>.');
+  if (!ans.weightUnder14k) inel.push('The deduction is limited to vehicles with a gross vehicle weight <strong>under 14,000 pounds</strong>.');
+  if (!ans.personalUse)    inel.push('The deduction requires that <strong>more than 50% of use is personal</strong> (not primarily for business).');
+
+  const stdDed     = STD_DED[fs];
+  const phaseStart = (fs === 'Married Filing Jointly') ? PHASEOUT_MFJ : PHASEOUT_OTH;
+  const phaseEnd   = phaseStart + (MAX_DED / PHASEOUT_RATE);
+  const excess     = Math.max(0, magi - phaseStart);
+  const reduction  = excess * PHASEOUT_RATE;
+  const capped     = Math.min(interest, MAX_DED);
+  const eligDed    = Math.max(0, capped - reduction);
+  const phasedOut  = (magi >= phaseEnd);
+  const partial    = (!phasedOut && magi > phaseStart);
+  const phaseoutPct = Math.min(100, (reduction / MAX_DED) * 100);
+
+  const tiBase  = Math.max(0, magi - stdDed);
+  const tiWith  = Math.max(0, magi - stdDed - eligDed);
+  const taxWO   = calcTax(tiBase, fs);
+  const taxWith = calcTax(tiWith, fs);
+  const savings = taxWO - taxWith;
+  const mRate   = marginalRate(tiBase, fs);
+
+  const R = document.getElementById('results');
+  R.style.display = 'block';
+
+  if (inel.length > 0) {
+    R.innerHTML = `
+      <div class="result-card">
+        <div class="result-hdr ineligible">
+          <span class="hdr-icon">✕</span>
+          <h2>Vehicle Does Not Qualify for the Deduction</h2>
+        </div>
+        <div class="result-body">
+          <p style="font-size:.875rem;color:#4a5568;margin-bottom:.9rem;">Based on your responses, your vehicle does not meet one or more of the eligibility requirements for the 2026 auto loan interest deduction:</p>
+          ${inel.map(r => `<div class="inel-reason">✕&ensp;${r}</div>`).join('')}
+          <div class="result-note">If you are purchasing a different vehicle that meets all requirements, update your answers above and recalculate.</div>
+        </div>
+      </div>`;
+
+  } else if (phasedOut) {
+    R.innerHTML = `
+      <div class="result-card">
+        <div class="result-hdr ineligible">
+          <span class="hdr-icon">✕</span>
+          <h2>Deduction Fully Phased Out — Income Too High</h2>
+        </div>
+        <div class="result-body">
+          <p style="font-size:.875rem;color:#4a5568;margin-bottom:.9rem;">Your vehicle qualifies, but your MAGI exceeds the income level at which the deduction is fully eliminated.</p>
+          <table class="dtl-table">
+            <tr><td>Your MAGI</td><td>${dollar(magi)}</td></tr>
+            <tr><td>Phaseout Begins At</td><td>${dollar(phaseStart)}</td></tr>
+            <tr><td>Deduction Fully Eliminated At</td><td>${dollar(phaseEnd)}</td></tr>
+            <tr><td>Eligible Deduction</td><td>$0</td></tr>
+          </table>
+          <div class="result-note">The phaseout reduces the maximum $10,000 deduction by 10 cents for every dollar your MAGI exceeds ${dollar(phaseStart)}, eliminating it entirely at ${dollar(phaseEnd)} MAGI for ${fs} filers.</div>
+        </div>
+      </div>`;
+
+  } else {
+    const hdrCls  = partial ? 'partial' : 'eligible';
+    const hdrIcon = partial ? '~' : '✓';
+    const hdrTxt  = partial ? 'Partially Eligible — Income Phaseout Applies' : 'Your Vehicle Qualifies for the Full Deduction';
+    const phaseBarCls = phaseoutPct < 40 ? 'low' : phaseoutPct < 75 ? 'mid' : 'high';
+
+    R.innerHTML = `
+      <div class="result-card">
+        <div class="result-hdr ${hdrCls}">
+          <span class="hdr-icon">${hdrIcon}</span>
+          <h2>${hdrTxt}</h2>
+        </div>
+        <div class="result-body">
+
+          <div class="stat-grid">
+            <div class="stat-box main">
+              <span class="stat-val green">${dollar(savings)}</span>
+              <span class="stat-lbl">Estimated Tax Savings</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-val">${dollar(eligDed)}</span>
+              <span class="stat-lbl">Eligible Deduction</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-val">${pct(mRate)}</span>
+              <span class="stat-lbl">Marginal Tax Rate</span>
+            </div>
+          </div>
+
+          <div class="details-wrap">
+            <button class="details-toggle-btn" onclick="toggleDetails(this)">
+              <span class="arrow">▸</span><span class="lbl-txt">Show calculation details</span>
+            </button>
+            <div class="details-content">
+
+              ${partial ? `
+              <div class="phaseout-bar-wrap">
+                <div class="phaseout-bar-lbl">
+                  <span>Income phaseout: ${phaseoutPct.toFixed(0)}% of max deduction eliminated</span>
+                  <span>${dollar(reduction)} reduction</span>
+                </div>
+                <div class="phaseout-bar"><div class="phaseout-fill ${phaseBarCls}" style="width:${phaseoutPct}%"></div></div>
+                <div class="phaseout-bar-range">Phaseout range: ${dollar(phaseStart)} – ${dollar(phaseEnd)} MAGI &nbsp;(${fs})</div>
+              </div>
+              <div class="divider"></div>
+              ` : ''}
+
+              <table class="dtl-table">
+                <tr class="dtl-section-head"><td colspan="2">Deduction Calculation</td></tr>
+                <tr><td>Interest Paid / Estimated</td><td>${dollar(interest)}</td></tr>
+                <tr><td>Maximum Deduction</td><td>${dollar(MAX_DED)}</td></tr>
+                <tr><td>Interest Eligible (capped at max)</td><td>${dollar(capped)}</td></tr>
+                ${partial ? `<tr><td>Phaseout Reduction</td><td style="color:#e43e47;">&minus; ${dollar(reduction)}</td></tr>` : ''}
+                <tr><td>Eligible Deduction</td><td>${dollar(eligDed)}</td></tr>
+
+                <tr class="dtl-section-head"><td colspan="2">Tax Savings Calculation</td></tr>
+                <tr><td>MAGI</td><td>${dollar(magi)}</td></tr>
+                <tr><td>Less: 2026 Standard Deduction (${fs})</td><td>&minus; ${dollar(stdDed)}</td></tr>
+                <tr><td>Less: Auto Loan Interest Deduction</td><td>&minus; ${dollar(eligDed)}</td></tr>
+                <tr><td>Taxable Income</td><td>${dollar(tiWith)}</td></tr>
+                <tr><td>Est. Federal Tax (with deduction)</td><td>${dollar(taxWith)}</td></tr>
+                <tr><td>Est. Federal Tax (without deduction)</td><td>${dollar(taxWO)}</td></tr>
+                <tr><td>Estimated Tax Savings</td><td style="color:#276749;">${dollar(savings)}</td></tr>
+              </table>
+
+              <div class="result-note">
+                <strong>Note:</strong> This estimate assumes the 2026 standard deduction and treats MAGI as the basis for all income calculations. Actual tax liability may differ based on tax credits, other deductions, and individual circumstances. This is not tax advice — consult a qualified tax professional.
+              </div>
+
+            </div><!-- /.details-content -->
+          </div><!-- /.details-wrap -->
+
+        </div>
+      </div>`;
+  }
+
+  R.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===================== HELPERS ===================== */
+function dollar(n) {
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+function pct(n) {
+  return (n * 100).toFixed(0) + '%';
+}
+</script>
+</body>
+</html>

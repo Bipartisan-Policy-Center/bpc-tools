@@ -1,0 +1,522 @@
+<div class="bpc-taxcalc" data-tool="ctc-eitc">
+  <div class="bpc-taxcalc__header">
+    <h3 class="bpc-taxcalc__title">CTC and EITC Estimator</h3>
+  </div>
+
+  <form class="bpc-taxcalc__form" onsubmit="return false;">
+    <div class="bpc-taxcalc__grid">
+      <!-- Row 1: Filing Status & Gross Income -->
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Filing Status</span>
+        <select class="bpc-taxcalc__input" name="filingStatus">
+          <option value="single">Single</option>
+          <option value="hoh">Head of Household</option>
+          <option value="mfj">Married Filing Jointly</option>
+        </select>
+      </label>
+
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Gross Income</span>
+        <div class="bpc-taxcalc__money-input">
+          <span class="bpc-taxcalc__money-prefix" aria-hidden="true">$</span>
+          <input class="bpc-taxcalc__input bpc-taxcalc__input--money" name="grossIncome" type="number" step="500" min="0" max="500000" value="45000" />
+        </div>
+        <span class="bpc-taxcalc__hint">We round to the nearest $500. For purposes of this calculator, income is capped at $500,000.</span>
+      </label>
+
+      <!-- Row 2: Dependents -->
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Dependents Under 17 (for CTC)</span>
+        <input class="bpc-taxcalc__input" name="dependentsUnder17" type="number" step="1" min="0" max="20" value="1" />
+      </label>
+
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Dependents Age 18 (or 19-23 and a Full-Time Student)</span>
+        <input class="bpc-taxcalc__input" name="dependents18Plus" type="number" step="1" min="0" max="20" value="0" />
+      </label>
+
+      <!-- Row 3: Standard Deduction & Above-the-Line -->
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Standard Deduction?</span>
+        <select class="bpc-taxcalc__input" name="standardDeduction">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Above-the-Line Deductions</span>
+        <div class="bpc-taxcalc__money-input">
+          <span class="bpc-taxcalc__money-prefix" aria-hidden="true">$</span>
+          <input class="bpc-taxcalc__input bpc-taxcalc__input--money" name="aboveTheLineDeductions" type="number" step="1" min="0" value="0" />
+        </div>
+        <span class="bpc-taxcalc__hint">You can include estimated deductions for student loan interest, or money you put in a traditional IRA. A link to the full list of above-the-line deductions is below.</span>
+      </label>
+
+      <!-- Row 4: Itemized & Other Deductions -->
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Itemized Deductions</span>
+        <div class="bpc-taxcalc__money-input">
+          <span class="bpc-taxcalc__money-prefix" aria-hidden="true">$</span>
+          <input class="bpc-taxcalc__input bpc-taxcalc__input--money" name="itemizedDeductions" type="number" step="1" min="0" value="0" />
+        </div>
+        <span class="bpc-taxcalc__hint">If you take the standard deduction, you cannot itemize. If you do not take the standard deduction, you can include estimated deductions for state and local taxes (SALT), mortgage interest, and charitable contributions. The full list of above-the-line deductions is below.</span>
+      </label>
+
+      <label class="bpc-taxcalc__field">
+        <span class="bpc-taxcalc__label">Tips, Overtime, Auto Loan Interest, Senior, or Qualified Business Income Deductions</span>
+        <div class="bpc-taxcalc__money-input">
+          <span class="bpc-taxcalc__money-prefix" aria-hidden="true">$</span>
+          <input class="bpc-taxcalc__input bpc-taxcalc__input--money" name="otherDeductions" type="number" step="1" min="0" value="0" />
+        </div>
+      </label>
+    </div>
+
+    <div class="bpc-taxcalc__actions">
+      <button type="button" class="bpc-taxcalc__button bpc-taxcalc-calc">
+        Calculate
+      </button>
+      <div class="bpc-taxcalc__error" aria-live="polite"></div>
+    </div>
+
+    <div class="bpc-taxcalc__results" aria-live="polite">
+      <div class="bpc-taxcalc__result">
+        <div class="bpc-taxcalc__result-label">Your Tax Liability BEFORE Credits</div>
+        <div class="bpc-taxcalc__result-value" data-out="taxLiabilityBefore">$—</div>
+      </div>
+
+      <div class="bpc-taxcalc__result">
+        <div class="bpc-taxcalc__result-label">Your Earned Income Tax Credit (EITC) Amount</div>
+        <div class="bpc-taxcalc__result-value" data-out="eitc">$—</div>
+      </div>
+
+      <div class="bpc-taxcalc__result">
+        <div class="bpc-taxcalc__result-label">Your Child Tax Credit (CTC) Amount</div>
+        <div class="bpc-taxcalc__result-value" data-out="ctc">$—</div>
+      </div>
+
+      <div class="bpc-taxcalc__result bpc-taxcalc__result--total">
+        <div class="bpc-taxcalc__result-label">
+          Your Tax Liability AFTER Credits
+          <div class="bpc-taxcalc__result-sub">
+            (Negative means you owe nothing in federal income taxes, and still receive some CTC and/or EITC.)
+          </div>
+        </div>
+        <div class="bpc-taxcalc__result-value" data-out="taxLiabilityAfter">$—</div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+  :root {
+    --bpc-primary: var(--bpc-blue, #1b4fd8);
+    --bpc-primary-hover: var(--bpc-blue-dark, #153ea8);
+    --bpc-radius: 12px;
+  }
+
+  .bpc-taxcalc {
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: var(--bpc-radius);
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .bpc-taxcalc__title {
+    margin: 0 0 20px;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .bpc-taxcalc__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  @media (min-width: 768px) {
+    .bpc-taxcalc {
+      padding: 32px;
+    }
+
+    .bpc-taxcalc__title {
+      margin: 0 0 28px;
+      font-size: 1.5rem;
+    }
+
+    .bpc-taxcalc__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 32px;
+    }
+  }
+
+  .bpc-taxcalc__field {
+    display: block;
+  }
+
+  .bpc-taxcalc__label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .bpc-taxcalc__input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: var(--bpc-radius);
+    border: 1px solid rgba(0,0,0,.2);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .bpc-taxcalc__input:focus {
+    outline: none;
+    border-color: var(--bpc-primary);
+    box-shadow: 0 0 0 3px rgba(27, 79, 216, 0.1);
+  }
+
+  .bpc-taxcalc__hint {
+    font-size: .85rem;
+    color: rgba(0, 0, 0, 0.65);
+    margin-top: 6px;
+    display: block;
+    line-height: 1.5;
+  }
+
+  .bpc-taxcalc__actions {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0,0,0,.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bpc-taxcalc__button {
+    background-color: var(--bpc-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--bpc-radius);
+    padding: 12px 28px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color .2s ease, transform .1s ease;
+  }
+
+  .bpc-taxcalc__button:hover {
+    background-color: var(--bpc-primary-hover);
+  }
+
+  .bpc-taxcalc__button:active {
+    transform: translateY(1px);
+  }
+
+  .bpc-taxcalc__results {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 2px solid rgba(0,0,0,.12);
+  }
+
+  .bpc-taxcalc__result {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+
+  .bpc-taxcalc__result:last-child:not(.bpc-taxcalc__result--total) {
+    border-bottom: none;
+  }
+
+  .bpc-taxcalc__result-label {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .bpc-taxcalc__result-value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.1rem;
+    white-space: nowrap;
+  }
+
+  .bpc-taxcalc__result--total {
+    background: rgba(27,79,216,.06);
+    border-radius: var(--bpc-radius);
+    padding: 18px 20px;
+    margin-top: 12px;
+    border: 2px solid rgba(27,79,216,.15);
+    border-bottom: 2px solid rgba(27,79,216,.15);
+  }
+
+  .bpc-taxcalc__result--total .bpc-taxcalc__result-value {
+    font-size: 1.25rem;
+    color: var(--bpc-primary);
+  }
+
+  .bpc-taxcalc__result-sub {
+    font-size: .85rem;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: normal;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .bpc-taxcalc__money-input {
+    position: relative;
+  }
+
+  .bpc-taxcalc__money-prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .bpc-taxcalc__input--money {
+    padding-left: 38px;
+  }
+
+  /* Override for more generous spacing if needed by theme */
+  .bpc-taxcalc .bpc-taxcalc__money-input .bpc-taxcalc__input--money {
+    padding-left: 38px !important;
+  }
+
+  .bpc-taxcalc .bpc-taxcalc__money-input .bpc-taxcalc__money-prefix {
+    left: 16px !important;
+  }
+
+  @media (min-width: 768px) {
+    .bpc-taxcalc__money-prefix {
+      left: 18px;
+    }
+
+    .bpc-taxcalc__input--money {
+      padding-left: 42px;
+    }
+
+    .bpc-taxcalc .bpc-taxcalc__money-input .bpc-taxcalc__input--money {
+      padding-left: 42px !important;
+    }
+
+    .bpc-taxcalc .bpc-taxcalc__money-input .bpc-taxcalc__money-prefix {
+      left: 18px !important;
+    }
+  }
+</style>
+
+<script>
+(function(){
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+  
+  function roundToNearest500(n) {
+    return Math.round(n / 500) * 500;
+  }
+
+  function money(n) {
+    const sign = n < 0 ? "-" : "";
+    const absRoundedUp = Math.ceil(Math.abs(n));
+    return sign + absRoundedUp.toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+
+  // Calculate tax using marginal brackets
+  function calcTaxByBrackets(taxableIncome, status) {
+    taxableIncome = Math.max(0, taxableIncome);
+    
+    if (status === "single") {
+      return Math.max(0,
+        Math.min(taxableIncome * 0.10, 1192.5) +
+        Math.min(Math.max(taxableIncome - 11925, 0) * 0.12, 4386) +
+        Math.min(Math.max(taxableIncome - 48475, 0) * 0.22, 12072.5) +
+        Math.min(Math.max(taxableIncome - 103350, 0) * 0.24, 22548) +
+        Math.min(Math.max(taxableIncome - 197300, 0) * 0.32, 17032) +
+        Math.min(Math.max(taxableIncome - 250525, 0) * 0.35, 131538.75) +
+        Math.max(taxableIncome - 626350, 0) * 0.37
+      );
+    } else if (status === "hoh") {
+      return Math.max(0,
+        Math.min(taxableIncome * 0.10, 1700) +
+        Math.min(Math.max(taxableIncome - 17000, 0) * 0.12, 5742) +
+        Math.min(Math.max(taxableIncome - 64850, 0) * 0.22, 8470) +
+        Math.min(Math.max(taxableIncome - 103350, 0) * 0.24, 22548) +
+        Math.min(Math.max(taxableIncome - 197300, 0) * 0.32, 22548) +
+        Math.min(Math.max(taxableIncome - 250500, 0) * 0.35, 131547.5) +
+        Math.max(taxableIncome - 626350, 0) * 0.37
+      );
+    } else { // mfj
+      return Math.max(0,
+        Math.min(taxableIncome * 0.10, 2385) +
+        Math.min(Math.max(taxableIncome - 23850, 0) * 0.12, 8772) +
+        Math.min(Math.max(taxableIncome - 96950, 0) * 0.22, 24145) +
+        Math.min(Math.max(taxableIncome - 206700, 0) * 0.24, 45096) +
+        Math.min(Math.max(taxableIncome - 394600, 0) * 0.32, 34064) +
+        Math.min(Math.max(taxableIncome - 501050, 0) * 0.35, 87692.5) +
+        Math.max(taxableIncome - 751600, 0) * 0.37
+      );
+    }
+  }
+
+  // Calculate EITC - now considers both types of dependents
+  function calcEITC(grossIncome, status, depsUnder17, deps18Plus) {
+    const totalDeps = depsUnder17 + deps18Plus;
+    grossIncome = Math.max(0, grossIncome);
+    
+    if (status === "mfj") {
+      if (totalDeps === 0) {
+        return grossIncome < 17730 
+          ? Math.min(grossIncome * 0.0765, 649)
+          : Math.max(0, 649 - ((grossIncome - 17730) * 0.0765));
+      }
+      if (totalDeps === 1) {
+        return grossIncome < 30470
+          ? Math.min(grossIncome * 0.34, 4328)
+          : Math.max(0, 4328 - ((grossIncome - 30470) * 0.1598));
+      }
+      if (totalDeps === 2) {
+        return grossIncome < 30470
+          ? Math.min(grossIncome * 0.4, 7152)
+          : Math.max(0, 7152 - ((grossIncome - 30470) * 0.2106));
+      }
+      // 3+ dependents
+      return grossIncome < 30470
+        ? Math.min(grossIncome * 0.45, 8046)
+        : Math.max(0, 8046 - ((grossIncome - 30470) * 0.2106));
+    }
+    
+    // Single or Head of Household
+    if (totalDeps === 0) {
+      return grossIncome < 10620
+        ? Math.min(grossIncome * 0.0765, 649)
+        : Math.max(0, 649 - ((grossIncome - 10620) * 0.0765));
+    }
+    if (totalDeps === 1) {
+      return grossIncome < 23350
+        ? Math.min(grossIncome * 0.34, 4328)
+        : Math.max(0, 4328 - ((grossIncome - 23350) * 0.1598));
+    }
+    if (totalDeps === 2) {
+      return grossIncome < 23350
+        ? Math.min(grossIncome * 0.4, 7152)
+        : Math.max(0, 7152 - ((grossIncome - 23350) * 0.2106));
+    }
+    // 3+ dependents
+    return grossIncome < 23350
+      ? Math.min(grossIncome * 0.45, 8046)
+      : Math.max(0, 8046 - ((grossIncome - 23350) * 0.2106));
+  }
+
+  // Calculate CTC - only for under 17
+  function calcCTC(grossIncome, adjustedGrossIncome, status, depsUnder17, taxBeforeCredits) {
+    if (depsUnder17 === 0) return 0;
+    
+    // ACTC (refundable portion)
+    const actc = Math.min(
+      Math.max(0, (grossIncome - 2500) * 0.15),
+      1700 * depsUnder17
+    );
+    
+    // Non-refundable CTC
+    const nonRefundable = Math.min(taxBeforeCredits, 500 * depsUnder17);
+    
+    // Maximum potential CTC
+    const maxCTC = 2200 * depsUnder17;
+    
+    // Phaseout threshold
+    const threshold = status === "mfj" ? 400000 : 200000;
+    
+    // Calculate total CTC with phaseout
+    if (adjustedGrossIncome < threshold) {
+      return actc + nonRefundable;
+    } else {
+      return Math.max(maxCTC - ((adjustedGrossIncome - threshold) * 0.05), 0);
+    }
+  }
+
+  function calculate(inputs) {
+    const status = inputs.filingStatus;
+    const gross = Math.min(500000, roundToNearest500(Number(inputs.grossIncome) || 0));
+    const depsUnder17 = clamp(Math.floor(inputs.dependentsUnder17 || 0), 0, 20);
+    const deps18Plus = clamp(Math.floor(inputs.dependents18Plus || 0), 0, 20);
+    const useStd = inputs.standardDeduction === "yes";
+    const aboveTheLine = Math.max(0, Number(inputs.aboveTheLineDeductions) || 0);
+    const itemized = Math.max(0, Number(inputs.itemizedDeductions) || 0);
+    const other = Math.max(0, Number(inputs.otherDeductions) || 0);
+    
+    // Calculate Adjusted Gross Income
+    const agi = Math.max(0, gross - aboveTheLine);
+    
+    // Calculate Standard Deduction amount
+    let stdAmt = 0;
+    if (useStd) {
+      if (status === "single") {
+        stdAmt = 15750;
+      } else if (status === "hoh") {
+        stdAmt = 23625;
+      } else { // mfj
+        stdAmt = 31500;
+      }
+    }
+    
+    // If standard deduction is used, itemized is 0
+    const effectiveItemized = useStd ? 0 : itemized;
+    
+    // Calculate Taxable Income
+    const taxableIncome = Math.max(0, agi - stdAmt - effectiveItemized - other);
+    
+    // Calculate tax before credits
+    const taxBeforeCredits = calcTaxByBrackets(taxableIncome, status);
+    
+    // Calculate credits
+    const eitc = calcEITC(gross, status, depsUnder17, deps18Plus);
+    const ctc = calcCTC(gross, agi, status, depsUnder17, taxBeforeCredits);
+    
+    // Calculate tax after credits
+    const taxAfterCredits = taxBeforeCredits - eitc - ctc;
+    
+    return {
+      taxLiabilityBefore: taxBeforeCredits,
+      eitc: eitc,
+      ctc: ctc,
+      taxLiabilityAfter: taxAfterCredits
+    };
+  }
+
+  document.querySelectorAll('.bpc-taxcalc').forEach(root => {
+    const btn = root.querySelector('.bpc-taxcalc-calc');
+    const out = k => root.querySelector(`[data-out="${k}"]`);
+
+    btn.addEventListener('click', () => {
+      const f = new FormData(root.querySelector('form'));
+      const r = calculate(Object.fromEntries(f.entries()));
+      
+      out("taxLiabilityBefore").textContent = money(r.taxLiabilityBefore);
+      out("eitc").textContent = money(r.eitc);
+      out("ctc").textContent = money(r.ctc);
+      out("taxLiabilityAfter").textContent = money(r.taxLiabilityAfter);
+      
+      window.dispatchEvent(new CustomEvent("bpc_taxcalc_calculate", {
+        detail: { tool: "ctc-eitc" }
+      }));
+    });
+
+    // Auto-calculate on page load
+    btn.click();
+  });
+})();
+</script>

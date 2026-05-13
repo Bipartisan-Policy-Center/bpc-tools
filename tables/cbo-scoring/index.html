@@ -1,0 +1,69 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,400;0,600;1,400;1,600&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+<style>
+  .bpc { font-family: 'Faustina', Georgia, serif; padding: 1.5rem 0 1rem; max-width: 740px; }
+  .tbl-label { font-family: 'Faustina', serif; font-size: 12px; font-style: italic; color: #333638; margin: 0 0 4px; letter-spacing: 0.01em; }
+  .tbl-label strong { font-style: normal; font-weight: 600; }
+  .bpc table { width: 100%; border-collapse: collapse; font-family: 'Faustina', Georgia, serif; font-size: 13.5px; border: 1px solid #d3d8d6; }
+  .bpc thead th { background-color: #3c608a !important; color: #fff !important; font-family: 'Faustina', serif; font-weight: 600; font-size: 12.5px; padding: 9px 14px; text-align: center; letter-spacing: 0.04em; text-transform: uppercase; }
+  .bpc td { border: 1px solid #d3d8d6; padding: 8px 13px; vertical-align: middle; color: #333638; line-height: 1.45; }
+  .bpc .gl { background: #eef2f7; font-weight: 600; font-size: 13px; color: #3c608a; text-align: center; border-right: 2px solid #3c608a; }
+  .bpc .sub { font-size: 12.5px; color: #555; text-align: center; background: #fafafa; font-style: italic; }
+  .bpc .act { background: #fff; font-size: 13px; }
+  .bpc .act em { font-style: italic; }
+  .bpc .imp { text-align: center; font-size: 13px; color: #333638; }
+  .bpc .imp.scored { background: #fffcf0 !important; }
+  .bpc .imp.not-scored { background: #f0f1f2 !important; }
+  .up { color: #b91f24; font-weight: 600; }
+  .dn { color: #1f476c; font-weight: 600; }
+  .sep { color: #888; margin: 0 2px; font-weight: 400; }
+  .legend { display: flex; gap: 20px; align-items: center; margin-top: 10px; }
+  .li { display: flex; align-items: center; gap: 7px; font-family: 'Faustina', serif; font-size: 12px; color: #555; font-style: italic; }
+  .sw { width: 22px; height: 14px; border: 1px solid #d3d8d6; display: inline-block; }
+  .sw-s { background: #fffcf0; border-color: #e8c84a; }
+  .sw-n { background: #f0f1f2; border-color: #c4c7ca; }
+</style>
+
+<div class="bpc">
+  <p class="tbl-label"><strong>Table 1.</strong> Impacts of CBO Scoring Guidelines</p>
+  <table>
+    <thead>
+      <tr>
+        <th colspan="2" style="text-align:left; background-color:#3c608a !important;"></th>
+        <th style="background-color:#3c608a !important;">Action</th>
+        <th style="background-color:#3c608a !important;">Secondary Impacts</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="gl" rowspan="4">Guideline #3</td>
+        <td class="sub" rowspan="4">Appropriations<br>Committees</td>
+        <td class="act" rowspan="2">Changes in <em>Discretionary Appropriations</em></td>
+        <td class="imp not-scored"><span class="up">↑ Program Cost</span><span class="sep">|</span><span class="dn">↓ Program Revenue</span></td>
+      </tr>
+      <tr>
+        <td class="imp not-scored"><span class="dn">↓ Program Cost</span><span class="sep">|</span><span class="up">↑ Program Revenue</span></td>
+      </tr>
+      <tr>
+        <td class="act" rowspan="2"><em>Substantive Changes in Mandatory Programs (CHIMPs)</em></td>
+        <td class="imp scored"><span class="up">↑ Program Cost</span><span class="sep">|</span><span class="dn">↓ Program Revenue</span></td>
+      </tr>
+      <tr>
+        <td class="imp scored"><span class="dn">↓ Program Cost</span><span class="sep">|</span><span class="up">↑ Program Revenue</span></td>
+      </tr>
+      <tr>
+        <td class="gl" rowspan="2">Guideline #14</td>
+        <td class="sub" rowspan="2">Authorizing<br>Committees</td>
+        <td class="act" rowspan="2">Changes in <em>Mandatory Appropriations for Program Administration</em></td>
+        <td class="imp scored"><span class="up">↑ Program Cost</span><span class="sep">|</span><span class="dn">↓ Program Revenue</span></td>
+      </tr>
+      <tr>
+        <td class="imp not-scored"><span class="dn">↓ Program Cost</span><span class="sep">|</span><span class="up">↑ Program Revenue</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="legend">
+    <div class="li"><span class="sw sw-s"></span> Scored</div>
+    <div class="li"><span class="sw sw-n"></span> Not Scored</div>
+  </div>
+</div>

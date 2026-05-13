@@ -1,0 +1,2272 @@
+<div id="cc-tool" class="cc-tool">
+  <div class="cc-tool__mapWrap">
+    <div class="cc-tool__mapTitle">
+      <strong>Explore child care data by state</strong>
+      <div class="cc-tool__mapHint">Click a state to view key metrics.</div>
+    </div>
+
+    <div id="cc-map" class="cc-tool__map" aria-label="US map (select a state)">
+      <!-- SVG will be embedded here by JavaScript -->
+    </div>
+  </div>
+
+  <div class="cc-tool__panelWrap">
+    <div id="cc-panel" class="cc-tool__panel" aria-live="polite">
+      <div class="cc-tool__panelIntro">
+        <div class="cc-tool__kicker">Selected state</div>
+        <h3 class="cc-tool__stateTitle">Select a state</h3>
+        <p class="cc-tool__muted">Click a state on the map to load data.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === DATA: paste your JSON array in here === -->
+<script id="cc-data" type="application/json">
+[
+  {
+    "state": "Alabama",
+    "code": "AL",
+    "children_under_5": 295446.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 566448.0,
+    "pct_5_13": 11.0,
+    "potential_need": 221880.0,
+    "supply": 130240.0,
+    "gap": 90010.0,
+    "gap_percentage": 40.6,
+    "economic_impact_low": 3887319154.0,
+    "economic_impact_high": 5931124244.0,
+    "avg_annual_cost": 8063.25,
+    "pct_dual_income": 8.0,
+    "pct_single_parent": 29.0,
+    "num_employees": 18196.0,
+    "median_hourly_wage": 10.93,
+    "ccdf_federal": 205911331.0,
+    "ccdf_state": 18810138.0,
+    "head_start": 164520709.0,
+    "tanf_to_ccdf": 18601451.0,
+    "tanf_ece": 36806064.0,
+    "state_preschool": 247950361.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3729.0
+  },
+  {
+    "state": "Alaska",
+    "code": "AK",
+    "children_under_5": 45536.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 89420.0,
+    "pct_5_13": 12.0,
+    "potential_need": 33400.0,
+    "supply": 17230.0,
+    "gap": 18470.0,
+    "gap_percentage": 55.3,
+    "economic_impact_low": 1068387698.0,
+    "economic_impact_high": 1631315286.0,
+    "avg_annual_cost": 10871.25,
+    "pct_dual_income": 10.0,
+    "pct_single_parent": 26.0,
+    "num_employees": 2884.0,
+    "median_hourly_wage": 13.08,
+    "ccdf_federal": 23319004.0,
+    "ccdf_state": 8864507.0,
+    "head_start": 23261978.0,
+    "tanf_to_ccdf": 8879493.0,
+    "tanf_ece": 3447037.0,
+    "state_preschool": 9164365.0,
+    "head_start_eligibility": 33310.0,
+    "ccdf_eligibility": 6192.0
+  },
+  {
+    "state": "Arizona",
+    "code": "AZ",
+    "children_under_5": 396960.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 798471.0,
+    "pct_5_13": 11.0,
+    "potential_need": 296800.0,
+    "supply": 256420.0,
+    "gap": 48920.0,
+    "gap_percentage": 16.5,
+    "economic_impact_low": 2497822601.0,
+    "economic_impact_high": 3815722682.0,
+    "avg_annual_cost": 12668.5,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 36.0,
+    "num_employees": 22.986,
+    "median_hourly_wage": 12.98,
+    "ccdf_federal": 268361769.0,
+    "ccdf_state": 33377843.0,
+    "head_start": 204938756.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 0.0,
+    "state_preschool": 50404480.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3419.0
+  },
+  {
+    "state": "Arkansas",
+    "code": "AR",
+    "children_under_5": 179167.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 353058.0,
+    "pct_5_13": 11.0,
+    "potential_need": 137400.0,
+    "supply": 154660.0,
+    "gap": 11260.0,
+    "gap_percentage": 8.2,
+    "economic_impact_low": 489508213.0,
+    "economic_impact_high": 745333779.0,
+    "avg_annual_cost": 8417.25,
+    "pct_dual_income": 9.0,
+    "pct_single_parent": 29.0,
+    "num_employees": 15707.0,
+    "median_hourly_wage": 11.04,
+    "ccdf_federal": 135145238.0,
+    "ccdf_state": 9783770.0,
+    "head_start": 116996229.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 29577024.0,
+    "state_preschool": 212079785.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5151.0
+  },
+  {
+    "state": "California",
+    "code": "CA",
+    "children_under_5": 2087677.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 4262147.0,
+    "pct_5_13": 11.0,
+    "potential_need": 1675250.0,
+    "supply": 1078070.0,
+    "gap": 600420.0,
+    "gap_percentage": 35.8,
+    "economic_impact_low": 34463046053.0,
+    "economic_impact_high": 52505580835.0,
+    "avg_annual_cost": 20825.0,
+    "pct_dual_income": 16.0,
+    "pct_single_parent": 50.0,
+    "num_employees": 178108.0,
+    "median_hourly_wage": 15.66,
+    "ccdf_federal": 1149871554.0,
+    "ccdf_state": 501010710.0,
+    "head_start": 1496264134.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 972849232.0,
+    "state_preschool": 3898876391.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 7472.0
+  },
+  {
+    "state": "Colorado",
+    "code": "CO",
+    "children_under_5": 311658.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 605425.0,
+    "pct_5_13": 10.0,
+    "potential_need": 246990.0,
+    "supply": 157660.0,
+    "gap": 91590.0,
+    "gap_percentage": 37.1,
+    "economic_impact_low": 4976486115.0,
+    "economic_impact_high": 7556768242.0,
+    "avg_annual_cost": 16447.25,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 43.0,
+    "num_employees": 23722.0,
+    "median_hourly_wage": 15.06,
+    "ccdf_federal": 138295852.0,
+    "ccdf_state": 71487354.0,
+    "head_start": 115445828.0,
+    "tanf_to_ccdf": 1113847.0,
+    "tanf_ece": 134503592.0,
+    "state_preschool": 301057683.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3833.0
+  },
+  {
+    "state": "Connecticut",
+    "code": "CT",
+    "children_under_5": 183534.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 362250.0,
+    "pct_5_13": 10.0,
+    "potential_need": 158650.0,
+    "supply": 106310.0,
+    "gap": 54610.0,
+    "gap_percentage": 34.4,
+    "economic_impact_low": 3179396993.0,
+    "economic_impact_high": 4833444496.0,
+    "avg_annual_cost": 17208.66,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 43.0,
+    "num_employees": 23056.0,
+    "median_hourly_wage": 15.01,
+    "ccdf_federal": 100599684.0,
+    "ccdf_state": 42317123.0,
+    "head_start": 125771942.0,
+    "tanf_to_ccdf": 26678810.0,
+    "tanf_ece": 81264199.0,
+    "state_preschool": 113392552.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 6126.0
+  },
+  {
+    "state": "Delaware",
+    "code": "DE",
+    "children_under_5": 55076.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 107169.0,
+    "pct_5_13": 10.0,
+    "potential_need": 45210.0,
+    "supply": 43860.0,
+    "gap": 5200.0,
+    "gap_percentage": 11.5,
+    "economic_impact_low": 235709726.0,
+    "economic_impact_high": 358267879.0,
+    "avg_annual_cost": 13160.0,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 37.0,
+    "num_employees": 5761.0,
+    "median_hourly_wage": 13.89,
+    "ccdf_federal": 33328501.0,
+    "ccdf_state": 9295219.0,
+    "head_start": 24489943.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 17908162.0,
+    "state_preschool": 14550750.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3833.0
+  },
+  {
+    "state": "Florida",
+    "code": "FL",
+    "children_under_5": 1154386.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 2265532.0,
+    "pct_5_13": 10.0,
+    "potential_need": 883090.0,
+    "supply": 766050.0,
+    "gap": 128960.0,
+    "gap_percentage": 14.6,
+    "economic_impact_low": 6225466134.0,
+    "economic_impact_high": 9498331446.0,
+    "avg_annual_cost": 11464.5,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 32.0,
+    "num_employees": 96872.0,
+    "median_hourly_wage": 12.02,
+    "ccdf_federal": 656554292.0,
+    "ccdf_state": 124624979.0,
+    "head_start": 507516858.0,
+    "tanf_to_ccdf": 82996516.0,
+    "tanf_ece": 208596015.0,
+    "state_preschool": 436562687.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3108.0
+  },
+  {
+    "state": "Georgia",
+    "code": "GA",
+    "children_under_5": 637970.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 1274706.0,
+    "pct_5_13": 11.0,
+    "potential_need": 499340.0,
+    "supply": 401930.0,
+    "gap": 102950.0,
+    "gap_percentage": 20.6,
+    "economic_impact_low": 5157360351.0,
+    "economic_impact_high": 7859680244.0,
+    "avg_annual_cost": 9513.25,
+    "pct_dual_income": 9.0,
+    "pct_single_parent": 29.0,
+    "num_employees": 60097.0,
+    "median_hourly_wage": 11.44,
+    "ccdf_federal": 459039693.0,
+    "ccdf_state": 59727436.0,
+    "head_start": 283415965.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 22182651.0,
+    "state_preschool": 457779908.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3333.0
+  },
+  {
+    "state": "Hawaii",
+    "code": "HI",
+    "children_under_5": 76624.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 151936.0,
+    "pct_5_13": 11.0,
+    "potential_need": 61300.0,
+    "supply": 24100.0,
+    "gap": 37200.0,
+    "gap_percentage": 60.7,
+    "economic_impact_low": 1953608977.0,
+    "economic_impact_high": 2975099589.0,
+    "avg_annual_cost": 16444.25,
+    "pct_dual_income": 18.0,
+    "pct_single_parent": 49.0,
+    "num_employees": 3638.0,
+    "median_hourly_wage": 14.16,
+    "ccdf_federal": 43118506.0,
+    "ccdf_state": 11380210.0,
+    "head_start": 36454564.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 11555259.0,
+    "state_preschool": 7590165.0,
+    "head_start_eligibility": 30650.0,
+    "ccdf_eligibility": 6202.0
+  },
+  {
+    "state": "Idaho",
+    "code": "ID",
+    "children_under_5": 114514.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 236294.0,
+    "pct_5_13": 12.0,
+    "potential_need": 80230.0,
+    "supply": 56260.0,
+    "gap": 25150.0,
+    "gap_percentage": 31.3,
+    "economic_impact_low": 1102255664.0,
+    "economic_impact_high": 1682573081.0,
+    "avg_annual_cost": 8823.0,
+    "pct_dual_income": 10.0,
+    "pct_single_parent": 26.0,
+    "num_employees": 6570.0,
+    "median_hourly_wage": 11.0,
+    "ccdf_federal": 65449761.0,
+    "ccdf_state": 6967935.0,
+    "head_start": 44465573.0,
+    "tanf_to_ccdf": 7804096.0,
+    "tanf_ece": 2538773.0,
+    "state_preschool": 0.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3626.0
+  },
+  {
+    "state": "Illinois",
+    "code": "IL",
+    "children_under_5": 660380.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 1366508.0,
+    "pct_5_13": 11.0,
+    "potential_need": 586490.0,
+    "supply": 371620.0,
+    "gap": 217290.0,
+    "gap_percentage": 37.0,
+    "economic_impact_low": 11644089839.0,
+    "economic_impact_high": 17701350358.0,
+    "avg_annual_cost": 15777.25,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 48.0,
+    "num_employees": 69474.0,
+    "median_hourly_wage": 13.33,
+    "ccdf_federal": 388953255.0,
+    "ccdf_state": 132344728.0,
+    "head_start": 469602600.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 896435649.0,
+    "state_preschool": 670768028.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4841.0
+  },
+  {
+    "state": "Indiana",
+    "code": "IN",
+    "children_under_5": 405896.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 798360.0,
+    "pct_5_13": 11.0,
+    "potential_need": 320950.0,
+    "supply": 166670.0,
+    "gap": 147200.0,
+    "gap_percentage": 45.9,
+    "economic_impact_low": 6880630255.0,
+    "economic_impact_high": 10485701209.0,
+    "avg_annual_cost": 12772.5,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 46.0,
+    "num_employees": 24701.0,
+    "median_hourly_wage": 11.95,
+    "ccdf_federal": 260686288.0,
+    "ccdf_state": 39397129.0,
+    "head_start": 169794025.0,
+    "tanf_to_ccdf": 61835002.0,
+    "tanf_ece": 17075759.0,
+    "state_preschool": 95262478.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3228.0
+  },
+  {
+    "state": "Iowa",
+    "code": "IA",
+    "children_under_5": 186390.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 366763.0,
+    "pct_5_13": 11.0,
+    "potential_need": 169130.0,
+    "supply": 156450.0,
+    "gap": 24670.0,
+    "gap_percentage": 14.6,
+    "economic_impact_low": 1118537555.0,
+    "economic_impact_high": 1694863229.0,
+    "avg_annual_cost": 10365.5,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 32.0,
+    "num_employees": 21714.0,
+    "median_hourly_wage": 11.3,
+    "ccdf_federal": 109630285.0,
+    "ccdf_state": 16893622.0,
+    "head_start": 91575708.0,
+    "tanf_to_ccdf": 26205412.0,
+    "tanf_ece": 16261573.0,
+    "state_preschool": 100296902.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3443.0
+  },
+  {
+    "state": "Kansas",
+    "code": "KS",
+    "children_under_5": 174072.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 348895.0,
+    "pct_5_13": 12.0,
+    "potential_need": 146710.0,
+    "supply": 94020.0,
+    "gap": 56450.0,
+    "gap_percentage": 38.5,
+    "economic_impact_low": 2511239085.0,
+    "economic_impact_high": 3813968310.0,
+    "avg_annual_cost": 10189.0,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 40.0,
+    "num_employees": 13583.0,
+    "median_hourly_wage": 11.25,
+    "ccdf_federal": 103733306.0,
+    "ccdf_state": 19604808.0,
+    "head_start": 88849166.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 39753370.0,
+    "state_preschool": 110559369.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5851.0
+  },
+  {
+    "state": "Kentucky",
+    "code": "KY",
+    "children_under_5": 266711.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 348895.0,
+    "pct_5_13": 7.0,
+    "potential_need": 201750.0,
+    "supply": 145940.0,
+    "gap": 56630.0,
+    "gap_percentage": 28.1,
+    "economic_impact_low": 2428008920.0,
+    "economic_impact_high": 3697532693.0,
+    "avg_annual_cost": 11050.0,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 45.0,
+    "num_employees": 17190.0,
+    "median_hourly_wage": 10.7,
+    "ccdf_federal": 199956519.0,
+    "ccdf_state": 18827681.0,
+    "head_start": 205473206.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 31338143.0,
+    "state_preschool": 250130532.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5731.0
+  },
+  {
+    "state": "Louisiana",
+    "code": "LA",
+    "children_under_5": 278565.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 348895.0,
+    "pct_5_13": 8.0,
+    "potential_need": 0,
+    "supply": 139760.0,
+    "gap": 88890.0,
+    "gap_percentage": 38.8,
+    "economic_impact_low": 3985313170.0,
+    "economic_impact_high": 6092540121.0,
+    "avg_annual_cost": 10422.0,
+    "pct_dual_income": 10.0,
+    "pct_single_parent": 39.0,
+    "num_employees": 22219.0,
+    "median_hourly_wage": 10.6,
+    "ccdf_federal": 199890987.0,
+    "ccdf_state": 20147384.0,
+    "head_start": 215101175.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 58727248.0,
+    "state_preschool": 110765377.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5173.0
+  },
+  {
+    "state": "Maine",
+    "code": "ME",
+    "children_under_5": 60550.0,
+    "pct_under_5": 4.0,
+    "children_5_13": 124396.0,
+    "pct_5_13": 9.0,
+    "potential_need": 50600.0,
+    "supply": 54900.0,
+    "gap": 3720.0,
+    "gap_percentage": 7.4,
+    "economic_impact_low": 168859572.0,
+    "economic_impact_high": 256684549.0,
+    "avg_annual_cost": 13396.5,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 39.0,
+    "num_employees": 6755.0,
+    "median_hourly_wage": 13.51,
+    "ccdf_federal": 33728027.0,
+    "ccdf_state": 5998556.0,
+    "head_start": 49089254.0,
+    "tanf_to_ccdf": 9609599.0,
+    "tanf_ece": 8336167.0,
+    "state_preschool": 68153508.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 9163.0
+  },
+  {
+    "state": "Maryland",
+    "code": "MD",
+    "children_under_5": 349531.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 692461.0,
+    "pct_5_13": 11.0,
+    "potential_need": 305210.0,
+    "supply": 255490.0,
+    "gap": 49430.0,
+    "gap_percentage": 16.2,
+    "economic_impact_low": 3070886405.0,
+    "economic_impact_high": 4664731677.0,
+    "avg_annual_cost": 19877.5,
+    "pct_dual_income": 16.0,
+    "pct_single_parent": 48.0,
+    "num_employees": 30559.0,
+    "median_hourly_wage": 14.17,
+    "ccdf_federal": 170755084.0,
+    "ccdf_state": 62903783.0,
+    "head_start": 138259524.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 191481613.0,
+    "state_preschool": 569159141.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 6302.0
+  },
+  {
+    "state": "Massachusetts",
+    "code": "MA",
+    "children_under_5": 349758.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 674995.0,
+    "pct_5_13": 10.0,
+    "potential_need": 303050.0,
+    "supply": 202670.0,
+    "gap": 102030.0,
+    "gap_percentage": 33.7,
+    "economic_impact_low": 6345612846.0,
+    "economic_impact_high": 9616884563.0,
+    "avg_annual_cost": 21419.5,
+    "pct_dual_income": 15.0,
+    "pct_single_parent": 62.0,
+    "num_employees": 40681.0,
+    "median_hourly_wage": 16.95,
+    "ccdf_federal": 193900787.0,
+    "ccdf_state": 83868546.0,
+    "head_start": 184633444.0,
+    "tanf_to_ccdf": 91570224.0,
+    "tanf_ece": 292073368.0,
+    "state_preschool": 212071280.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5092.0
+  },
+  {
+    "state": "Michigan",
+    "code": "MI",
+    "children_under_5": 526174.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 1068459.0,
+    "pct_5_13": 11.0,
+    "potential_need": 430510.0,
+    "supply": 311240.0,
+    "gap": 120350.0,
+    "gap_percentage": 28.0,
+    "economic_impact_low": 5992855154.0,
+    "economic_impact_high": 9125233320.0,
+    "avg_annual_cost": 11606.5,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 38.0,
+    "num_employees": 39057.0,
+    "median_hourly_wage": 11.81,
+    "ccdf_federal": 325831118.0,
+    "ccdf_state": 57539018.0,
+    "head_start": 417988492.0,
+    "tanf_to_ccdf": 8300000.0,
+    "tanf_ece": 291330239.0,
+    "state_preschool": 524720000.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4144.0
+  },
+  {
+    "state": "Minnesota",
+    "code": "MN",
+    "children_under_5": 325780.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 1068459.0,
+    "pct_5_13": 18.0,
+    "potential_need": 301430.0,
+    "supply": 213930.0,
+    "gap": 88810.0,
+    "gap_percentage": 29.5,
+    "economic_impact_low": 4754173110.0,
+    "economic_impact_high": 7198230350.0,
+    "avg_annual_cost": 14429.5,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 46.0,
+    "num_employees": 30174.0,
+    "median_hourly_wage": 13.66,
+    "ccdf_federal": 171258949.0,
+    "ccdf_state": 55452779.0,
+    "head_start": 142389618.0,
+    "tanf_to_ccdf": 56425000.0,
+    "tanf_ece": 55395735.0,
+    "state_preschool": 54036950.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4134.0
+  },
+  {
+    "state": "Mississippi",
+    "code": "MS",
+    "children_under_5": 173612.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 332154.0,
+    "pct_5_13": 11.0,
+    "potential_need": 136510.0,
+    "supply": 127760.0,
+    "gap": 19940.0,
+    "gap_percentage": 14.6,
+    "economic_impact_low": 764299958.0,
+    "economic_impact_high": 1168579313.0,
+    "avg_annual_cost": 6779.5,
+    "pct_dual_income": 7.0,
+    "pct_single_parent": 29.0,
+    "num_employees": 16799.0,
+    "median_hourly_wage": 10.62,
+    "ccdf_federal": 129177358.0,
+    "ccdf_state": 7418386.0,
+    "head_start": 264501232.0,
+    "tanf_to_ccdf": 25944373.0,
+    "tanf_ece": 0.0,
+    "state_preschool": 69683209.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4322.0
+  },
+  {
+    "state": "Missouri",
+    "code": "MO",
+    "children_under_5": 349506.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 691671.0,
+    "pct_5_13": 11.0,
+    "potential_need": 293560.0,
+    "supply": 151860.0,
+    "gap": 138100.0,
+    "gap_percentage": 47.0,
+    "economic_impact_low": 6159375076.0,
+    "economic_impact_high": 9369497452.0,
+    "avg_annual_cost": 11115.0,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 35.0,
+    "num_employees": 27153.0,
+    "median_hourly_wage": 11.71,
+    "ccdf_federal": 229382154.0,
+    "ccdf_state": 37035204.0,
+    "head_start": 212645878.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 20392208.0,
+    "state_preschool": 42609450.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3108.0
+  },
+  {
+    "state": "Montana",
+    "code": "MT",
+    "children_under_5": 56612.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 118877.0,
+    "pct_5_13": 10.0,
+    "potential_need": 45090.0,
+    "supply": 24910.0,
+    "gap": 21240.0,
+    "gap_percentage": 47.1,
+    "economic_impact_low": 909177847.0,
+    "economic_impact_high": 1382044170.0,
+    "avg_annual_cost": 13390.0,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 36.0,
+    "num_employees": 4788.0,
+    "median_hourly_wage": 10.9,
+    "ccdf_federal": 31995239.0,
+    "ccdf_state": 5158565.0,
+    "head_start": 42277132.0,
+    "tanf_to_ccdf": 8700000.0,
+    "tanf_ece": 1672351.0,
+    "state_preschool": 0.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3981.0
+  },
+  {
+    "state": "Nebraska",
+    "code": "NE",
+    "children_under_5": 124599.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 244137.0,
+    "pct_5_13": 12.0,
+    "potential_need": 110880.0,
+    "supply": 96200.0,
+    "gap": 16310.0,
+    "gap_percentage": 14.7,
+    "economic_impact_low": 706931254.0,
+    "economic_impact_high": 1071772209.0,
+    "avg_annual_cost": 15524.25,
+    "pct_dual_income": 15.0,
+    "pct_single_parent": 43.0,
+    "num_employees": 14170.0,
+    "median_hourly_wage": 11.29,
+    "ccdf_federal": 72642657.0,
+    "ccdf_state": 16430992.0,
+    "head_start": 71840452.0,
+    "tanf_to_ccdf": 14409787.0,
+    "tanf_ece": 6498998.0,
+    "state_preschool": 160850738.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3833.0
+  },
+  {
+    "state": "Nevada",
+    "code": "NV",
+    "children_under_5": 170528.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 349537.0,
+    "pct_5_13": 11.0,
+    "potential_need": 132800.0,
+    "supply": 44790.0,
+    "gap": 87900.0,
+    "gap_percentage": 66.1,
+    "economic_impact_low": 4204526422.0,
+    "economic_impact_high": 6430854619.0,
+    "avg_annual_cost": 10760.75,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 32.0,
+    "num_employees": 11279.0,
+    "median_hourly_wage": 13.25,
+    "ccdf_federal": 94279731.0,
+    "ccdf_state": 15579442.0,
+    "head_start": 28346130.0,
+    "tanf_to_ccdf": 2500000.0,
+    "tanf_ece": 16170449.0,
+    "state_preschool": 34987861.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 2756.0
+  },
+  {
+    "state": "New Hampshire",
+    "code": "NH",
+    "children_under_5": 62097.0,
+    "pct_under_5": 4.0,
+    "children_5_13": 124263.0,
+    "pct_5_13": 9.0,
+    "potential_need": 53750.0,
+    "supply": 40420.0,
+    "gap": 13810.0,
+    "gap_percentage": 25.7,
+    "economic_impact_low": 0,
+    "economic_impact_high": 0,
+    "avg_annual_cost": 13512.5,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 36.0,
+    "num_employees": 6446.0,
+    "median_hourly_wage": 14.95,
+    "ccdf_federal": 30014511.0,
+    "ccdf_state": 11843424.0,
+    "head_start": 23843026.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 4581872.0,
+    "state_preschool": 0.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 7940.0
+  },
+  {
+    "state": "New Jersey",
+    "code": "NJ",
+    "children_under_5": 528652.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 124263.0,
+    "pct_5_13": 13.0,
+    "potential_need": 439690.0,
+    "supply": 372530.0,
+    "gap": 81010.0,
+    "gap_percentage": 18.4,
+    "economic_impact_low": 5049576370.0,
+    "economic_impact_high": 7675431420.0,
+    "avg_annual_cost": 15819.0,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 45.0,
+    "num_employees": 55056.0,
+    "median_hourly_wage": 14.33,
+    "ccdf_federal": 248028848.0,
+    "ccdf_state": 84754544.0,
+    "head_start": 194947987.0,
+    "tanf_to_ccdf": 79000000.0,
+    "tanf_ece": 963048386.0,
+    "state_preschool": 0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4303.0
+  },
+  {
+    "state": "New Mexico",
+    "code": "NM",
+    "children_under_5": 107321.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 225916.0,
+    "pct_5_13": 11.0,
+    "potential_need": 83100.0,
+    "supply": 71040.0,
+    "gap": 17020.0,
+    "gap_percentage": 20.5,
+    "economic_impact_low": 773228980.0,
+    "economic_impact_high": 1180957531.0,
+    "avg_annual_cost": 0,
+    "pct_dual_income": 0,
+    "pct_single_parent": 0,
+    "num_employees": 8223.0,
+    "median_hourly_wage": 12.03,
+    "ccdf_federal": 93438152.0,
+    "ccdf_state": 7846153.0,
+    "head_start": 88411179.0,
+    "tanf_to_ccdf": 31527500.0,
+    "tanf_ece": 17555423.0,
+    "state_preschool": 212888058.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 0
+  },
+  {
+    "state": "New York",
+    "code": "NY",
+    "children_under_5": 1043811.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 2005294.0,
+    "pct_5_13": 10.0,
+    "potential_need": 865260.0,
+    "supply": 479380.0,
+    "gap": 363610.0,
+    "gap_percentage": 42.0,
+    "economic_impact_low": 20855716131.0,
+    "economic_impact_high": 31711467407.0,
+    "avg_annual_cost": 17757.75,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 50.0,
+    "num_employees": 126726.0,
+    "median_hourly_wage": 14.9,
+    "ccdf_federal": 607845073.0,
+    "ccdf_state": 220319911.0,
+    "head_start": 824499860.0,
+    "tanf_to_ccdf": 209446200.0,
+    "tanf_ece": 705634245.0,
+    "state_preschool": 999114327.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 7604.0
+  },
+  {
+    "state": "North Carolina",
+    "code": "NC",
+    "children_under_5": 617555.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 1173191.0,
+    "pct_5_13": 11.0,
+    "potential_need": 461350.0,
+    "supply": 197080.0,
+    "gap": 257670.0,
+    "gap_percentage": 55.9,
+    "economic_impact_low": 12238885592.0,
+    "economic_impact_high": 18650571810.0,
+    "avg_annual_cost": 10904.0,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 34.0,
+    "num_employees": 47548.0,
+    "median_hourly_wage": 12.31,
+    "ccdf_federal": 398825065.0,
+    "ccdf_state": 72472967.0,
+    "head_start": 275520963.0,
+    "tanf_to_ccdf": 21773001.0,
+    "tanf_ece": 289824203.0,
+    "state_preschool": 256490779.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4143.0
+  },
+  {
+    "state": "North Dakota",
+    "code": "ND",
+    "children_under_5": 48994.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 94848.0,
+    "pct_5_13": 12.0,
+    "potential_need": 44010.0,
+    "supply": 39060.0,
+    "gap": 10550.0,
+    "gap_percentage": 24.0,
+    "economic_impact_low": 550207077.0,
+    "economic_impact_high": 830371110.0,
+    "avg_annual_cost": 10955.25,
+    "pct_dual_income": 9.0,
+    "pct_single_parent": 35.0,
+    "num_employees": 5882.0,
+    "median_hourly_wage": 11.46,
+    "ccdf_federal": 23580222.0,
+    "ccdf_state": 5768485.0,
+    "head_start": 27248963.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 0.0,
+    "state_preschool": 5481515.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 6463.0
+  },
+  {
+    "state": "Ohio",
+    "code": "OH",
+    "children_under_5": 655527.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 1300011.0,
+    "pct_5_13": 11.0,
+    "potential_need": 541960.0,
+    "supply": 491590.0,
+    "gap": 68870.0,
+    "gap_percentage": 12.7,
+    "economic_impact_low": 3148055818.0,
+    "economic_impact_high": 4795865667.0,
+    "avg_annual_cost": 11726.0,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 40.0,
+    "num_employees": 54526.0,
+    "median_hourly_wage": 12.02,
+    "ccdf_federal": 443526075.0,
+    "ccdf_state": 87006628.0,
+    "head_start": 429248754.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 399486322.0,
+    "state_preschool": 119612000.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3004.0
+  },
+  {
+    "state": "Oklahoma",
+    "code": "OK",
+    "children_under_5": 244133.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 489812.0,
+    "pct_5_13": 12.0,
+    "potential_need": 181350.0,
+    "supply": 119150.0,
+    "gap": 62050.0,
+    "gap_percentage": 34.2,
+    "economic_impact_low": 2736890197.0,
+    "economic_impact_high": 4172184877.0,
+    "avg_annual_cost": 9847.5,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 34.0,
+    "num_employees": 17833.0,
+    "median_hourly_wage": 11.04,
+    "ccdf_federal": 185706448.0,
+    "ccdf_state": 24085778.0,
+    "head_start": 160262275.0,
+    "tanf_to_ccdf": 27601600.0,
+    "tanf_ece": 79029048.0,
+    "state_preschool": 427001401.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5357.0
+  },
+  {
+    "state": "Oregon",
+    "code": "OR",
+    "children_under_5": 201399.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 417886.0,
+    "pct_5_13": 10.0,
+    "potential_need": 163170.0,
+    "supply": 107850.0,
+    "gap": 57030.0,
+    "gap_percentage": 34.9,
+    "economic_impact_low": 2955210920.0,
+    "economic_impact_high": 4494313187.0,
+    "avg_annual_cost": 16627.0,
+    "pct_dual_income": 16.0,
+    "pct_single_parent": 47.0,
+    "num_employees": 18678.0,
+    "median_hourly_wage": 14.33,
+    "ccdf_federal": 122336212.0,
+    "ccdf_state": 28373362.0,
+    "head_start": 121353882.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 47712993.0,
+    "state_preschool": 234774788.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4304.0
+  },
+  {
+    "state": "Pennsylvania",
+    "code": "PA",
+    "children_under_5": 663930.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 1326633.0,
+    "pct_5_13": 10.0,
+    "potential_need": 558790.0,
+    "supply": 411470.0,
+    "gap": 154690.0,
+    "gap_percentage": 27.7,
+    "economic_impact_low": 7415588728.0,
+    "economic_impact_high": 11287123912.0,
+    "avg_annual_cost": 12628.0,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 40.0,
+    "num_employees": 57029.0,
+    "median_hourly_wage": 13.07,
+    "ccdf_federal": 398741651.0,
+    "ccdf_state": 111614778.0,
+    "head_start": 329905836.0,
+    "tanf_to_ccdf": 43162500.0,
+    "tanf_ece": 542883435.0,
+    "state_preschool": 460009750.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4303.0
+  },
+  {
+    "state": "Rhode Island",
+    "code": "RI",
+    "children_under_5": 52400.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 102713.0,
+    "pct_5_13": 9.0,
+    "potential_need": 46710.0,
+    "supply": 0,
+    "gap": 23740.0,
+    "gap_percentage": 50.8,
+    "economic_impact_low": 1236691746.0,
+    "economic_impact_high": 1879185508.0,
+    "avg_annual_cost": 16393.0,
+    "pct_dual_income": 13.0,
+    "pct_single_parent": 47.0,
+    "num_employees": 5585.0,
+    "median_hourly_wage": 14.79,
+    "ccdf_federal": 32002804.0,
+    "ccdf_state": 10181390.0,
+    "head_start": 38803499.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 18332235.0,
+    "state_preschool": 23732799.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4303.0
+  },
+  {
+    "state": "South Carolina",
+    "code": "SC",
+    "children_under_5": 295722.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 573965.0,
+    "pct_5_13": 10.0,
+    "potential_need": 221690.0,
+    "supply": 206520.0,
+    "gap": 28350.0,
+    "gap_percentage": 12.8,
+    "economic_impact_low": 1246004355.0,
+    "economic_impact_high": 1902233733.0,
+    "avg_annual_cost": 9089.25,
+    "pct_dual_income": 9.0,
+    "pct_single_parent": 30.0,
+    "num_employees": 20701.0,
+    "median_hourly_wage": 10.96,
+    "ccdf_federal": 198228361.0,
+    "ccdf_state": 18291092.0,
+    "head_start": 155790890.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 24929969.0,
+    "state_preschool": 123195310.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5841.0
+  },
+  {
+    "state": "South Dakota",
+    "code": "SD",
+    "children_under_5": 57344.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 111645.0,
+    "pct_5_13": 12.0,
+    "potential_need": 50490.0,
+    "supply": 35270.0,
+    "gap": 17810.0,
+    "gap_percentage": 35.3,
+    "economic_impact_low": 759532479.0,
+    "economic_impact_high": 1152973261.0,
+    "avg_annual_cost": 7727.0,
+    "pct_dual_income": 8.0,
+    "pct_single_parent": 23.0,
+    "num_employees": 6014.0,
+    "median_hourly_wage": 11.81,
+    "ccdf_federal": 32048899.0,
+    "ccdf_state": 6140683.0,
+    "head_start": 32535226.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 802914.0,
+    "state_preschool": 0.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4498.0
+  },
+  {
+    "state": "Tennessee",
+    "code": "TN",
+    "children_under_5": 416182.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 788968.0,
+    "pct_5_13": 11.0,
+    "potential_need": 300920.0,
+    "supply": 238990.0,
+    "gap": 65110.0,
+    "gap_percentage": 21.6,
+    "economic_impact_low": 2978485003.0,
+    "economic_impact_high": 4545012561.0,
+    "avg_annual_cost": 11008.5,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 41.0,
+    "num_employees": 27237.0,
+    "median_hourly_wage": 11.57,
+    "ccdf_federal": 316775458.0,
+    "ccdf_state": 42935225.0,
+    "head_start": 217604495.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 80402864.0,
+    "state_preschool": 110558090.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5853.0
+  },
+  {
+    "state": "Texas",
+    "code": "TX",
+    "children_under_5": 1977474.0,
+    "pct_under_5": 6.0,
+    "children_5_13": 3862318.0,
+    "pct_5_13": 12.0,
+    "potential_need": 1414600.0,
+    "supply": 1332870.0,
+    "gap": 111490.0,
+    "gap_percentage": 7.9,
+    "economic_impact_low": 5463291661.0,
+    "economic_impact_high": 8342041722.0,
+    "avg_annual_cost": 10559.25,
+    "pct_dual_income": 10.0,
+    "pct_single_parent": 30.0,
+    "num_employees": 141416.0,
+    "median_hourly_wage": 11.67,
+    "ccdf_federal": 1226160870.0,
+    "ccdf_state": 179707393.0,
+    "head_start": 826221506.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 334290905.0,
+    "state_preschool": 1080697989.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 6141.0
+  },
+  {
+    "state": "Utah",
+    "code": "UT",
+    "children_under_5": 230987.0,
+    "pct_under_5": 7.0,
+    "children_5_13": 468363.0,
+    "pct_5_13": 13.0,
+    "potential_need": 157290.0,
+    "supply": 95250.0,
+    "gap": 63090.0,
+    "gap_percentage": 40.1,
+    "economic_impact_low": 2984507465.0,
+    "economic_impact_high": 4543223389.0,
+    "avg_annual_cost": 11247.0,
+    "pct_dual_income": 12.0,
+    "pct_single_parent": 32.0,
+    "num_employees": 11486.0,
+    "median_hourly_wage": 12.47,
+    "ccdf_federal": 144610601.0,
+    "ccdf_state": 18442323.0,
+    "head_start": 96578098.0,
+    "tanf_to_ccdf": 15071188.0,
+    "tanf_ece": 12330687.0,
+    "state_preschool": 10000008.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 6637.0
+  },
+  {
+    "state": "Vermont",
+    "code": "VT",
+    "children_under_5": 26794.0,
+    "pct_under_5": 4.0,
+    "children_5_13": 57430.0,
+    "pct_5_13": 9.0,
+    "potential_need": 25220.0,
+    "supply": 19500.0,
+    "gap": 6990.0,
+    "gap_percentage": 27.7,
+    "economic_impact_low": 348849521.0,
+    "economic_impact_high": 527502459.0,
+    "avg_annual_cost": 15261.25,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 43.0,
+    "num_employees": 3731.0,
+    "median_hourly_wage": 13.25,
+    "ccdf_federal": 17052679.0,
+    "ccdf_state": 5175985.0,
+    "head_start": 27523298.0,
+    "tanf_to_ccdf": 9224076.0,
+    "tanf_ece": 33990584.0,
+    "state_preschool": 84164751.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 8607.0
+  },
+  {
+    "state": "Virginia",
+    "code": "VA",
+    "children_under_5": 482882.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 951495.0,
+    "pct_5_13": 11.0,
+    "potential_need": 395670.0,
+    "supply": 357800.0,
+    "gap": 52920.0,
+    "gap_percentage": 13.4,
+    "economic_impact_low": 2844685998.0,
+    "economic_impact_high": 4326181868.0,
+    "avg_annual_cost": 14573.0,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 39.0,
+    "num_employees": 40455.0,
+    "median_hourly_wage": 13.41,
+    "ccdf_federal": 245785055.0,
+    "ccdf_state": 73657238.0,
+    "head_start": 184465210.0,
+    "tanf_to_ccdf": 2659033.0,
+    "tanf_ece": 18638737.0,
+    "state_preschool": 243698805.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 7973.0
+  },
+  {
+    "state": "Washington",
+    "code": "WA",
+    "children_under_5": 424733.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 836625.0,
+    "pct_5_13": 11.0,
+    "potential_need": 316570.0,
+    "supply": 174220.0,
+    "gap": 143300.0,
+    "gap_percentage": 45.3,
+    "economic_impact_low": 8919836471.0,
+    "economic_impact_high": 13605006449.0,
+    "avg_annual_cost": 18696.0,
+    "pct_dual_income": 15.0,
+    "pct_single_parent": 51.0,
+    "num_employees": 30413.0,
+    "median_hourly_wage": 15.46,
+    "ccdf_federal": 218407908.0,
+    "ccdf_state": 87421597.0,
+    "head_start": 194491452.0,
+    "tanf_to_ccdf": 108021311.0,
+    "tanf_ece": 183880079.0,
+    "state_preschool": 283853445.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5057.0
+  },
+  {
+    "state": "West Virginia",
+    "code": "WV",
+    "children_under_5": 86120.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 175473.0,
+    "pct_5_13": 10.0,
+    "potential_need": 61530.0,
+    "supply": 40250.0,
+    "gap": 17550.0,
+    "gap_percentage": 28.5,
+    "economic_impact_low": 785410985.0,
+    "economic_impact_high": 1195717108.0,
+    "avg_annual_cost": 9167.25,
+    "pct_dual_income": 10.0,
+    "pct_single_parent": 35.0,
+    "num_employees": 6987.0,
+    "median_hourly_wage": 11.43,
+    "ccdf_federal": 72909154.0,
+    "ccdf_state": 6518228.0,
+    "head_start": 85730016.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 21593441.0,
+    "state_preschool": 164054009.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 5394.0
+  },
+  {
+    "state": "Wisconsin",
+    "code": "WI",
+    "children_under_5": 307868.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 622986.0,
+    "pct_5_13": 10.0,
+    "potential_need": 276610.0,
+    "supply": 171050.0,
+    "gap": 104960.0,
+    "gap_percentage": 37.9,
+    "economic_impact_low": 4819951121.0,
+    "economic_impact_high": 7329810244.0,
+    "avg_annual_cost": 15816.0,
+    "pct_dual_income": 14.0,
+    "pct_single_parent": 44.0,
+    "num_employees": 26020.0,
+    "median_hourly_wage": 12.99,
+    "ccdf_federal": 183258173.0,
+    "ccdf_state": 39805320.0,
+    "head_start": 145118682.0,
+    "tanf_to_ccdf": 62569196.0,
+    "tanf_ece": 29210109.0,
+    "state_preschool": 307248552.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 4303.0
+  },
+  {
+    "state": "Wyoming",
+    "code": "WY",
+    "children_under_5": 30739.0,
+    "pct_under_5": 5.0,
+    "children_5_13": 64496.0,
+    "pct_5_13": 11.0,
+    "potential_need": 24890.0,
+    "supply": 22700.0,
+    "gap": 5400.0,
+    "gap_percentage": 21.7,
+    "economic_impact_low": 265814231.0,
+    "economic_impact_high": 403701041.0,
+    "avg_annual_cost": 11415.75,
+    "pct_dual_income": 11.0,
+    "pct_single_parent": 38.0,
+    "num_employees": 2914.0,
+    "median_hourly_wage": 10.6,
+    "ccdf_federal": 16271426.0,
+    "ccdf_state": 5294424.0,
+    "head_start": 25488194.0,
+    "tanf_to_ccdf": 0.0,
+    "tanf_ece": 3580077.0,
+    "state_preschool": 0.0,
+    "head_start_eligibility": 26650.0,
+    "ccdf_eligibility": 3765.0
+  }
+]
+</script>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  .cc-tool {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    align-items: start;
+    margin: 0 0 24px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (max-width: 980px) {
+    .cc-tool { 
+      grid-template-columns: 1fr; 
+    }
+  }
+
+  .cc-tool__panelWrap {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  /* Custom scrollbar styling */
+  .cc-tool__panelWrap::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .cc-tool__panelWrap::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .cc-tool__panelWrap::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  .cc-tool__panelWrap::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .cc-tool__mapWrap {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .cc-tool__mapTitle { 
+    margin-bottom: 10px; 
+  }
+
+  .cc-tool__mapTitle strong {
+    font-size: 18px;
+    color: #1a1a1a;
+  }
+
+  .cc-tool__mapHint { 
+    font-size: 14px; 
+    opacity: 0.7; 
+    margin-top: 4px; 
+  }
+
+  .cc-tool__map {
+    width: 100%;
+    min-height: 360px;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .cc-tool__map svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* State interactivity */
+  .cc-tool__map path[id] {
+    cursor: pointer;
+    transition: fill 120ms ease, filter 120ms ease;
+    fill: #e6e8ec;
+    stroke: #c9cdd3;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .cc-tool__map path[id]:hover {
+    fill: #cfd8e3;
+  }
+
+  .cc-state--selected {
+    fill: #5b8cc9 !important;
+  }
+
+  .cc-tool__map path[id][style*="not-allowed"] {
+    fill: #f2f2f2;
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Panel Styles */
+  .cc-tool__kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-bottom: 6px;
+    color: #666;
+  }
+
+  .cc-tool__stateTitle {
+    margin: 0 0 12px 0;
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .cc-tool__muted {
+    margin: 0;
+    opacity: 0.7;
+    color: #666;
+  }
+
+  /* Tab Navigation */
+  .cc-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    border-bottom: 2px solid #e6e8ec;
+  }
+
+  .cc-tab {
+    padding: 10px 18px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    transition: all 150ms ease;
+    margin-bottom: -2px;
+  }
+
+  .cc-tab:hover {
+    color: #333;
+    background: rgba(0,0,0,0.02);
+  }
+
+  .cc-tab--active {
+    color: #5b8cc9;
+    border-bottom-color: #5b8cc9;
+  }
+
+  .cc-tab-content {
+    display: none;
+  }
+
+  .cc-tab-content--active {
+    display: block;
+  }
+
+  /* Badges */
+  .cc-badgeRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0 0 0;
+  }
+
+  .cc-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .cc-badge__label { 
+    font-size: 11px; 
+    opacity: 0.7; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .cc-badge__value { 
+    font-weight: 700; 
+    font-size: 16px;
+    color: #1a1a1a;
+  }
+
+  /* Comparison View */
+  .cc-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .cc-comparison__col {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e6e8ec;
+  }
+
+  .cc-comparison__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #666;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cc-comparison__value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  .cc-comparison__diff {
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .cc-comparison__diff--better {
+    color: #28a745;
+  }
+
+  .cc-comparison__diff--worse {
+    color: #dc3545;
+  }
+
+  /* Sections */
+  .cc-section {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .cc-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .cc-metric {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .cc-metric:last-child { 
+    border-bottom: none; 
+  }
+
+  .cc-metric__label { 
+    opacity: 0.8;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .cc-metric__value { 
+    font-weight: 600; 
+    text-align: right;
+    color: #1a1a1a;
+    font-size: 14px;
+  }
+
+  /* Download Button */
+  .cc-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    margin-top: 16px;
+    background: linear-gradient(135deg, #5b8cc9 0%, #4a7ab5 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 200ms ease;
+    box-shadow: 0 2px 6px rgba(91, 140, 201, 0.3);
+  }
+
+  .cc-download-btn:hover {
+    background: linear-gradient(135deg, #4a7ab5 0%, #3a6a9f 100%);
+    box-shadow: 0 4px 12px rgba(91, 140, 201, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .cc-download-btn:active {
+    transform: translateY(0);
+  }
+
+  .cc-download-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Loading state */
+  .cc-loading {
+    text-align: center;
+    padding: 40px;
+    opacity: 0.6;
+  }
+
+  .cc-spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0,0,0,0.1);
+    border-top-color: #5b8cc9;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .cc-comparison {
+      grid-template-columns: 1fr;
+    }
+
+    .cc-badgeRow {
+      flex-direction: column;
+    }
+
+    .cc-badge {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  // === CONFIG ===
+  // Change this URL to switch between different map styles
+  const SVG_MAP_URL = "https://stage.bipartisanpolicy.org/wp-content/uploads/2026/01/us_states_filled.svg";
+  // Alternative options:
+  // const SVG_MAP_URL = "https://stage.bipartisanpolicy.org/wp-content/uploads/2026/01/us.svg";
+  // const SVG_MAP_URL = "https://stage.bipartisanpolicy.org/wp-content/uploads/2026/01/us_states_outline.svg";
+  
+  const EXCLUDE_CODES = new Set(["DC", "PR"]);
+
+  const mapEl = document.getElementById("cc-map");
+  const panelEl = document.getElementById("cc-panel");
+  const dataScript = document.getElementById("cc-data");
+
+  if (!mapEl || !panelEl || !dataScript) return;
+
+  // === DATA LOAD ===
+  let rows = [];
+  let nationalData = null;
+
+  try {
+    rows = JSON.parse((dataScript.textContent || "[]").trim());
+    if (!Array.isArray(rows)) rows = [];
+    
+    // Calculate national totals
+    nationalData = calculateNationalData(rows);
+  } catch(e) {
+    console.error("Failed to parse data:", e);
+    rows = [];
+  }
+
+  // Normalize + index by code
+  const byCode = new Map();
+  rows.forEach(r => {
+    const code = String(r.code || "").trim().toUpperCase();
+    if (!code || EXCLUDE_CODES.has(code)) return;
+    byCode.set(code, { ...r, code });
+  });
+
+  // === CALCULATE NATIONAL DATA ===
+  function calculateNationalData(data) {
+    const total = {
+      potential_need: 0,
+      supply: 0,
+      gap: 0,
+      avg_annual_cost: 0,
+      median_hourly_wage: 0,
+      children_under_5: 0,
+      pct_dual_income: 0,
+      pct_single_parent: 0,
+      num_employees: 0,
+      count: 0
+    };
+
+    data.forEach(state => {
+      if (EXCLUDE_CODES.has(state.code)) return;
+      
+      total.potential_need += Number(state.potential_need) || 0;
+      total.supply += Number(state.supply) || 0;
+      total.gap += Number(state.gap) || 0;
+      total.avg_annual_cost += Number(state.avg_annual_cost) || 0;
+      total.median_hourly_wage += Number(state.median_hourly_wage) || 0;
+      total.children_under_5 += Number(state.children_under_5) || 0;
+      total.pct_dual_income += Number(state.pct_dual_income) || 0;
+      total.pct_single_parent += Number(state.pct_single_parent) || 0;
+      total.num_employees += Number(state.num_employees) || 0;
+      total.count++;
+    });
+
+    // Calculate averages for cost, wage, and percentages
+    if (total.count > 0) {
+      total.avg_annual_cost = total.avg_annual_cost / total.count;
+      total.median_hourly_wage = total.median_hourly_wage / total.count;
+      total.pct_dual_income = total.pct_dual_income / total.count;
+      total.pct_single_parent = total.pct_single_parent / total.count;
+    }
+
+    return total;
+  }
+
+  // === FORMATTERS ===
+  const fmtInt = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString();
+  const fmtMoney2 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString(undefined, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  const fmtPct0 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : `${Math.round(Number(v) * 100)}%`;
+  const fmtPct1 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : `${(Number(v) * 100).toFixed(1)}%`;
+
+  // === COMPARISON HELPERS ===
+  function calculateDifference(stateVal, nationalVal, format = 'percent') {
+    if (!Number.isFinite(stateVal) || !Number.isFinite(nationalVal) || nationalVal === 0) {
+      return null;
+    }
+
+    const diff = ((stateVal - nationalVal) / nationalVal) * 100;
+    const isBetter = format === 'cost' ? diff < 0 : diff > 0;
+    const symbol = diff > 0 ? '+' : '';
+    
+    return {
+      value: `${symbol}${diff.toFixed(1)}%`,
+      isBetter: isBetter,
+      raw: diff
+    };
+  }
+
+  // === DOWNLOAD CSV FUNCTION ===
+  function downloadStateCSV(row) {
+    if (!row) return;
+
+    const csvContent = [
+      ['Metric', 'Value'],
+      ['State', row.state],
+      ['State Code', row.code],
+      ['Children Needing Care', fmtInt(row.potential_need)],
+      ['Licensed Child Care Slots', fmtInt(row.supply)],
+      ['Child Care Gap', fmtInt(row.gap)],
+      ['Coverage Rate', fmtPct1(row.supply / row.potential_need)],
+      ['Gap Percentage', fmtPct1(row.gap / row.potential_need)],
+      ['Average Annual Cost of Care', fmtMoney2(row.avg_annual_cost)],
+      ['Median Hourly Wage (ECE Workers)', fmtMoney2(row.median_hourly_wage)]
+    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `childcare-data-${row.code}-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+// === PANEL RENDER ===
+  function renderPanel(row) {
+    if (!row) {
+      panelEl.innerHTML = `
+        <div class="cc-tool__panelIntro">
+          <div class="cc-tool__kicker">Selected state</div>
+          <h3 class="cc-tool__stateTitle">Select a state</h3>
+          <p class="cc-tool__muted">Click a state on the map to load data.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const need = Number(row.potential_need);
+    const supply = Number(row.supply);
+    const gap = Number(row.gap);
+
+    const coverage = (Number.isFinite(need) && need > 0 && Number.isFinite(supply)) ? (supply / need) : null;
+    const gapPct = (Number.isFinite(need) && need > 0 && Number.isFinite(gap)) ? (gap / need) : null;
+
+    // Calculate comparisons with national data
+    const costDiff = calculateDifference(row.avg_annual_cost, nationalData.avg_annual_cost, 'cost');
+    const wageDiff = calculateDifference(row.median_hourly_wage, nationalData.median_hourly_wage, 'wage');
+    const coverageDiff = calculateDifference(coverage, nationalData.supply / nationalData.potential_need, 'coverage');
+
+    // Format large currency values
+    const fmtBillion = (v) => {
+      if (!Number.isFinite(v) || v === 0) return "N/A";
+      return `$${(v / 1000000000).toFixed(2)}B`;
+    };
+
+    const fmtMillion = (v) => {
+      if (!Number.isFinite(v) || v === 0) return "N/A";
+      return `$${(v / 1000000).toFixed(1)}M`;
+    };
+
+    panelEl.innerHTML = `
+      <div>
+        <div class="cc-tool__kicker">Selected state</div>
+        <h3 class="cc-tool__stateTitle">${row.state}</h3>
+
+        <div class="cc-badgeRow">
+          <div class="cc-badge">
+            <span class="cc-badge__label">Coverage Rate</span>
+            <span class="cc-badge__value">${coverage == null ? "N/A" : fmtPct0(coverage)}</span>
+          </div>
+          <div class="cc-badge">
+            <span class="cc-badge__label">Gap Share</span>
+            <span class="cc-badge__value">${gapPct == null ? "N/A" : fmtPct0(gapPct)}</span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="cc-tabs">
+          <button class="cc-tab cc-tab--active" data-tab="state">State Data</button>
+          <button class="cc-tab" data-tab="national">vs. National</button>
+        </div>
+
+        <!-- State Data Tab -->
+        <div class="cc-tab-content cc-tab-content--active" data-tab-content="state">
+          <div class="cc-section">
+            <h4>Population</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Children under 5</div>
+              <div class="cc-metric__value">${fmtInt(row.children_under_5)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">% of state population under 5</div>
+              <div class="cc-metric__value">${fmtPct0(row.pct_under_5 / 100)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Children ages 5-13</div>
+              <div class="cc-metric__value">${fmtInt(row.children_5_13)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Costs &amp; Affordability</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Average annual cost of child care</div>
+              <div class="cc-metric__value">${fmtMoney2(row.avg_annual_cost)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">% of median dual-income family budget</div>
+              <div class="cc-metric__value">${fmtPct0(row.pct_dual_income / 100)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">% of single parent income</div>
+              <div class="cc-metric__value">${fmtPct0(row.pct_single_parent / 100)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Workforce</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Estimated ECE employees</div>
+              <div class="cc-metric__value">${fmtInt(row.num_employees)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Median hourly wage (ECE workers)</div>
+              <div class="cc-metric__value">${fmtMoney2(row.median_hourly_wage)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Supply &amp; Demand</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Children needing care</div>
+              <div class="cc-metric__value">${fmtInt(row.potential_need)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Licensed child care slots</div>
+              <div class="cc-metric__value">${fmtInt(row.supply)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Child care gap</div>
+              <div class="cc-metric__value">${fmtInt(row.gap)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Gap as % of need</div>
+              <div class="cc-metric__value">${fmtPct1(row.gap_percentage / 100)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Economic Impact</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Estimated economic impact (low)</div>
+              <div class="cc-metric__value">${fmtBillion(row.economic_impact_low)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Estimated economic impact (high)</div>
+              <div class="cc-metric__value">${fmtBillion(row.economic_impact_high)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Public Funding</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">CCDF - Federal</div>
+              <div class="cc-metric__value">${fmtMillion(row.ccdf_federal)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">CCDF - State Match + MOE</div>
+              <div class="cc-metric__value">${fmtMillion(row.ccdf_state)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Head Start</div>
+              <div class="cc-metric__value">${fmtMillion(row.head_start)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">State Pre-K Spending</div>
+              <div class="cc-metric__value">${fmtMillion(row.state_preschool)}</div>
+            </div>
+          </div>
+
+          <div class="cc-section">
+            <h4>Eligibility Thresholds</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Head Start eligibility (100% FPL)</div>
+              <div class="cc-metric__value">${fmtMoney2(row.head_start_eligibility)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">CCDF assistance (monthly, family of 3)</div>
+              <div class="cc-metric__value">${fmtMoney2(row.ccdf_eligibility)}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- National Comparison Tab -->
+        <div class="cc-tab-content" data-tab-content="national">
+          <div class="cc-section">
+            <h4>Cost Comparison</h4>
+            <div class="cc-comparison">
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">${row.state}</div>
+                <div class="cc-comparison__value">${fmtMoney2(row.avg_annual_cost)}</div>
+              </div>
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">National Avg</div>
+                <div class="cc-comparison__value">${fmtMoney2(nationalData.avg_annual_cost)}</div>
+              </div>
+            </div>
+            ${costDiff ? `
+              <div class="cc-comparison__diff ${costDiff.isBetter ? 'cc-comparison__diff--better' : 'cc-comparison__diff--worse'}">
+                ${row.state} is ${costDiff.value} ${costDiff.isBetter ? 'lower' : 'higher'} than national average
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="cc-section">
+            <h4>Wage Comparison</h4>
+            <div class="cc-comparison">
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">${row.state}</div>
+                <div class="cc-comparison__value">${fmtMoney2(row.median_hourly_wage)}</div>
+              </div>
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">National Avg</div>
+                <div class="cc-comparison__value">${fmtMoney2(nationalData.median_hourly_wage)}</div>
+              </div>
+            </div>
+            ${wageDiff ? `
+              <div class="cc-comparison__diff ${wageDiff.isBetter ? 'cc-comparison__diff--better' : 'cc-comparison__diff--worse'}">
+                ${row.state} wages are ${wageDiff.value} ${wageDiff.isBetter ? 'higher' : 'lower'} than national average
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="cc-section">
+            <h4>Coverage Comparison</h4>
+            <div class="cc-comparison">
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">${row.state}</div>
+                <div class="cc-comparison__value">${fmtPct1(coverage)}</div>
+              </div>
+              <div class="cc-comparison__col">
+                <div class="cc-comparison__title">National Avg</div>
+                <div class="cc-comparison__value">${fmtPct1(nationalData.supply / nationalData.potential_need)}</div>
+              </div>
+            </div>
+            ${coverageDiff ? `
+              <div class="cc-comparison__diff ${coverageDiff.isBetter ? 'cc-comparison__diff--better' : 'cc-comparison__diff--worse'}">
+                ${row.state} coverage is ${coverageDiff.value} ${coverageDiff.isBetter ? 'higher' : 'lower'} than national average
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="cc-section">
+            <h4>National Totals</h4>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Total children needing care</div>
+              <div class="cc-metric__value">${fmtInt(nationalData.potential_need)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Total licensed slots</div>
+              <div class="cc-metric__value">${fmtInt(nationalData.supply)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Total child care gap</div>
+              <div class="cc-metric__value">${fmtInt(nationalData.gap)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Average annual cost</div>
+              <div class="cc-metric__value">${fmtMoney2(nationalData.avg_annual_cost)}</div>
+            </div>
+            <div class="cc-metric">
+              <div class="cc-metric__label">Average hourly wage</div>
+              <div class="cc-metric__value">${fmtMoney2(nationalData.median_hourly_wage)}</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="cc-download-btn" id="cc-download-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download ${row.state} Data Sheet
+        </button>
+
+        <p class="cc-tool__muted" style="margin-top:14px;font-size:13px;">
+          Data reflects 2025 estimates. Click the download button above to get the complete data sheet for ${row.state}.
+        </p>
+      </div>
+    `;
+
+    // Bind tab switching
+    const tabs = panelEl.querySelectorAll('.cc-tab');
+    const tabContents = panelEl.querySelectorAll('.cc-tab-content');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.getAttribute('data-tab');
+        
+        tabs.forEach(t => t.classList.remove('cc-tab--active'));
+        tab.classList.add('cc-tab--active');
+        
+        tabContents.forEach(content => {
+          if (content.getAttribute('data-tab-content') === targetTab) {
+            content.classList.add('cc-tab-content--active');
+          } else {
+            content.classList.remove('cc-tab-content--active');
+          }
+        });
+      });
+    });
+
+    // Bind download button
+    const downloadBtn = panelEl.querySelector('#cc-download-btn');
+    if (downloadBtn) {
+      downloadBtn.addEventListener('click', () => downloadStateCSV(row));
+    }
+  }
+
+  // === MAP LOAD + BIND ===
+  let selectedCode = null;
+  let svgRoot = null;
+
+  function applyBaseMapStyle() {
+    if (!svgRoot) return;
+
+    svgRoot.querySelectorAll("path").forEach((p) => {
+      p.style.fill = "#e6e8ec";
+      p.style.stroke = "#c9cdd3";
+      p.style.strokeWidth = "1";
+      p.style.vectorEffect = "non-scaling-stroke";
+      p.style.transition = "fill 120ms ease, opacity 120ms ease";
+      p.style.opacity = "1";
+    });
+  }
+
+  async function loadMap() {
+    try {
+      // Show loading state
+      mapEl.innerHTML = '<div class="cc-loading"><div class="cc-spinner"></div></div>';
+
+      // Fetch the production SVG
+      const res = await fetch(SVG_MAP_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch SVG: " + res.status);
+      
+      const svgText = await res.text();
+      mapEl.innerHTML = svgText;
+
+      svgRoot = mapEl.querySelector("svg");
+      if (!svgRoot) throw new Error("SVG missing <svg> root");
+
+      applyBaseMapStyle();
+
+      // Bind interactions - production SVG uses id attributes for state codes
+      const paths = svgRoot.querySelectorAll("path[id]");
+      paths.forEach(p => {
+        const code = (p.getAttribute("id") || "").trim().toUpperCase();
+        if (!code || EXCLUDE_CODES.has(code)) return;
+
+        if (!byCode.has(code)) {
+          p.style.opacity = "0.35";
+          p.style.cursor = "not-allowed";
+          return;
+        }
+
+        p.addEventListener("mouseenter", () => {
+          if (!p.classList.contains("cc-state--selected")) {
+            p.style.fill = "#cfd8e3";
+          }
+        });
+
+        p.addEventListener("mouseleave", () => {
+          if (!p.classList.contains("cc-state--selected")) {
+            p.style.fill = "#e6e8ec";
+          }
+        });
+
+        p.addEventListener("click", () => {
+          if (!byCode.has(code)) return;
+
+          if (selectedCode) {
+            const prev = svgRoot.querySelector(`path#${CSS.escape(selectedCode)}`);
+            if (prev) {
+              prev.classList.remove("cc-state--selected");
+              prev.style.fill = "#e6e8ec";
+            }
+          }
+
+          selectedCode = code;
+          p.classList.add("cc-state--selected");
+          renderPanel(byCode.get(code));
+          
+          // Smooth scroll to panel on mobile
+          if (window.innerWidth <= 980) {
+            panelEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      });
+    } catch (err) {
+      console.error("Map loading error:", err);
+      mapEl.innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #dc3545;">
+          <strong>Error loading map</strong><br>
+          <small>Please check your internet connection and try again.</small>
+        </div>
+      `;
+    }
+  }
+
+  // === BOOT ===
+  renderPanel(null);
+  loadMap();
+})();
+</script>

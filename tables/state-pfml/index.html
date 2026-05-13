@@ -1,0 +1,847 @@
+<!--
+  BPC State PFL Comparison Table
+  Ready for WordPress custom HTML block
+  Generated from 2026-3_State_PFL_Comparisons_Table.xlsx
+-->
+<style>
+/* === BPC PFL TABLE STYLES === */
+.bpc-pfl-wrap {
+  font-family: 'Faustina', Georgia, serif;
+  font-size: 14px;
+  color: #222;
+  margin: 1.5rem 0 2rem;
+}
+
+/* Tab Controls */
+.bpc-tab-controls {
+  display: flex;
+  gap: 0;
+  border-bottom: 3px solid #3c608a;
+  margin-bottom: 0;
+}
+.bpc-tab-btn {
+  padding: 10px 24px;
+  background: #f0f3f7;
+  border: 1px solid #d0d7e3;
+  border-bottom: none;
+  font-family: 'Faustina', Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3c608a;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  margin-right: 4px;
+  border-radius: 4px 4px 0 0;
+  letter-spacing: 0.01em;
+}
+.bpc-tab-btn:hover {
+  background: #dce4ef;
+}
+.bpc-tab-btn.active {
+  background: #3c608a;
+  color: #fff;
+  border-color: #3c608a;
+}
+
+/* Table panel */
+.bpc-tab-panel {
+  display: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #d0d7e3;
+  border-top: none;
+}
+.bpc-tab-panel.active {
+  display: block;
+}
+
+/* Table base */
+.bpc-pfl-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1200px;
+  background: #fff;
+}
+
+/* Header rows */
+.bpc-pfl-table thead tr.group-header th {
+  background: #3c608a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  padding: 10px 8px;
+  border: 1px solid #2e4d73;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.bpc-pfl-table thead tr.sub-header th {
+  background: #4e7aad;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  padding: 7px 8px;
+  border: 1px solid #3a6090;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: sticky;
+  top: 39px;
+  z-index: 2;
+}
+.bpc-pfl-table thead th.group-label {
+  background: #2d5078;
+  border-bottom: 2px solid #fcbb13;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Body rows */
+.bpc-pfl-table tbody tr {
+  border-bottom: 1px solid #e4e9f0;
+  vertical-align: top;
+}
+.bpc-pfl-table tbody tr:nth-child(even) {
+  background: #f7f9fc;
+}
+.bpc-pfl-table tbody tr:hover {
+  background: #edf1f8;
+}
+.bpc-pfl-table tbody td {
+  padding: 9px 10px;
+  border: 1px solid #e4e9f0;
+  font-size: 13px;
+  line-height: 1.4;
+  vertical-align: top;
+  text-align: left;
+}
+
+/* State column */
+.col-state {
+  font-weight: 700;
+  color: #3c608a !important;
+  white-space: nowrap;
+  min-width: 140px;
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 2px 0 4px rgba(60,96,138,0.08);
+}
+.bpc-pfl-table tbody tr:nth-child(even) .col-state {
+  background: #f7f9fc;
+}
+.bpc-pfl-table tbody tr:hover .col-state {
+  background: #edf1f8;
+}
+.bpc-pfl-table thead .col-state {
+  left: 0;
+  z-index: 3;
+}
+
+/* Specific column sizing */
+.col-elig  { min-width: 200px; font-size: 12px; }
+.col-who   { min-width: 160px; font-size: 12px; }
+.col-wage  { min-width: 160px; font-size: 12px; }
+.col-sbc   { min-width: 180px; font-size: 12px; }
+.col-total { font-weight: 600; text-align: center; }
+
+/* Insurance type tags */
+.ins-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.ins-social  { background: #e8eef6; color: #2d5078; }
+.ins-private { background: #fdf0e8; color: #a04000; }
+
+/* Job protection yes highlight */
+.jp-yes { color: #1a6e38; font-weight: 600; }
+
+/* Badges */
+.bpc-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.bpc-badge--pending { background: #fff3cd; color: #7d5a00; border: 1px solid #f0d060; }
+.bpc-badge--note    { background: #f8e8e8; color: #8b0000; border: 1px solid #e4b0b0; }
+
+/* Count note below tabs */
+.bpc-tab-count {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 8px;
+  padding: 6px 0 0;
+}
+
+/* Footnote */
+.bpc-pfl-footnote {
+  font-size: 12px;
+  color: #555;
+  margin-top: 10px;
+  line-height: 1.5;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 8px;
+}
+.bpc-pfl-footnote abbr {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+@media (max-width: 768px) {
+  .bpc-tab-btn { padding: 8px 14px; font-size: 13px; }
+  .bpc-pfl-table { font-size: 12px; }
+}
+</style>
+
+<div class="bpc-pfl-wrap">
+
+  <!-- Tab Controls -->
+  <div class="bpc-tab-controls" role="tablist" aria-label="PFL program type">
+    <button class="bpc-tab-btn active" role="tab" aria-selected="true"  aria-controls="tab-mandatory" id="btn-mandatory" onclick="bpcPflTab(event,'tab-mandatory')">
+      Mandatory Programs (15 states + D.C.)
+    </button>
+    <button class="bpc-tab-btn"        role="tab" aria-selected="false" aria-controls="tab-voluntary"  id="btn-voluntary"  onclick="bpcPflTab(event,'tab-voluntary')">
+      Voluntary Programs (9 states)
+    </button>
+  </div>
+
+  <!-- Mandatory Tab -->
+  <div class="bpc-tab-panel active" id="tab-mandatory" role="tabpanel" aria-labelledby="btn-mandatory">
+    <table class="bpc-pfl-table" aria-label="State Mandatory Paid Family and Medical Leave Programs, 2026">
+      
+  <thead>
+    <tr class="group-header">
+      <th rowspan="2" class="col-state">State</th>
+      <th rowspan="2">Enacted</th>
+      <th rowspan="2">Effective</th>
+      <th rowspan="2">Insurance Type</th>
+      <th colspan="6" class="group-label">Leave Duration</th>
+      <th rowspan="2" class="col-elig">Eligibility Requirement</th>
+      <th colspan="3" class="group-label">Premium Details</th>
+      <th rowspan="2" class="col-wage">Wage Replacement Rate</th>
+      <th rowspan="2">Max Weekly Benefit</th>
+      <th rowspan="2">Job Protection</th>
+      <th rowspan="2" class="col-sbc">Small Business Carveout</th>
+    </tr>
+    <tr class="sub-header">
+      <th>Parental</th>
+      <th>Family Caregiving</th>
+      <th>Personal Medical</th>
+      <th>Military Exigency</th>
+      <th>Safety Leave</th>
+      <th class="col-total">Total Available / Year</th>
+      <th>Premium Rate</th>
+      <th>Income Cap</th>
+      <th class="col-who">Who Pays</th>
+    </tr>
+  </thead>
+      <tbody>
+    <tr>
+      <td class="col-state">California</td>
+      <td>Enacted 2002</td>
+      <td>Effective 2004</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>8 weeks</td>
+      <td>8 weeks</td>
+      <td>52 weeks</td>
+      <td>8 weeks</td>
+      <td>—</td>
+      <td class="col-total">52 weeks</td>
+      <td class="col-elig">$300</td>
+      <td>1.3%  (combined PFL and disability)</td>
+      <td>None</td>
+      <td class="col-who">Employee</td>
+      <td class="col-wage">Based on highest quarterly earnings (HQE) 
+$0 if HQE  <$300
+$50 if HQE <$723 
+90% of AWW if HQE $723-$16,280 
+$1,127 if HQE $16,280-$20,931
+70% of AWW if HQE >$20,931</td>
+      <td>$1,765</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">No</td>
+    </tr>
+    <tr>
+      <td class="col-state">New Jersey</td>
+      <td>Enacted 2008</td>
+      <td>Effective 2009</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>26 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">26 weeks</td>
+      <td class="col-elig">20 weeks of work earning at least $310/week or a combined total of $15,500 over the four quarters of the base year</td>
+      <td>0.42% (combined PFL and TDI)</td>
+      <td>$171,100</td>
+      <td class="col-who">Employee</td>
+      <td class="col-wage">85% of AWW</td>
+      <td>$1,119</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">No</td>
+    </tr>
+    <tr>
+      <td class="col-state">Rhode Island</td>
+      <td>Enacted 2013</td>
+      <td>Effective 2014</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>8 weeks</td>
+      <td>8 weeks</td>
+      <td>30 weeks</td>
+      <td>—</td>
+      <td>1 week</td>
+      <td class="col-total">30 weeks</td>
+      <td class="col-elig">$19,200 
+-OR- 
+total wages ≥$6,400 AND $3,200 in one base quarter AND total wages ≥1.5x highest quarter of earnings</td>
+      <td>1.10%</td>
+      <td>$100,000</td>
+      <td class="col-who">Employee</td>
+      <td class="col-wage">4.62% of wages in highest-paid base quarter</td>
+      <td>$1,103</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">No</td>
+    </tr>
+    <tr>
+      <td class="col-state">New York</td>
+      <td>Enacted 2016</td>
+      <td>Effective 2018</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>26 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td class="col-total">26 weeks</td>
+      <td class="col-elig">26 consecutive weeks of full-time (20+ hours) employment -or- 175 part-time (<20 hours) working days</td>
+      <td>0.432% of gross wages per pay period up to $412</td>
+      <td>$95,139</td>
+      <td class="col-who">Employee</td>
+      <td class="col-wage">67% of AWW</td>
+      <td>$1,228.53 (0.67x SAWW)</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">No</td>
+    </tr>
+    <tr>
+      <td class="col-state">District of Columbia</td>
+      <td>Enacted 2017</td>
+      <td>Effective 2020</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">12 weeks</td>
+      <td class="col-elig">Any income in one base period quarter</td>
+      <td>0.75% per quarter</td>
+      <td>None</td>
+      <td class="col-who">Employer</td>
+      <td class="col-wage">90% of AWW up to 1.5x DC minimum wage ($1,077) 
++ 
+50% of AWW over 1.5x the DC minimum wage up to $1,153</td>
+      <td>$1,190</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">Yes, <5 employees exempt</td>
+    </tr>
+    <tr>
+      <td class="col-state">Washington</td>
+      <td>Enacted 2017</td>
+      <td>Effective 2019/2020</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td class="col-total">16-18 weeks</td>
+      <td class="col-elig">820 hours of work over 12 month period</td>
+      <td>1.1%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 71.43% 
+Employer: 28.57%</td>
+      <td class="col-wage">90% of AWW up to 0.5x SAWW 
++ 
+50% of AWW over 0.5x SAWW up to max weekly benefit
++ 
+50% of AWW >0.5x SAWW</td>
+      <td>$1,647</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">Yes, <50 employees, employer exempt from premium tax; grant programs for businesses with up to 150 employees</td>
+    </tr>
+    <tr>
+      <td class="col-state">Massachusetts</td>
+      <td>Enacted 2018</td>
+      <td>Effective 2019/2021</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>20 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td class="col-total">26 weeks</td>
+      <td class="col-elig">$6,300 -AND- 30x benefit amount</td>
+      <td>0.88% (0.70% medical + 0.18% family)</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 100% (family)
+40% (medical) 
+Employer: 0% (family)
+60% (medical)</td>
+      <td class="col-wage">80% of AWW up to 0.5x SAWW 
++ 
+50% of AWW >0.5x SAWW up to maximum weekly benefit</td>
+      <td>$1,230.39 (0.64x SAWW)</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">Yes, <25 employees, employer exempt from premium tax</td>
+    </tr>
+    <tr>
+      <td class="col-state">Connecticut</td>
+      <td>Enacted 2019</td>
+      <td>Effective 2021/2022</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 Days</td>
+      <td class="col-total">12 weeks</td>
+      <td class="col-elig">$2,325 in highest-earning quarter in the first four of the five most recently completed quarters AND have been employed within last 12 weeks</td>
+      <td>0.50%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee</td>
+      <td class="col-wage">95% of AWW up to 40x CT minimum wage ($627.60)
++ 
+60% of AWW >40x CT min wageup to max weekly benefit</td>
+      <td>$1,016 (60x CT min wage)</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">No</td>
+    </tr>
+    <tr>
+      <td class="col-state">Oregon</td>
+      <td>Enacted 2019</td>
+      <td>Effective 2023</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td>12 weeks</td>
+      <td class="col-total">12-14 weeks</td>
+      <td class="col-elig">$1,000</td>
+      <td>1.00%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 60% 
+Employer: 40%</td>
+      <td class="col-wage">100% of AWW up to 0.65x SAWW 
++ 
+50% of AWW >0.65x SAWW</td>
+      <td>$1,636.56 (1.2x SAWW)</td>
+      <td class="col-jp jp-yes">Yes, if employed by current employer for 90+ days</td>
+      <td class="col-sbc">Yes, <25 employees, employer exempt from premium tax; grant assistance programs offsets certain costs</td>
+    </tr>
+    <tr>
+      <td class="col-state">Colorado</td>
+      <td>Enacted 2020</td>
+      <td>Effective 2023/2024</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td class="col-total">12-16 weeks</td>
+      <td class="col-elig">$2,500</td>
+      <td>0.88%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 50% 
+Employer: 50%</td>
+      <td class="col-wage">90% of AWW up to 0.5x SAWW 
++ 
+50% of AWW >0.5x SAWW</td>
+      <td>$1,381.45 (0.9x SAWW)</td>
+      <td class="col-jp jp-yes">Yes, if employed by current employer for 180+ days</td>
+      <td class="col-sbc">Yes, <9 employees, employer exempt from premium tax</td>
+    </tr>
+    <tr>
+      <td class="col-state">Maryland <span class="bpc-badge bpc-badge--pending">Pending</span></td>
+      <td>Enacted 2022</td>
+      <td>Effective 2027/2028</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>—</td>
+      <td class="col-total">12 - 24 weeks</td>
+      <td class="col-elig">680 hours of work over the 12-month period immediately preceding the date on which the leave is scheduled to begin</td>
+      <td>0.9%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 50% 
+Employer: 50%</td>
+      <td class="col-wage">90% of AWW up to 0.65x SAWW 
++ 
+50% of AWW >0.65x SAWW</td>
+      <td>$1,000 (indexed to inflation after 2025)</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">Yes, <15 employees, employer exempt from premium tax</td>
+    </tr>
+    <tr>
+      <td class="col-state">Delaware</td>
+      <td>Enacted 2022</td>
+      <td>Effective 2025/2026</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>One period of leave of up to 6 weeks in any 24-month period</td>
+      <td>One period of leave of up to 6 weeks in any 24-month period</td>
+      <td>One period of leave of up to 6 weeks in any 24-month period</td>
+      <td>—</td>
+      <td class="col-total">12 weeks</td>
+      <td class="col-elig">Tenure with employer of ≥12 months -AND- ≥1,250 hours of work in last 12 months</td>
+      <td>0.8% (0.40% medical + 0.08% family + 0.32% parental)</td>
+      <td>$184,500</td>
+      <td class="col-who">Employee: 50% Employer: 50%</td>
+      <td class="col-wage">80% of AWW</td>
+      <td>$900 (indexed to inflation after 2026)</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">Yes, <10 employees, employer is not required to participate</td>
+    </tr>
+    <tr>
+      <td class="col-state">Minnesota</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2026</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td class="col-total">20 weeks</td>
+      <td class="col-elig">Earned ~$3,900 (5.3% SAWW) over a designated 12- month base period</td>
+      <td>0.88% (0.61% medical + 0.27% family)</td>
+      <td>$184,500</td>
+      <td class="col-who">Employer: 50% Employee: 50%</td>
+      <td class="col-wage">90% of AWW up to 0.5x SAWW 
++ 
+66% of AWW > 0.5x SAWW < 1.00x SAWW 
++ 
+55% of wages > 1.00x SAWW</td>
+      <td>$1,423 (SAWW)</td>
+      <td class="col-jp jp-yes">Yes, if employed by current employer for 90+ days</td>
+      <td class="col-sbc">Yes, <30 employees, premium rate is 0.66% and small employer assistance grants are available</td>
+    </tr>
+    <tr>
+      <td class="col-state">Maine</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2025/2026</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td class="col-total">12 weeks</td>
+      <td class="col-elig">Earned 6x the SAWW over a designated 12-month base period</td>
+      <td>1%</td>
+      <td>$184,500</td>
+      <td class="col-who">Employer: 50% Employee: 50%</td>
+      <td class="col-wage">90% of AWW that is ≤ 0.5x SAWW + 66% of AWW > than 0.5x SAWW</td>
+      <td>$1,199 (SAWW)</td>
+      <td class="col-jp jp-yes">Yes, if employed by current employer for 120+ days</td>
+      <td class="col-sbc">Yes, <15 employees, employer exempt from premium tax</td>
+    </tr>
+    <tr>
+      <td class="col-state">Virginia <span class="bpc-badge bpc-badge--pending">Pending</span></td>
+      <td>Enacted 2026</td>
+      <td>Effective 2028/2029</td>
+      <td><span class="ins-type ins-social">Social Insurance</span></td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td>12 weeks</td>
+      <td class="col-total">12 weeks</td>
+      <td class="col-elig">$3,000 over two highest-earning quarters in designated base period</td>
+      <td>TBD (set by 10/01/2027)</td>
+      <td>$184,500</td>
+      <td class="col-who">Employer: 50% Employee: 50%</td>
+      <td class="col-wage">80% of AWW</td>
+      <td>$1,507 (SAWW)</td>
+      <td class="col-jp jp-yes">Yes</td>
+      <td class="col-sbc">Yes, <10 employees, employer exempt from premium tax</td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Voluntary Tab -->
+  <div class="bpc-tab-panel" id="tab-voluntary" role="tabpanel" aria-labelledby="btn-voluntary">
+    <table class="bpc-pfl-table" aria-label="State Voluntary Paid Family and Medical Leave Programs, 2026">
+      
+  <thead>
+    <tr class="group-header">
+      <th rowspan="2" class="col-state">State</th>
+      <th rowspan="2">Enacted</th>
+      <th rowspan="2">Effective</th>
+      <th rowspan="2">Insurance Type</th>
+      <th colspan="6" class="group-label">Leave Duration</th>
+      <th rowspan="2" class="col-elig">Eligibility Requirement</th>
+      <th colspan="3" class="group-label">Premium Details</th>
+      <th rowspan="2" class="col-wage">Wage Replacement Rate</th>
+      <th rowspan="2">Max Weekly Benefit</th>
+      <th rowspan="2">Job Protection</th>
+      <th rowspan="2" class="col-sbc">Small Business Carveout</th>
+    </tr>
+    <tr class="sub-header">
+      <th>Parental</th>
+      <th>Family Caregiving</th>
+      <th>Personal Medical</th>
+      <th>Military Exigency</th>
+      <th>Safety Leave</th>
+      <th class="col-total">Total Available / Year</th>
+      <th>Premium Rate</th>
+      <th>Income Cap</th>
+      <th class="col-who">Who Pays</th>
+    </tr>
+  </thead>
+      <tbody>
+    <tr>
+      <td class="col-state">New Hampshire</td>
+      <td>Enacted 2021</td>
+      <td>Effective 2023/2024</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 6 weeks</td>
+      <td>At least 6 weeks</td>
+      <td>At least 6 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">At least 6 weeks</td>
+      <td class="col-elig">Employer plan: None Individual plan: TBD</td>
+      <td>—</td>
+      <td>$184,500</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">60% of AWW</td>
+      <td>$2,128</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">Yes, <50 employees, employer exempt from collecting premium payments via payroll deduction</td>
+    </tr>
+    <tr>
+      <td class="col-state">Virginia <span class="bpc-badge bpc-badge--pending">Pending</span> <span class="bpc-badge bpc-badge--note">Superseded</span></td>
+      <td>Enacted 2022</td>
+      <td>Effective 2022</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>Set by insurer</td>
+      <td>Set by insurer</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">Set by insurer</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Vermont</td>
+      <td>Enacted 2022</td>
+      <td>Effective 2023/2024/2025</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 6 weeks</td>
+      <td>At least 6 weeks</td>
+      <td>At least 6 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">At least 6 weeks</td>
+      <td class="col-elig">Employer plan: None Individual plan: TBD</td>
+      <td>—</td>
+      <td>$184,500</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">60-70% of AWW</td>
+      <td>$2,128 OR set by employer</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Arkansas</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2023</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>Set by insurer</td>
+      <td>Set by insurer</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">Set by insurer</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Tennessee</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2024/2026</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>Set by insurer</td>
+      <td>Set by insurer</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">Set by insurer</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Alabama</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2024/2026</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>Set by insurer</td>
+      <td>Set by insurer</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">Set by insurer</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Texas</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2023</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 2 weeks</td>
+      <td>At least 2 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">At least 2 weeks</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>$nan</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Florida</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2023</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 2 weeks</td>
+      <td>At least 2 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">At least 2 weeks</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>$nan</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">South Carolina</td>
+      <td>Enacted 2023</td>
+      <td>Effective 2023</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 2 weeks</td>
+      <td>At least 2 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">Set by insurer</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+    <tr>
+      <td class="col-state">Kentucky</td>
+      <td>Enacted 2024</td>
+      <td>Effective 2024/2026</td>
+      <td><span class="ins-type ins-private">Private Insurance</span></td>
+      <td>At least 2 weeks</td>
+      <td>At least 2 weeks</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="col-total">At least 2 weeks</td>
+      <td class="col-elig">Set by employer</td>
+      <td>—</td>
+      <td>$nan</td>
+      <td class="col-who">Set by employer</td>
+      <td class="col-wage">Set by insurer</td>
+      <td>N/A</td>
+      <td class="col-jp ">No</td>
+      <td class="col-sbc">—</td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="bpc-pfl-footnote">
+    <abbr title="Average Weekly Wage">AWW</abbr> = leave taker's base period average weekly wages &nbsp;|&nbsp;
+    <abbr title="Statewide Average Weekly Wage">SAWW</abbr> = statewide average weekly wage &nbsp;|&nbsp;
+    Multiple dates denote separate effective dates for contributions and benefits. &nbsp;|&nbsp;
+    <strong>Pending</strong> = enacted but not yet in effect. &nbsp;|&nbsp;
+    <strong>Superseded</strong> = Virginia's 2022 voluntary law predates its 2026 mandatory program.
+  </p>
+
+</div>
+
+<script>
+function bpcPflTab(e, targetId) {
+  var btns   = document.querySelectorAll('.bpc-tab-btn');
+  var panels = document.querySelectorAll('.bpc-tab-panel');
+  btns.forEach(function(b)   { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  panels.forEach(function(p) { p.classList.remove('active'); });
+  e.currentTarget.classList.add('active');
+  e.currentTarget.setAttribute('aria-selected','true');
+  document.getElementById(targetId).classList.add('active');
+}
+</script>
