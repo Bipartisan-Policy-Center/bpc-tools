@@ -1,0 +1,378 @@
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&family=Faustina:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* Scoped entirely to .ies-embed — nothing leaks to the WP page */
+  .ies-embed *, .ies-embed *::before, .ies-embed *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ies-embed {
+    --red:        #e43e47;
+    --blue:       #3c608a;
+    --dark-blue:  #1f476c;
+    --cyan:       #1b83c6;
+    --dark-gray:  #333638;
+    --light-gray: #d3d8d6;
+    --white:      #ffffff;
+    --connector:  #aab4bb;
+
+    font-family: 'Faustina', Georgia, serif;
+    font-size: 11pt;
+    color: var(--dark-gray);
+    background: var(--white);
+    padding: 36px 32px;
+    width: 100%;
+  }
+
+  /* ── Page header ── */
+  .ies-embed .page-header {
+    border-top: 5px solid var(--red);
+    padding-top: 20px;
+    margin-bottom: 40px;
+  }
+  .ies-embed .page-header h3 {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 700;
+    font-size: 26pt;
+    color: var(--blue);
+    line-height: 1.15;
+  }
+  .ies-embed .page-header .subtitle {
+    font-size: 11pt;
+    color: var(--dark-gray);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── Org chart layout ── */
+  .ies-embed .org-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Root node ── */
+  .ies-embed .root-node {
+    background: var(--blue);
+    color: var(--white);
+    border-radius: 6px;
+    padding: 18px 40px;
+    text-align: center;
+    width: 420px;
+  }
+  .ies-embed .root-node .org-title {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 700;
+    font-size: 16pt;
+    line-height: 1.2;
+  }
+  .ies-embed .root-node .org-subtitle {
+    font-size: 9.5pt;
+    margin-top: 5px;
+    opacity: 0.88;
+    line-height: 1.4;
+  }
+
+  /* ── Root drop connector ── */
+  .ies-embed .root-connector {
+    width: 2px;
+    height: 32px;
+    background: var(--connector);
+  }
+
+  /* ── Horizontal bar ── */
+  .ies-embed .h-bar-wrap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+  }
+  .ies-embed .h-bar {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 160px);
+    height: 2px;
+    background: var(--connector);
+  }
+
+  /* ── Centers flat grid ── */
+  .ies-embed .centers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 18px;
+    row-gap: 0;
+    width: 100%;
+    padding-top: 32px;
+  }
+
+  .ies-embed .center-connector {
+    width: 2px;
+    height: 32px;
+    background: var(--connector);
+    justify-self: center;
+  }
+
+  /* ── Center node ── */
+  .ies-embed .center-node {
+    border-radius: 6px;
+    padding: 14px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+  }
+  .ies-embed .center-node .acronym {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 700;
+    font-size: 16pt;
+    color: var(--white);
+    line-height: 1;
+  }
+  .ies-embed .center-node .full-name {
+    font-family: 'Faustina', Georgia, serif;
+    font-size: 8.5pt;
+    color: rgba(255,255,255,0.9);
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+  .ies-embed .center-node.c1 { background: var(--red); }
+  .ies-embed .center-node.c2 { background: var(--blue); }
+  .ies-embed .center-node.c3 { background: var(--cyan); }
+  .ies-embed .center-node.c4 { background: var(--dark-blue); }
+
+  /* ── Mission box ── */
+  .ies-embed .mission-box {
+    margin-top: 8px;
+    background: #f5f6f6;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 9pt;
+    text-align: center;
+    width: 100%;
+    line-height: 1.5;
+    color: var(--dark-gray);
+  }
+
+  /* ── Divisions section ── */
+  .ies-embed .divisions-section {
+    margin-top: 16px;
+  }
+  .ies-embed .divisions-label {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 500;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dark-gray);
+    margin-top: 16px;
+    margin-bottom: 4px;
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+  }
+  .ies-embed .div-connector-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .ies-embed .div-line {
+    width: 2px;
+    height: 8px;
+    background: var(--connector);
+    margin: 0 auto;
+  }
+  .ies-embed .division-node {
+    background: var(--white);
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 9pt;
+    text-align: center;
+    width: 100%;
+    line-height: 1.35;
+    margin-top: 6px;
+  }
+  .ies-embed .no-divisions {
+    font-size: 9pt;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  /* ── Source note ── */
+  .ies-embed .source-note {
+    margin-top: 28px;
+    font-size: 9pt;
+    color: #888;
+    text-align: center;
+  }
+
+  /* ── Footer rule ── */
+  .ies-embed .page-footer {
+    margin-top: 16px;
+    border-top: 5px solid var(--red);
+  }
+</style>
+
+<div class="ies-embed">
+
+  <header class="page-header">
+    <h3>Division Organization: Institute of Education Statistics</h3>
+    <p class="subtitle">Independent research &amp; statistics arm of the U.S. Department of Education</p>
+  </header>
+
+  <div class="org-chart">
+
+    <!-- Root node -->
+    <div class="root-node">
+      <div class="org-title">Institute of Education Sciences</div>
+      <div class="org-subtitle">Independent research &amp; statistics arm of the U.S. Dept. of Education</div>
+    </div>
+
+    <div class="root-connector"></div>
+
+    <!-- Horizontal bar + centers -->
+    <div class="h-bar-wrap">
+      <div class="h-bar"></div>
+
+      <div class="centers-grid">
+
+        <!-- Row 1: drop connectors -->
+        <div class="center-connector"></div>
+        <div class="center-connector"></div>
+        <div class="center-connector"></div>
+        <div class="center-connector"></div>
+
+        <!-- Row 2: center nodes -->
+        <div class="center-node c1">
+          <div class="acronym">NCES</div>
+          <div class="full-name">National Center for Education Statistics</div>
+        </div>
+        <div class="center-node c2">
+          <div class="acronym">NCEE</div>
+          <div class="full-name">National Center for Education Evaluation &amp; Regional Assistance</div>
+        </div>
+        <div class="center-node c3">
+          <div class="acronym">NCER</div>
+          <div class="full-name">National Center for Education Research</div>
+        </div>
+        <div class="center-node c4">
+          <div class="acronym">NCSER</div>
+          <div class="full-name">National Center for Special Education Research</div>
+        </div>
+
+        <!-- Row 3: mission boxes -->
+        <div class="mission-box">Collects &amp; analyzes education data for the U.S. and other nations</div>
+        <div class="mission-box">Conducts large-scale evaluations of federal education programs</div>
+        <div class="mission-box">Funds rigorous research to improve education from pre-K to adult</div>
+        <div class="mission-box">Expands knowledge of education for students with disabilities</div>
+
+        <!-- Row 4: divisions -->
+        <div class="divisions-section">
+          <div class="divisions-label">Divisions</div>
+          <div class="div-connector-wrap">
+            <div class="div-line"></div>
+            <div class="division-node">Early Childhood</div>
+            <div class="div-line"></div>
+            <div class="division-node">Assessment</div>
+            <div class="div-line"></div>
+            <div class="division-node">Elementary / Secondary</div>
+            <div class="div-line"></div>
+            <div class="division-node">Postsecondary Statistics</div>
+          </div>
+        </div>
+        <div class="divisions-section">
+          <div class="divisions-label">Divisions</div>
+          <div class="div-connector-wrap">
+            <div class="div-line"></div>
+            <div class="division-node">Evaluation</div>
+            <div class="div-line"></div>
+            <div class="division-node">Knowledge Use</div>
+          </div>
+        </div>
+        <div class="divisions-section">
+          <div class="divisions-label">Divisions</div>
+          <div class="div-connector-wrap">
+            <div class="div-line"></div>
+            <div class="division-node">Teaching &amp; Learning</div>
+            <div class="div-line"></div>
+            <div class="division-node">Policy &amp; Systems</div>
+          </div>
+        </div>
+        <div class="divisions-section">
+          <p class="no-divisions">No formal divisions</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <p class="source-note">Established by the Education Sciences Reform Act of 2002 · U.S. Department of Education</p>
+  <footer class="page-footer"></footer>
+
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "GovernmentOrganization",
+  "name": "Institute of Education Sciences",
+  "alternateName": "IES",
+  "description": "Independent research and statistics arm of the U.S. Department of Education, established by the Education Sciences Reform Act of 2002.",
+  "url": "https://ies.ed.gov",
+  "parentOrganization": {
+    "@type": "GovernmentOrganization",
+    "name": "U.S. Department of Education"
+  },
+  "subOrganization": [
+    {
+      "@type": "GovernmentOrganization",
+      "name": "National Center for Education Statistics",
+      "alternateName": "NCES",
+      "description": "Collects and analyzes education data for the U.S. and other nations.",
+      "department": [
+        { "@type": "GovernmentOrganization", "name": "Early Childhood" },
+        { "@type": "GovernmentOrganization", "name": "Assessment" },
+        { "@type": "GovernmentOrganization", "name": "Elementary / Secondary" },
+        { "@type": "GovernmentOrganization", "name": "Postsecondary Statistics" }
+      ]
+    },
+    {
+      "@type": "GovernmentOrganization",
+      "name": "National Center for Education Evaluation and Regional Assistance",
+      "alternateName": "NCEE",
+      "description": "Conducts large-scale evaluations of federal education programs.",
+      "department": [
+        { "@type": "GovernmentOrganization", "name": "Evaluation" },
+        { "@type": "GovernmentOrganization", "name": "Knowledge Use" }
+      ]
+    },
+    {
+      "@type": "GovernmentOrganization",
+      "name": "National Center for Education Research",
+      "alternateName": "NCER",
+      "description": "Funds rigorous research to improve education from pre-K to adult.",
+      "department": [
+        { "@type": "GovernmentOrganization", "name": "Teaching and Learning" },
+        { "@type": "GovernmentOrganization", "name": "Policy and Systems" }
+      ]
+    },
+    {
+      "@type": "GovernmentOrganization",
+      "name": "National Center for Special Education Research",
+      "alternateName": "NCSER",
+      "description": "Expands knowledge of education for students with disabilities."
+    }
+  ]
+}
+</script>

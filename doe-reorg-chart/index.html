@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOE Organizational Restructuring — Bipartisan Policy Center</title>
+
+  <!-- BPC Fonts: Inter Tight (UI/headings) + Source Serif 4 (body/descriptions) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── BPC DESIGN TOKENS ─────────────────────────────────────────── */
+    :root {
+      /* BPC brand palette — exact site values */
+      --bpc-navy:        #1F476C;   /* dark-blue — nav, primary headers   */
+      --bpc-blue:        #3C608A;   /* blue — secondary elements           */
+      --bpc-bright:      #1B83C6;   /* light-blue — links, S4 branch       */
+      --bpc-red:         #E43E47;   /* red — changed badge                 */
+      --bpc-red-dark:    #B91F24;   /* secondary-red — OCMI feature        */
+      --bpc-yellow:      #FCBB13;   /* yellow — renamed badge              */
+      --bpc-orange:      #F47521;   /* orange — S3 Energy branch           */
+      --bpc-green:       #00AD4D;   /* green — new office badge            */
+      --bpc-pink:        #B71D51;   /* pink — expanded/merged badge        */
+      --bpc-maroon:      #6F173A;   /* maroon — accent                     */
+      --bpc-dark-gray:   #404040;   /* body text                           */
+      --bpc-mid-gray:    #757575;   /* secondary text                      */
+      --bpc-gray:        #D3D8D6;   /* borders                             */
+      --bpc-light-gray:  #E0E0E0;   /* light backgrounds                   */
+      --bpc-white:       #ffffff;
+
+      /* Branch colours */
+      --s5-main:  var(--bpc-navy);
+      --s5-light: #e8eef5;
+      --s4-main:  var(--bpc-bright);
+      --s4-light: #e6f3fb;
+      --s3-main:  var(--bpc-orange);
+      --s3-light: #fdf2e8;
+
+      /* Badge colours (text / background) */
+      --b-new-tx:  #006630;  --b-new-bg:  #e5f6ec;
+      --b-ren-tx:  #7a5500;  --b-ren-bg:  #fff4cc;
+      --b-mov-tx:  #0f3b6b;  --b-mov-bg:  #dceef8;
+      --b-exp-tx:  #7a3200;  --b-exp-bg:  #fde9d5;
+      --b-chg-tx:  #8a1a1e;  --b-chg-bg:  #fde3e4;
+
+      /* Typography */
+      --font-ui:   'Inter Tight', sans-serif;
+      --font-body: 'Source Serif 4', serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: #f5f6f7;
+      color: var(--bpc-dark-gray);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── OUTER WRAPPER ─────────────────────────────────────────────── */
+    .bpc-doe {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 48px;
+    }
+
+    /* ─── EYEBROW + HEADER ──────────────────────────────────────────── */
+    .doe-eyebrow {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--bpc-bright);
+      margin-bottom: 8px;
+    }
+    .doe-title {
+      font-family: var(--font-ui);
+      font-size: clamp(1.25rem, 2vw + .5rem, 1.75rem);
+      font-weight: 800;
+      color: var(--bpc-navy);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .doe-intro {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--bpc-mid-gray);
+      max-width: 680px;
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+
+    /* ─── LEGEND ────────────────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      margin-bottom: 4px;
+    }
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 10px 3px 6px;
+      border-radius: 9999px;
+      border: 1.5px solid transparent;
+    }
+    .lc-new  { background: var(--b-new-bg); color: var(--b-new-tx); border-color: var(--bpc-green); }
+    .lc-ren  { background: var(--b-ren-bg); color: var(--b-ren-tx); border-color: var(--bpc-yellow); }
+    .lc-mov  { background: var(--b-mov-bg); color: var(--b-mov-tx); border-color: var(--bpc-bright); }
+    .lc-exp  { background: var(--b-exp-bg); color: var(--b-exp-tx); border-color: var(--bpc-orange); }
+    .lc-chg  { background: var(--b-chg-bg); color: var(--b-chg-tx); border-color: var(--bpc-red); }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .legend-note {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      color: #999;
+      margin-top: 5px;
+      margin-bottom: 22px;
+    }
+
+    /* ─── DIVIDER ───────────────────────────────────────────────────── */
+    .bpc-divider {
+      height: 3px;
+      background: linear-gradient(to right, var(--bpc-navy) 0%, var(--bpc-bright) 50%, var(--bpc-orange) 100%);
+      border-radius: 2px;
+      margin-bottom: 26px;
+    }
+
+    /* ─── SECRETARY ROW ─────────────────────────────────────────────── */
+    .sec-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .sec-box {
+      background: var(--bpc-navy);
+      color: var(--bpc-white);
+      font-family: var(--font-ui);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 14px 28px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background .15s;
+      text-align: center;
+      min-width: 210px;
+    }
+    .sec-box:hover { background: #193d60; }
+    .sec-box-title {
+      font-size: 0.97rem;
+      font-weight: 800;
+      letter-spacing: .005em;
+      margin-bottom: 9px;
+    }
+    .sec-box-divider {
+      height: 1px;
+      background: rgba(255,255,255,.25);
+      margin: 0 0 8px;
+    }
+    .sec-box-role {
+      font-size: 0.8rem;
+      font-weight: 400;
+      opacity: .9;
+      margin-top: 5px;
+      text-align: center;
+    }
+    .sec-changed-dot {
+      position: absolute; top: -4px; right: -4px;
+      width: 13px; height: 13px;
+      background: var(--bpc-yellow);
+      border-radius: 50%;
+      border: 2px solid var(--bpc-white);
+    }
+    .connector-v {
+      width: 2px; height: 20px;
+      background: var(--bpc-gray);
+    }
+
+    /* ─── DIRECT REPORTS BAR ────────────────────────────────────────── */
+    .direct-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      padding: 10px 14px;
+      border: 1.5px dashed var(--bpc-gray);
+      border-radius: 8px;
+      background: var(--bpc-white);
+      margin-bottom: 6px;
+    }
+    .direct-label {
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+    .direct-pill {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--bpc-blue);
+      background: #f0f4f8;
+      border: 1px solid #d0dae4;
+      border-radius: 9999px;
+      padding: 3px 12px;
+      white-space: nowrap;
+    }
+
+    /* ─── BRANCHES GRID ─────────────────────────────────────────────── */
+    .connector-v-long {
+      width: 2px; height: 20px;
+      background: var(--bpc-gray);
+      margin: 0 auto;
+    }
+    .branches-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 820px) {
+      .branches-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── BRANCH CARD ───────────────────────────────────────────────── */
+    .branch-card {
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+
+    /* Desktop header */
+    .branch-head {
+      padding: 16px 16px 13px;
+      color: var(--bpc-white);
+      font-family: var(--font-ui);
+      font-size: 0.83rem;
+      font-weight: 700;
+      line-height: 1.35;
+      cursor: pointer;
+      transition: filter .15s;
+    }
+    .branch-head:hover { filter: brightness(1.08); }
+    .s5 .branch-head { background: var(--s5-main); }
+    .s4 .branch-head { background: var(--s4-main); }
+    .s3 .branch-head { background: var(--s3-main); }
+
+    .branch-sub {
+      font-weight: 400;
+      font-size: 0.7rem;
+      opacity: .82;
+      margin-top: 3px;
+    }
+    .branch-pill-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: rgba(255,255,255,.2);
+      color: var(--bpc-white);
+      padding: 2px 9px;
+      border-radius: 9999px;
+      cursor: pointer;
+    }
+
+    /* Mobile toggle */
+    .branch-toggle {
+      display: none;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      padding: 12px 16px;
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--bpc-white);
+      text-align: left;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .branch-toggle .chev { font-size: 0.65rem; transition: transform .2s; }
+    .branch-toggle.open .chev { transform: rotate(180deg); }
+    .s5 .branch-toggle { background: var(--s5-main); }
+    .s4 .branch-toggle { background: var(--s4-main); }
+    .s3 .branch-toggle { background: var(--s3-main); }
+
+    @media (max-width: 820px) {
+      .branch-head    { display: none; }
+      .branch-toggle  { display: flex; }
+      .branch-offices { display: none; }
+      .branch-offices.open { display: block; }
+    }
+
+    .branch-offices {
+      background: var(--bpc-white);
+      padding: 8px;
+    }
+
+    /* ─── OFFICE ITEMS ──────────────────────────────────────────────── */
+    .office-item {
+      padding: 7px 10px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      font-family: var(--font-ui);
+      font-size: 0.76rem;
+      line-height: 1.4;
+      border: 1px solid #f0f0f0;
+      color: #999;
+      background: #fafafa;
+    }
+    .office-item:last-child { margin-bottom: 0; }
+
+    .office-item.interactive {
+      cursor: pointer;
+      border-color: #e4e8ed;
+      background: var(--bpc-white);
+      color: var(--bpc-dark-gray);
+      transition: all .15s;
+    }
+    .office-item.interactive:hover {
+      transform: translateX(3px);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    }
+    /* colored left accent per branch */
+    .s5 .office-item.interactive { border-left: 3px solid var(--s5-main); }
+    .s4 .office-item.interactive { border-left: 3px solid var(--s4-main); }
+    .s3 .office-item.interactive { border-left: 3px solid var(--s3-main); }
+
+    /* major-change tinted background */
+    .s5 .office-item.major { background: var(--s5-light); }
+    .s4 .office-item.major { background: var(--s4-light); }
+    .s3 .office-item.major { background: var(--s3-light); }
+
+    .office-name { font-weight: 600; color: var(--bpc-dark-gray); }
+    .tap-hint {
+      font-size: 0.65rem;
+      color: #bbb;
+      margin-top: 2px;
+      display: none;
+    }
+    @media (hover: none) { .tap-hint { display: block; } }
+
+    /* ─── BADGES ────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 0.58rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .b-NEW      { background: var(--b-new-bg); color: var(--b-new-tx); }
+    .b-RENAMED  { background: var(--b-ren-bg); color: var(--b-ren-tx); }
+    .b-MOVED    { background: var(--b-mov-bg); color: var(--b-mov-tx); }
+    .b-EXPANDED { background: var(--b-exp-bg); color: var(--b-exp-tx); }
+    .b-CHANGED  { background: var(--b-chg-bg); color: var(--b-chg-tx); }
+
+    /* ─── OCMI FEATURE BOX ──────────────────────────────────────────── */
+    .ocmi-wrap { margin-bottom: 16px; }
+    .ocmi-box {
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(185,31,36,.15);
+      border: 1.5px solid #d9a0a2;
+    }
+    .ocmi-head {
+      background: var(--bpc-red-dark);
+      padding: 14px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      transition: filter .15s;
+    }
+    .ocmi-head:hover { filter: brightness(1.07); }
+    .ocmi-head-left h3,
+    .ocmi-title {
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--bpc-white);
+      margin: 6px 0 3px;
+      line-height: 1.3;
+    }
+    .ocmi-head-left p {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: rgba(255,255,255,.82);
+      line-height: 1.5;
+    }
+    .ocmi-arrow {
+      color: rgba(255,255,255,.6);
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── STAFF SECTION ─────────────────────────────────────────────── */
+    .staff-section { margin-top: 0; }
+    .staff-btn {
+      width: 100%;
+      padding: 11px 18px;
+      background: var(--bpc-white);
+      border: 1.5px solid var(--bpc-gray);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--bpc-blue);
+      transition: background .15s;
+      text-align: left;
+    }
+    .staff-btn:hover { background: #f5f7fa; }
+    .staff-chev { font-size: 0.65rem; transition: transform .2s; }
+    .staff-chev.open { transform: rotate(180deg); }
+
+    .staff-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 5px;
+      padding: 10px;
+      background: var(--bpc-white);
+      border: 1.5px solid var(--bpc-gray);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+    }
+    .staff-grid.open { display: grid; }
+    .staff-pill {
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid #ebebeb;
+      font-family: var(--font-ui);
+      font-size: 0.71rem;
+      color: var(--bpc-mid-gray);
+      background: #fafafa;
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────────────── */
+    .doe-footer {
+      margin-top: 26px;
+      padding-top: 16px;
+      border-top: 1px solid var(--bpc-light-gray);
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      color: #aaa;
+      text-align: left;
+      line-height: 1.7;
+    }
+    .doe-footer a { color: var(--bpc-bright); text-decoration: none; }
+    .doe-footer a:hover { text-decoration: underline; }
+
+    /* ─── OVERLAY ───────────────────────────────────────────────────── */
+    .doe-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.4);
+      z-index: 200;
+      backdrop-filter: blur(1px);
+    }
+    .doe-overlay.active { display: block; }
+
+    /* ─── DETAIL PANEL ──────────────────────────────────────────────── */
+    .detail-panel {
+      position: fixed;
+      top: 0; bottom: 0;
+      right: -440px;
+      width: 410px;
+      max-width: 96vw;
+      background: var(--bpc-white);
+      z-index: 201;
+      box-shadow: -6px 0 32px rgba(0,0,0,.13);
+      transition: right .27s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .detail-panel.active { right: 0; }
+
+    @media (max-width: 600px) {
+      .detail-panel {
+        right: 0; top: auto; bottom: -90vh;
+        width: 100%; height: 84vh;
+        transition: bottom .27s cubic-bezier(.4,0,.2,1);
+        border-radius: 14px 14px 0 0;
+      }
+      .detail-panel.active { bottom: 0; }
+    }
+
+    /* Panel top accent bar */
+    .panel-accent {
+      height: 4px;
+      background: linear-gradient(to right, var(--bpc-navy), var(--bpc-bright));
+      flex-shrink: 0;
+    }
+    .panel-accent.s5  { background: var(--s5-main); }
+    .panel-accent.s4  { background: var(--s4-main); }
+    .panel-accent.s3  { background: var(--s3-main); }
+    .panel-accent.sec { background: var(--bpc-blue); }
+    .panel-accent.ocmi { background: var(--bpc-red-dark); }
+
+    .panel-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--bpc-light-gray);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bpc-white);
+    }
+    .panel-header-left { flex: 1; }
+    .panel-title {
+      font-family: var(--font-ui);
+      font-size: 0.97rem;
+      font-weight: 800;
+      color: var(--bpc-navy);
+      line-height: 1.35;
+    }
+    .panel-branch-label {
+      display: inline-block;
+      margin-top: 7px;
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 2px 9px;
+      border-radius: 9999px;
+    }
+    .lbl-s5  { background: var(--s5-light); color: var(--s5-main); }
+    .lbl-s4  { background: var(--s4-light); color: #0a5f8a; }
+    .lbl-s3  { background: var(--s3-light); color: #7a3200; }
+    .lbl-sec { background: #e8eef5;          color: var(--bpc-navy); }
+    .lbl-ocmi { background: #fde3e4;         color: var(--bpc-red-dark); }
+
+    .close-btn {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      background: #f0f2f5;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      color: var(--bpc-mid-gray);
+      transition: background .15s;
+    }
+    .close-btn:hover { background: var(--bpc-light-gray); }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      font-family: var(--font-body);
+    }
+
+    /* Change type banner */
+    .change-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .cb-NEW      { background: var(--b-new-bg); color: var(--b-new-tx); }
+    .cb-RENAMED  { background: var(--b-ren-bg); color: var(--b-ren-tx); }
+    .cb-MOVED    { background: var(--b-mov-bg); color: var(--b-mov-tx); }
+    .cb-EXPANDED { background: var(--b-exp-bg); color: var(--b-exp-tx); }
+    .cb-CHANGED  { background: var(--b-chg-bg); color: var(--b-chg-tx); }
+
+    .detail-block { margin-bottom: 18px; }
+    .detail-lbl {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--bpc-mid-gray);
+      margin-bottom: 5px;
+    }
+    .detail-val {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--bpc-dark-gray);
+      line-height: 1.65;
+    }
+    .detail-val.na {
+      color: #bbb;
+      font-style: italic;
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+    }
+
+    .programs-box {
+      margin-top: 7px;
+      padding: 12px 14px;
+      background: #f5f7fa;
+      border-left: 3px solid var(--bpc-bright);
+      border-radius: 0 5px 5px 0;
+      font-family: var(--font-body);
+      font-size: 0.84rem;
+      color: var(--bpc-dark-gray);
+      line-height: 1.7;
+    }
+    .s5-panel .programs-box { border-left-color: var(--s5-main); }
+    .s4-panel .programs-box { border-left-color: var(--s4-main); }
+    .s3-panel .programs-box { border-left-color: var(--s3-main); }
+    .ocmi-panel .programs-box { border-left-color: var(--bpc-red-dark); }
+
+    .programs-box ul { margin-left: 16px; margin-top: 4px; }
+    .programs-box li { margin-bottom: 2px; }
+
+    .panel-note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--bpc-light-gray);
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      color: #999;
+      line-height: 1.6;
+    }
+
+    /* ─── INDEPENDENT AGENCIES (FERC + Inspector General) ───────────────
+       These entities are NOT direct reports to the Secretary.
+       They operate independently; the dotted line signals that relationship.
+    ─────────────────────────────────────────────────────────────────── */
+    .sec-outer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .sec-level-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      width: 100%;
+      max-width: 740px;
+    }
+    /* ── Independent entities grouped box ── */
+    .indep-group {
+      background: #f4f6f9;
+      border: 2px dashed #8fa5bc;
+      border-radius: 8px;
+      padding: 10px 14px 12px;
+      max-width: 210px;
+      flex-shrink: 0;
+    }
+    .indep-group-label {
+      font-family: var(--font-ui);
+      font-size: 0.57rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #8fa5bc;
+      line-height: 1.45;
+      margin-bottom: 9px;
+      text-align: center;
+    }
+    .indep-entity {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--bpc-blue);
+      background: var(--bpc-white);
+      border: 1px dashed #b8c9d9;
+      border-radius: 4px;
+      padding: 6px 10px;
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 5px;
+    }
+    .indep-entity:last-child { margin-bottom: 0; }
+    .dotted-h {
+      flex: 1;
+      min-width: 18px;
+      max-width: 56px;
+      height: 2px;
+      border-top: 2px dashed #8fa5bc;
+      align-self: center;
+    }
+    /* Legend chip for dotted line */
+    .lc-ind {
+      background: #f4f6f9;
+      color: var(--bpc-blue);
+      border-color: #8fa5bc;
+      border-style: dashed;
+    }
+
+    /* ── Staff offices callout ── */
+    .staff-callout {
+      margin-top: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1.5px solid #d0dae4;
+    }
+    .staff-callout-head {
+      background: var(--bpc-navy);
+      color: var(--bpc-white);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: .01em;
+    }
+    .staff-callout-body {
+      background: var(--bpc-white);
+      padding: 12px 14px;
+    }
+    .staff-callout-item {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--bpc-dark-gray);
+      line-height: 1.55;
+      margin-bottom: 10px;
+      padding: 8px 10px 8px 12px;
+      border-left: 3px solid var(--bpc-gray);
+      background: #f8f9fb;
+      border-radius: 0 4px 4px 0;
+    }
+    .staff-callout-item:last-child { margin-bottom: 0; }
+    .staff-callout-item.pbr { border-left-color: var(--bpc-bright); }
+    .staff-callout-item.eliminated { border-left-color: var(--bpc-red); background: #fff8f8; }
+    .staff-callout-item .ci-label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 3px;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .staff-callout-item.pbr .ci-label { color: var(--bpc-bright); }
+    .staff-callout-item.eliminated .ci-label { color: var(--bpc-red); }
+
+    @media (max-width: 680px) {
+      .sec-level-wrap { flex-direction: column; align-items: center; gap: 10px; }
+      .dotted-h { display: none; }
+      .indep-group { max-width: 280px; }
+      .sec-box { min-width: unset; width: 100%; max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bpc-doe" aria-hidden="true">
+
+  <!-- ── HEADER ── -->
+  <p class="doe-eyebrow">Energy Policy Analysis</p>
+  <div class="doe-title">Department of Energy: 2025 Organizational Restructuring</div>
+  <p class="doe-intro">The Department of Energy has reorganized and renamed a number of its offices. Click or tap any highlighted office below to learn what changed — including its previous name, oversight level, and the major programs now housed within it.</p>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span class="legend-chip lc-new"><span class="legend-dot" style="background:var(--bpc-green)"></span> New office</span>
+    <span class="legend-chip lc-ren"><span class="legend-dot" style="background:var(--bpc-yellow)"></span> Renamed</span>
+    <span class="legend-chip lc-mov"><span class="legend-dot" style="background:var(--bpc-bright)"></span> Moved branches</span>
+    <span class="legend-chip lc-exp"><span class="legend-dot" style="background:var(--bpc-orange)"></span> Expanded / merged</span>
+    <span class="legend-chip lc-chg"><span class="legend-dot" style="background:var(--bpc-red)"></span> Administrative change</span>
+    <span class="legend-chip lc-ind"><span class="legend-dot" style="background:#8fa5bc"></span> Independent agency</span>
+  </div>
+  <p class="legend-note">Offices without a colored indicator are unchanged. Dotted lines indicate entities that operate independently and do not report to the Secretary.</p>
+
+  <!-- BPC accent divider -->
+  <div class="bpc-divider"></div>
+
+  <!-- ── SECRETARY + INDEPENDENT AGENCIES ── -->
+  <div class="sec-outer">
+    <div class="sec-level-wrap">
+
+      <!-- Secretary box -->
+      <button class="sec-box" onclick="openPanel('secretary')">
+        <span class="sec-changed-dot" title="Note: Office of Ombudsman eliminated"></span>
+        <div class="sec-box-title">Office of the Secretary</div>
+        <div class="sec-box-divider"></div>
+        <div class="sec-box-role">Secretary (S1)</div>
+        <div class="sec-box-role">Deputy Secretary (S2)</div>
+      </button>
+
+      <!-- Dotted connector to independent entities -->
+      <div class="dotted-h" aria-hidden="true"></div>
+
+      <!-- Independent entities: FERC + Inspector General -->
+      <div class="indep-group">
+        <div class="indep-group-label">Associated federal entities that operate independently from DOE</div>
+        <div class="indep-entity">Federal Energy Regulatory Commission (FERC)</div>
+        <div class="indep-entity">Inspector General</div>
+      </div>
+
+    </div>
+    <div class="connector-v"></div>
+  </div>
+
+  <!-- Direct reports row -->
+  <div class="direct-row">
+    <div class="direct-label">Direct reports to the Secretary</div>
+    <span class="direct-pill">Chief of Staff</span>
+    <span class="direct-pill">Boards and Councils</span>
+    <span class="direct-pill">Secretary-level staff offices ↓</span>
+  </div>
+
+  <div class="connector-v-long"></div>
+
+  <!-- ── THREE BRANCHES ── -->
+  <div class="branches-grid">
+
+    <!-- S5 / NNSA -->
+    <div class="branch-card s5">
+      <div class="branch-head" onclick="openPanel('s5')">
+        Under Secretary for Nuclear Security (S5) / NNSA
+        <div class="branch-sub">National Nuclear Security Administration</div>
+        <span class="branch-pill-tag">Minor title changes within — click for details</span>
+      </div>
+      <button class="branch-toggle" onclick="toggleBranch(this)">
+        <span>Under Secretary for Nuclear Security (S5) / NNSA</span>
+        <span class="chev">▼</span>
+      </button>
+      <div class="branch-offices">
+        <div class="office-item">Office of Defense Programs</div>
+        <div class="office-item">Naval Reactors</div>
+        <div class="office-item">Office of Defense Nuclear Security</div>
+        <div class="office-item">Office of Defense Nuclear Proliferation</div>
+        <div class="office-item">Office of Infrastructure</div>
+        <div class="office-item">Office of Management and Budget</div>
+        <div class="office-item">Office of General Counsel</div>
+        <div class="office-item interactive" onclick="openPanel('s5-em')">
+          <div class="office-name"><span class="badge b-CHANGED">Changed</span>Office of Emergency Management</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item interactive" onclick="openPanel('s5-ct')">
+          <div class="office-name"><span class="badge b-CHANGED">Changed</span>Office of Counter-Terrorism and Counter-Proliferation</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item interactive" onclick="openPanel('s5-comm')">
+          <div class="office-name"><span class="badge b-NEW">New</span>Office of Communication</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item interactive" onclick="openPanel('s5-pas')">
+          <div class="office-name"><span class="badge b-CHANGED">Changed</span>Office of Partnership and Acquisition Services</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item interactive" onclick="openPanel('s5-esh')">
+          <div class="office-name"><span class="badge b-CHANGED">Changed</span>Office of Environment, Safety and Health</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item interactive" onclick="openPanel('s5-im')">
+          <div class="office-name"><span class="badge b-CHANGED">Changed</span>Office of Information Management and Chief Information Officer</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4 Science -->
+    <div class="branch-card s4">
+      <div class="branch-head" onclick="openPanel('s4')">
+        Under Secretary for Science (S4)
+        <div class="branch-sub">Formerly: Under Secretary for Science and Innovation</div>
+        <span class="branch-pill-tag">Renamed branch — click for details</span>
+      </div>
+      <button class="branch-toggle" onclick="toggleBranch(this)">
+        <span>Under Secretary for Science (S4)</span>
+        <span class="chev">▼</span>
+      </button>
+      <div class="branch-offices">
+        <div class="office-item major interactive" onclick="openPanel('s4-tech')">
+          <div class="office-name"><span class="badge b-MOVED">Moved</span>Office of Technology Commercialization</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item major interactive" onclick="openPanel('s4-strat')">
+          <div class="office-name"><span class="badge b-RENAMED">Renamed</span>Office of Strategy and Technology Road Maps</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item">Office of Science</div>
+        <div class="office-item major interactive" onclick="openPanel('s4-fusion')">
+          <div class="office-name"><span class="badge b-NEW">New</span>Office of Fusion</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item major interactive" onclick="openPanel('s4-ai')">
+          <div class="office-name"><span class="badge b-NEW">New</span>Office of Artificial Intelligence and Quantum</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 Energy -->
+    <div class="branch-card s3">
+      <div class="branch-head" onclick="openPanel('s3')">
+        Under Secretary for Energy (S3)
+        <div class="branch-sub">Formerly: Under Secretary for Infrastructure</div>
+        <span class="branch-pill-tag">Renamed branch — click for details</span>
+      </div>
+      <button class="branch-toggle" onclick="toggleBranch(this)">
+        <span>Under Secretary for Energy (S3)</span>
+        <span class="chev">▼</span>
+      </button>
+      <div class="branch-offices">
+        <div class="office-item major interactive" onclick="openPanel('s3-elec')">
+          <div class="office-name"><span class="badge b-MOVED">Moved</span><span class="badge b-EXPANDED">Expanded</span>Office of Electricity</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item major interactive" onclick="openPanel('s3-arctic')">
+          <div class="office-name"><span class="badge b-MOVED">Moved</span>Arctic Energy Office</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item major interactive" onclick="openPanel('s3-ne')">
+          <div class="office-name"><span class="badge b-MOVED">Moved</span>Office of Nuclear Energy</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item major interactive" onclick="openPanel('s3-hg')">
+          <div class="office-name"><span class="badge b-NEW">New</span>Hydrocarbons and Geothermal</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item">Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</div>
+        <div class="office-item">Office of Indian Energy Policy and Programs</div>
+        <div class="office-item major interactive" onclick="openPanel('s3-edf')">
+          <div class="office-name"><span class="badge b-RENAMED">Renamed</span>Office of Energy Dominance Financing (EDF)</div>
+          <div class="tap-hint">Tap for details</div>
+        </div>
+        <div class="office-item">Power Marketing Administrations</div>
+      </div>
+    </div>
+
+  </div><!-- /branches-grid -->
+
+  <!-- ── OCMI FEATURED BOX ── -->
+  <div class="ocmi-wrap">
+    <div class="ocmi-box">
+      <div class="ocmi-head" onclick="openPanel('ocmi')">
+        <div class="ocmi-head-left">
+          <span class="badge b-NEW">New Office</span>
+          <div class="ocmi-title">Office of Critical Minerals and Energy Innovation</div>
+          <p>A major new cross-cutting office consolidating programs previously spread across the S4 and S3 branches — click to see the full list of predecessor offices and programs.</p>
+        </div>
+        <div class="ocmi-arrow">→</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STAFF OFFICES ── -->
+  <div class="staff-section">
+    <button class="staff-btn" onclick="toggleStaff(this)">
+      <span>Secretary-Level Staff Offices <span style="font-weight:400;color:#aaa;">(click to expand)</span></span>
+      <span class="staff-chev" id="staffChev">▼</span>
+    </button>
+    <div class="staff-grid" id="staffGrid">
+      <div class="staff-pill">ARPA-E</div>
+      <div class="staff-pill">Office of Chief Human Capital Officer</div>
+      <div class="staff-pill">Office of Congressional and Intergovernmental Affairs</div>
+      <div class="staff-pill">Office of the General Counsel</div>
+      <div class="staff-pill">Office of the Chief Financial Officer</div>
+      <div class="staff-pill">Office of International Affairs</div>
+      <div class="staff-pill">Office of Policy</div>
+      <div class="staff-pill">Office of Public Affairs</div>
+      <div class="staff-pill">Office of Minority Impact</div>
+      <div class="staff-pill">Office of Chief Information Officer</div>
+      <div class="staff-pill">U.S. Energy Information Administration (EIA)</div>
+      <div class="staff-pill">Office of Environmental Health, Safety and Security (EHSS)</div>
+      <div class="staff-pill">Office of Intelligence and Counterintelligence</div>
+      <div class="staff-pill">Office of Management</div>
+      <div class="staff-pill">Office of Legacy Management</div>
+    </div>
+  </div>
+
+  <!-- ── STAFF OFFICES CALLOUT ── -->
+  <div class="staff-callout">
+    <div class="staff-callout-head">
+      ℹ️ &nbsp;Secretary-Level Office Changes
+    </div>
+    <div class="staff-callout-body">
+      <div class="staff-callout-item pbr">
+        <span class="ci-label">Removed from org chart — still funded in the President's Budget Request (PBR)</span>
+        Office of Hearings and Appeals &nbsp;·&nbsp; Office of Small and Disadvantaged Businesses &nbsp;·&nbsp; Office of Enterprise Assessments &nbsp;·&nbsp; Office of Project Management
+      </div>
+      <div class="staff-callout-item eliminated">
+        <span class="ci-label">Eliminated — removed from org chart and not included in the PBR</span>
+        Office of Energy Justice and Equity
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="doe-footer">
+    Source: U.S. Department of Energy organizational chart. Analysis by the <a href="https://bipartisanpolicy.org" target="_blank">Bipartisan Policy Center</a>.<br />
+    Minor administrative title changes within NNSA (Associate Administrator designations elevated to Office titles) are noted but not highlighted as major programmatic changes.
+  </div>
+
+</div><!-- /bpc-doe -->
+
+<!-- OVERLAY -->
+<div class="doe-overlay" id="doeOverlay" onclick="closePanel()"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="panel-accent" id="panelAccent"></div>
+  <div class="panel-header">
+    <div class="panel-header-left">
+      <div class="panel-title" id="panelTitle"></div>
+      <span class="panel-branch-label" id="panelLabel"></span>
+    </div>
+    <button class="close-btn" onclick="closePanel()" aria-label="Close">✕</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+</div>
+
+<script>
+/* ── DATA ────────────────────────────────────────────────────────── */
+const offices = {
+  secretary: {
+    title: "Office of the Secretary",
+    branch: "sec", branchLabel: "Secretary Level",
+    changeType: "CHANGED",
+    changeSummary: "An office within the Secretary's office has been eliminated.",
+    prevName: "Office of the Secretary (same name)",
+    prevOversight: "Secretary (S1)",
+    programs: null,
+    note: "The Office of Ombudsman has been eliminated."
+  },
+  s5: {
+    title: "Under Secretary for Nuclear Security (S5) / NNSA",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Several offices within NNSA have had their titles elevated from Associate Administrator designations to formal Office titles. No major programmatic changes were made.",
+    prevName: "Same name — no change to the branch title",
+    prevOversight: "S5",
+    programs: null,
+    note: "See individual offices for specific title changes."
+  },
+  "s5-em": {
+    title: "Office of Emergency Management",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Previously designated as an Associate Administrator role; now formally titled as an Office.",
+    prevName: "Associate Administrator for Emergency Management (NA-40)",
+    prevOversight: "S5 / NNSA",
+    programs: null,
+    note: "Administrative title change. No major programmatic changes noted."
+  },
+  "s5-ct": {
+    title: "Office of Counter-Terrorism and Counter-Proliferation",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Previously designated as a Deputy Undersecretary position; now titled as a formal Office.",
+    prevName: "Deputy Undersecretary for Counter-Terrorism and Counter-Proliferation (NA-80)",
+    prevOversight: "S5 / NNSA",
+    programs: null,
+    note: "Administrative title change. No major programmatic changes noted."
+  },
+  "s5-comm": {
+    title: "Office of Communication",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "NEW",
+    changeSummary: "Newly created office within the NNSA structure.",
+    prevName: null,
+    prevOversight: null,
+    programs: null,
+    note: "New office — no predecessor identified."
+  },
+  "s5-pas": {
+    title: "Office of Partnership and Acquisition Services",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Previously designated as an Associate Administrator role; now formally titled as an Office.",
+    prevName: "Associate Administrator for Partnership and Acquisition Services (NA-PAS)",
+    prevOversight: "S5 / NNSA",
+    programs: null,
+    note: "Administrative title change. No major programmatic changes noted."
+  },
+  "s5-esh": {
+    title: "Office of Environment, Safety and Health",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Previously designated as an Associate Administrator role; now formally titled as an Office.",
+    prevName: "Associate Administrator for Environment, Safety and Health (NA-ESH)",
+    prevOversight: "S5 / NNSA",
+    programs: null,
+    note: "Administrative title change. No major programmatic changes noted."
+  },
+  "s5-im": {
+    title: "Office of Information Management and Chief Information Officer",
+    branch: "s5", branchLabel: "S5 / NNSA Branch",
+    changeType: "CHANGED",
+    changeSummary: "Previously designated as an Associate Administrator role; now formally titled as an Office.",
+    prevName: "Associate Administrator for Information Management and Chief Information Officer (NA-IM)",
+    prevOversight: "S5 / NNSA",
+    programs: null,
+    note: "Administrative title change. No major programmatic changes noted."
+  },
+  s4: {
+    title: "Under Secretary for Science (S4)",
+    branch: "s4", branchLabel: "S4 — Science Branch",
+    changeType: "RENAMED",
+    changeSummary: "The branch has been renamed, dropping \"Innovation\" from its title. Several offices have been reorganized under this branch.",
+    prevName: "Office of the Under Secretary for Science and Innovation",
+    prevOversight: "S4",
+    programs: null,
+    note: "Renamed from \"Science and Innovation\" to simply \"Science.\""
+  },
+  "s4-tech": {
+    title: "Office of Technology Commercialization",
+    branch: "s4", branchLabel: "S4 — Science Branch",
+    changeType: "MOVED",
+    changeSummary: "This office has moved from reporting directly to the Secretary (S1) to reporting under the Under Secretary for Science (S4).",
+    prevName: "Office of Technology Transitions (OTT) / Office of Technology Commercialization",
+    prevOversight: "S1 (Secretary level)",
+    programs: null,
+    note: "Previously reported directly to the Secretary. Now housed under S4."
+  },
+  "s4-strat": {
+    title: "Office of Strategy and Technology Road Maps",
+    branch: "s4", branchLabel: "S4 — Science Branch",
+    changeType: "RENAMED",
+    changeSummary: "Renamed from the Office of Critical and Emerging Technologies, signaling a shift toward strategic planning and technology roadmapping.",
+    prevName: "Office of Critical and Emerging Technologies (OCET)",
+    prevOversight: "S4",
+    programs: null,
+    note: null
+  },
+  "s4-fusion": {
+    title: "Office of Fusion",
+    branch: "s4", branchLabel: "S4 — Science Branch",
+    changeType: "NEW",
+    changeSummary: "Newly established office focused on fusion energy research and development.",
+    prevName: null,
+    prevOversight: null,
+    programs: null,
+    note: "New office — no direct predecessor identified."
+  },
+  "s4-ai": {
+    title: "Office of Artificial Intelligence and Quantum",
+    branch: "s4", branchLabel: "S4 — Science Branch",
+    changeType: "NEW",
+    changeSummary: "Newly established office focused on artificial intelligence and quantum information science.",
+    prevName: null,
+    prevOversight: null,
+    programs: null,
+    note: "New office — no direct predecessor identified."
+  },
+  s3: {
+    title: "Under Secretary for Energy (S3)",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "RENAMED",
+    changeSummary: "The branch has been renamed from \"Infrastructure\" to \"Energy,\" reflecting a realignment of energy-producing program offices under this branch.",
+    prevName: "Office of the Under Secretary for Infrastructure",
+    prevOversight: "S3",
+    programs: null,
+    note: "Several offices previously under S4 have been moved to S3 under this reorganization."
+  },
+  "s3-elec": {
+    title: "Office of Electricity",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "MOVED",
+    changeSummary: "Moved from S4 (Science and Innovation) to S3 (Energy) and expanded to absorb the Grid Deployment Office, which no longer exists as a separate entity.",
+    prevName: "Office of Electricity (OE)",
+    prevOversight: "S4 (Under Secretary for Science and Innovation)",
+    programs: "Now includes all activities and programs previously housed in the Grid Deployment Office (GDO), which has been folded into this office.",
+    note: null
+  },
+  "s3-arctic": {
+    title: "Arctic Energy Office",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "MOVED",
+    changeSummary: "Moved from S4 (Science and Innovation) to S3 (Energy). No programmatic changes noted.",
+    prevName: "Arctic Energy Office (AE)",
+    prevOversight: "S4 (Under Secretary for Science and Innovation)",
+    programs: null,
+    note: null
+  },
+  "s3-ne": {
+    title: "Office of Nuclear Energy",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "MOVED",
+    changeSummary: "Moved from S4 (Science and Innovation) to S3 (Energy). No programmatic changes noted.",
+    prevName: "Office of Nuclear Energy (NE)",
+    prevOversight: "S4 (Under Secretary for Science and Innovation)",
+    programs: null,
+    note: null
+  },
+  "s3-hg": {
+    title: "Hydrocarbons and Geothermal",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "NEW",
+    changeSummary: "Newly created office consolidating fossil fuel and geothermal programs previously spread across two separate offices.",
+    prevName: null,
+    prevOversight: "Activities previously in S3 (Fossil Energy) and S4 (EERE Geothermal Office)",
+    programs: "Consolidates activities from:\n• Office of Fossil Energy and Carbon Management (FECM)\n• Geothermal Technologies Office (previously within EERE under S4)",
+    note: null
+  },
+  "s3-edf": {
+    title: "Office of Energy Dominance Financing (EDF)",
+    branch: "s3", branchLabel: "S3 — Energy Branch",
+    changeType: "RENAMED",
+    changeSummary: "Renamed from the Loan Programs Office (LPO), reflecting a rebranding of the office's financing mission.",
+    prevName: "Loan Programs Office (LPO)",
+    prevOversight: "S3",
+    programs: "Includes all activities and programs previously housed in the Loan Programs Office (LPO).",
+    note: null
+  },
+  ocmi: {
+    title: "Office of Critical Minerals and Energy Innovation",
+    branch: "ocmi", branchLabel: "New Cross-Cutting Office",
+    changeType: "NEW",
+    changeSummary: "A major new office consolidating a broad range of clean energy, manufacturing, and minerals programs previously spread across the S4 and S3 branches.",
+    prevName: null,
+    prevOversight: "Programs previously in S4 (EERE / Under Secretary for Science and Innovation) and S3 (Under Secretary for Infrastructure)",
+    programs: "Absorbs programs and offices previously in the Office of Energy Efficiency and Renewable Energy (EERE) — excluding Geothermal — and related offices:\n• Building Technologies Office\n• Office of Wind Energy Technologies\n• Office of Solar Energy Technologies\n• Office of Water Power Technologies\n• Industrial Technologies Office\n• Advanced Manufacturing and Materials Technologies Office (AMMTO)\n• Vehicle Technologies Office\n• Bioenergy Technologies Office\n• Hydrogen and Fuel Cell Technologies Office\n• Federal Energy Management Program (FEMP)\n• Office of State and Community Energy Programs\n• Office of Clean Energy Demonstrations (OCED)\n• Manufacturing and Energy Supply Chains (MESC)\n• Fossil Energy's Mineral Production and Processing Technologies",
+    note: null
+  }
+};
+
+const changeLabels = {
+  NEW:      "✦ New Office",
+  RENAMED:  "↔ Renamed",
+  MOVED:    "→ Moved Branches",
+  EXPANDED: "⊕ Expanded / Merged",
+  CHANGED:  "⚑ Administrative Change"
+};
+
+/* ── OPEN PANEL ── */
+function openPanel(id) {
+  const d = offices[id];
+  if (!d) return;
+
+  document.getElementById('panelTitle').textContent = d.title;
+
+  const lbl = document.getElementById('panelLabel');
+  lbl.textContent = d.branchLabel;
+  lbl.className = 'panel-branch-label lbl-' + d.branch;
+
+  const accent = document.getElementById('panelAccent');
+  accent.className = 'panel-accent ' + d.branch;
+
+  const body = document.getElementById('panelBody');
+  body.className = 'panel-body ' + d.branch + '-panel';
+
+  let html = '';
+
+  // Change banner
+  html += `<div class="change-banner cb-${d.changeType}">${changeLabels[d.changeType] || d.changeType}</div>`;
+
+  // What changed
+  html += `<div class="detail-block">
+    <div class="detail-lbl">What Changed</div>
+    <div class="detail-val">${d.changeSummary}</div>
+  </div>`;
+
+  // Previous name
+  html += `<div class="detail-block">
+    <div class="detail-lbl">Previous Office Name</div>
+    <div class="detail-val ${d.prevName ? '' : 'na'}">${d.prevName || 'No predecessor — newly created'}</div>
+  </div>`;
+
+  // Previous oversight
+  html += `<div class="detail-block">
+    <div class="detail-lbl">Previous Oversight Level</div>
+    <div class="detail-val ${d.prevOversight ? '' : 'na'}">${d.prevOversight || 'N/A — new office'}</div>
+  </div>`;
+
+  // Programs
+  if (d.programs) {
+    const lines = d.programs.split('\n').map(l => l.trim()).filter(Boolean);
+    const intro = lines[0];
+    const bullets = lines.slice(1);
+    html += `<div class="detail-block">
+      <div class="detail-lbl">Major Programs / Office Focus</div>
+      <div class="programs-box">
+        ${intro}
+        ${bullets.length ? '<ul>' + bullets.map(b => `<li>${b.replace(/^•\s*/, '')}</li>`).join('') + '</ul>' : ''}
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="detail-block">
+      <div class="detail-lbl">Major Programs / Office Focus</div>
+      <div class="detail-val na">No major programmatic changes — see description above.</div>
+    </div>`;
+  }
+
+  // Note
+  if (d.note) {
+    html += `<div class="panel-note">${d.note}</div>`;
+  }
+
+  body.innerHTML = html;
+  document.getElementById('detailPanel').classList.add('active');
+  document.getElementById('doeOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ── CLOSE ── */
+function closePanel() {
+  document.getElementById('detailPanel').classList.remove('active');
+  document.getElementById('doeOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+/* ── STAFF TOGGLE ── */
+function toggleStaff(btn) {
+  document.getElementById('staffGrid').classList.toggle('open');
+  document.getElementById('staffChev').classList.toggle('open');
+}
+
+/* ── MOBILE BRANCH TOGGLE ── */
+function toggleBranch(btn) {
+  const offices = btn.nextElementSibling;
+  offices.classList.toggle('open');
+  btn.classList.toggle('open');
+  btn.querySelector('.chev').textContent = offices.classList.contains('open') ? '▲' : '▼';
+}
+
+/* ── ESC ── */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+</script>
+
+</body>
+</html>

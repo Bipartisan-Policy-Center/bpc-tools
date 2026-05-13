@@ -1,0 +1,790 @@
+<div id="cc-tool" class="cc-tool">
+  <div class="cc-tool__mapWrap">
+    <div class="cc-tool__mapTitle">
+      <strong>Explore child care data by state</strong>
+      <div class="cc-tool__mapHint">Click a state to view key metrics.</div>
+    </div>
+
+    <div id="cc-map" class="cc-tool__map" aria-label="US map (select a state)"></div>
+  </div>
+
+  <div class="cc-tool__panelWrap">
+    <div id="cc-panel" class="cc-tool__panel" aria-live="polite">
+      <div class="cc-tool__panelIntro">
+        <div class="cc-tool__kicker">Selected state</div>
+        <h3 class="cc-tool__stateTitle">Select a state</h3>
+        <p class="cc-tool__muted">Click a state on the map to load data.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === OPTION A DATA: paste your JSON array in here === -->
+<script id="cc-data" type="application/json">
+[
+  {
+    "state": "Alabama",
+    "code": "AL",
+    "potential_need": 221880,
+    "supply": 130240,
+    "gap": 90010,
+    "avg_annual_cost": 8063.25,
+    "median_hourly_wage": 10.93
+  },
+  {
+    "state": "Alaska",
+    "code": "AK",
+    "potential_need": 33400,
+    "supply": 17230,
+    "gap": 18470,
+    "avg_annual_cost": 10871.25,
+    "median_hourly_wage": 13.08
+  },
+  {
+    "state": "Arizona",
+    "code": "AZ",
+    "potential_need": 296800,
+    "supply": 256420,
+    "gap": 48920,
+    "avg_annual_cost": 12668.5,
+    "median_hourly_wage": 12.98
+  },
+  {
+    "state": "Arkansas",
+    "code": "AR",
+    "potential_need": 132360,
+    "supply": 80060,
+    "gap": 52300,
+    "avg_annual_cost": 8478.0,
+    "median_hourly_wage": 10.29
+  },
+  {
+    "state": "California",
+    "code": "CA",
+    "potential_need": 1673300,
+    "supply": 1096760,
+    "gap": 576540,
+    "avg_annual_cost": 16162.0,
+    "median_hourly_wage": 16.87
+  },
+  {
+    "state": "Colorado",
+    "code": "CO",
+    "potential_need": 262820,
+    "supply": 224880,
+    "gap": 37940,
+    "avg_annual_cost": 15018.25,
+    "median_hourly_wage": 14.34
+  },
+  {
+    "state": "Connecticut",
+    "code": "CT",
+    "potential_need": 165150,
+    "supply": 132650,
+    "gap": 32500,
+    "avg_annual_cost": 15693.75,
+    "median_hourly_wage": 15.16
+  },
+  {
+    "state": "Delaware",
+    "code": "DE",
+    "potential_need": 45320,
+    "supply": 29240,
+    "gap": 16080,
+    "avg_annual_cost": 13514.75,
+    "median_hourly_wage": 13.35
+  },
+  {
+    "state": "Florida",
+    "code": "FL",
+    "potential_need": 906540,
+    "supply": 657840,
+    "gap": 248700,
+    "avg_annual_cost": 10161.0,
+    "median_hourly_wage": 11.46
+  },
+  {
+    "state": "Georgia",
+    "code": "GA",
+    "potential_need": 475840,
+    "supply": 330610,
+    "gap": 145230,
+    "avg_annual_cost": 9650.5,
+    "median_hourly_wage": 11.64
+  },
+  {
+    "state": "Hawaii",
+    "code": "HI",
+    "potential_need": 60090,
+    "supply": 37440,
+    "gap": 22650,
+    "avg_annual_cost": 16620.25,
+    "median_hourly_wage": 14.86
+  },
+  {
+    "state": "Idaho",
+    "code": "ID",
+    "potential_need": 89210,
+    "supply": 67620,
+    "gap": 21590,
+    "avg_annual_cost": 9650.25,
+    "median_hourly_wage": 11.25
+  },
+  {
+    "state": "Illinois",
+    "code": "IL",
+    "potential_need": 577780,
+    "supply": 458620,
+    "gap": 119160,
+    "avg_annual_cost": 13387.75,
+    "median_hourly_wage": 13.72
+  },
+  {
+    "state": "Indiana",
+    "code": "IN",
+    "potential_need": 309820,
+    "supply": 225360,
+    "gap": 84460,
+    "avg_annual_cost": 10263.75,
+    "median_hourly_wage": 11.51
+  },
+  {
+    "state": "Iowa",
+    "code": "IA",
+    "potential_need": 150250,
+    "supply": 129690,
+    "gap": 20560,
+    "avg_annual_cost": 10041.0,
+    "median_hourly_wage": 11.33
+  },
+  {
+    "state": "Kansas",
+    "code": "KS",
+    "potential_need": 137980,
+    "supply": 105530,
+    "gap": 32450,
+    "avg_annual_cost": 10054.25,
+    "median_hourly_wage": 11.2
+  },
+  {
+    "state": "Kentucky",
+    "code": "KY",
+    "potential_need": 206860,
+    "supply": 138510,
+    "gap": 68350,
+    "avg_annual_cost": 9040.0,
+    "median_hourly_wage": 10.74
+  },
+  {
+    "state": "Louisiana",
+    "code": "LA",
+    "potential_need": 214050,
+    "supply": 144060,
+    "gap": 69990,
+    "avg_annual_cost": 9228.75,
+    "median_hourly_wage": 10.74
+  },
+  {
+    "state": "Maine",
+    "code": "ME",
+    "potential_need": 60480,
+    "supply": 48020,
+    "gap": 12460,
+    "avg_annual_cost": 12228.0,
+    "median_hourly_wage": 12.88
+  },
+  {
+    "state": "Maryland",
+    "code": "MD",
+    "potential_need": 276140,
+    "supply": 214060,
+    "gap": 62080,
+    "avg_annual_cost": 15168.5,
+    "median_hourly_wage": 14.93
+  },
+  {
+    "state": "Massachusetts",
+    "code": "MA",
+    "potential_need": 303050,
+    "supply": 198090,
+    "gap": 104960,
+    "avg_annual_cost": 15816.0,
+    "median_hourly_wage": 12.99
+  },
+  {
+    "state": "Michigan",
+    "code": "MI",
+    "potential_need": 453830,
+    "supply": 336260,
+    "gap": 117570,
+    "avg_annual_cost": 11287.75,
+    "median_hourly_wage": 12.29
+  },
+  {
+    "state": "Minnesota",
+    "code": "MN",
+    "potential_need": 260350,
+    "supply": 209820,
+    "gap": 50530,
+    "avg_annual_cost": 13592.75,
+    "median_hourly_wage": 13.9
+  },
+  {
+    "state": "Mississippi",
+    "code": "MS",
+    "potential_need": 137660,
+    "supply": 78720,
+    "gap": 58940,
+    "avg_annual_cost": 8154.25,
+    "median_hourly_wage": 10.3
+  },
+  {
+    "state": "Missouri",
+    "code": "MO",
+    "potential_need": 282740,
+    "supply": 199520,
+    "gap": 83220,
+    "avg_annual_cost": 10389.75,
+    "median_hourly_wage": 11.61
+  },
+  {
+    "state": "Montana",
+    "code": "MT",
+    "potential_need": 47660,
+    "supply": 36870,
+    "gap": 10790,
+    "avg_annual_cost": 10096.5,
+    "median_hourly_wage": 11.69
+  },
+  {
+    "state": "Nebraska",
+    "code": "NE",
+    "potential_need": 87340,
+    "supply": 70110,
+    "gap": 17230,
+    "avg_annual_cost": 10267.25,
+    "median_hourly_wage": 11.56
+  },
+  {
+    "state": "Nevada",
+    "code": "NV",
+    "potential_need": 133560,
+    "supply": 92620,
+    "gap": 40940,
+    "avg_annual_cost": 12057.25,
+    "median_hourly_wage": 12.45
+  },
+  {
+    "state": "New Hampshire",
+    "code": "NH",
+    "potential_need": 61230,
+    "supply": 46140,
+    "gap": 15090,
+    "avg_annual_cost": 15813.75,
+    "median_hourly_wage": 13.89
+  },
+  {
+    "state": "New Jersey",
+    "code": "NJ",
+    "potential_need": 397980,
+    "supply": 309650,
+    "gap": 88330,
+    "avg_annual_cost": 15314.0,
+    "median_hourly_wage": 14.94
+  },
+  {
+    "state": "New Mexico",
+    "code": "NM",
+    "potential_need": 100090,
+    "supply": 68130,
+    "gap": 31960,
+    "avg_annual_cost": 10278.75,
+    "median_hourly_wage": 11.87
+  },
+  {
+    "state": "New York",
+    "code": "NY",
+    "potential_need": 828430,
+    "supply": 598690,
+    "gap": 229740,
+    "avg_annual_cost": 15179.5,
+    "median_hourly_wage": 15.15
+  },
+  {
+    "state": "North Carolina",
+    "code": "NC",
+    "potential_need": 474330,
+    "supply": 329350,
+    "gap": 144980,
+    "avg_annual_cost": 10152.75,
+    "median_hourly_wage": 11.73
+  },
+  {
+    "state": "North Dakota",
+    "code": "ND",
+    "potential_need": 34210,
+    "supply": 29380,
+    "gap": 4830,
+    "avg_annual_cost": 10403.75,
+    "median_hourly_wage": 11.6
+  },
+  {
+    "state": "Ohio",
+    "code": "OH",
+    "potential_need": 529890,
+    "supply": 394780,
+    "gap": 135110,
+    "avg_annual_cost": 10734.75,
+    "median_hourly_wage": 11.97
+  },
+  {
+    "state": "Oklahoma",
+    "code": "OK",
+    "potential_need": 190450,
+    "supply": 125970,
+    "gap": 64480,
+    "avg_annual_cost": 8991.25,
+    "median_hourly_wage": 10.79
+  },
+  {
+    "state": "Oregon",
+    "code": "OR",
+    "potential_need": 186720,
+    "supply": 140590,
+    "gap": 46130,
+    "avg_annual_cost": 13768.75,
+    "median_hourly_wage": 14.1
+  },
+  {
+    "state": "Pennsylvania",
+    "code": "PA",
+    "potential_need": 557620,
+    "supply": 410740,
+    "gap": 146880,
+    "avg_annual_cost": 12343.25,
+    "median_hourly_wage": 12.64
+  },
+  {
+    "state": "Rhode Island",
+    "code": "RI",
+    "potential_need": 46120,
+    "supply": 35690,
+    "gap": 10430,
+    "avg_annual_cost": 14147.25,
+    "median_hourly_wage": 13.7
+  },
+  {
+    "state": "South Carolina",
+    "code": "SC",
+    "potential_need": 236950,
+    "supply": 157880,
+    "gap": 79070,
+    "avg_annual_cost": 9700.0,
+    "median_hourly_wage": 11.27
+  },
+  {
+    "state": "South Dakota",
+    "code": "SD",
+    "potential_need": 42090,
+    "supply": 34300,
+    "gap": 7790,
+    "avg_annual_cost": 10075.0,
+    "median_hourly_wage": 11.46
+  },
+  {
+    "state": "Tennessee",
+    "code": "TN",
+    "potential_need": 316720,
+    "supply": 219840,
+    "gap": 96880,
+    "avg_annual_cost": 9631.5,
+    "median_hourly_wage": 11.21
+  },
+  {
+    "state": "Texas",
+    "code": "TX",
+    "potential_need": 1354800,
+    "supply": 1012130,
+    "gap": 342670,
+    "avg_annual_cost": 9300.25,
+    "median_hourly_wage": 11.18
+  },
+  {
+    "state": "Utah",
+    "code": "UT",
+    "potential_need": 187430,
+    "supply": 155120,
+    "gap": 32310,
+    "avg_annual_cost": 10023.75,
+    "median_hourly_wage": 11.79
+  },
+  {
+    "state": "Vermont",
+    "code": "VT",
+    "potential_need": 28110,
+    "supply": 20110,
+    "gap": 8000,
+    "avg_annual_cost": 13823.25,
+    "median_hourly_wage": 13.29
+  },
+  {
+    "state": "Virginia",
+    "code": "VA",
+    "potential_need": 390760,
+    "supply": 306680,
+    "gap": 84080,
+    "avg_annual_cost": 13315.75,
+    "median_hourly_wage": 12.93
+  },
+  {
+    "state": "Washington",
+    "code": "WA",
+    "potential_need": 329010,
+    "supply": 254620,
+    "gap": 74390,
+    "avg_annual_cost": 14659.75,
+    "median_hourly_wage": 15.03
+  },
+  {
+    "state": "West Virginia",
+    "code": "WV",
+    "potential_need": 81530,
+    "supply": 57590,
+    "gap": 23940,
+    "avg_annual_cost": 9053.25,
+    "median_hourly_wage": 10.71
+  },
+  {
+    "state": "Wisconsin",
+    "code": "WI",
+    "potential_need": 268960,
+    "supply": 212280,
+    "gap": 56680,
+    "avg_annual_cost": 11473.75,
+    "median_hourly_wage": 12.03
+  },
+  {
+    "state": "Wyoming",
+    "code": "WY",
+    "potential_need": 24890,
+    "supply": 22700,
+    "gap": 5400,
+    "avg_annual_cost": 11415.75,
+    "median_hourly_wage": 10.6
+  }
+]
+</script>
+
+<style>
+  .cc-tool{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    align-items:start;
+    margin: 24px 0;
+  }
+  @media (max-width: 980px){
+    .cc-tool{ grid-template-columns: 1fr; }
+  }
+
+  .cc-tool__mapWrap, .cc-tool__panelWrap{
+    background:#fff;
+    border:1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .cc-tool__mapTitle{ margin-bottom: 10px; }
+  .cc-tool__mapHint{ font-size: 14px; opacity: 0.75; margin-top: 4px; }
+
+  .cc-tool__map{
+    width: 100%;
+    min-height: 320px;
+  }
+  .cc-tool__map svg{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  /* State interactivity */
+  .cc-tool__map path[id]{
+    cursor:pointer;
+    transition: opacity 120ms ease, filter 120ms ease;
+  }
+  .cc-state--hover{
+    filter: brightness(0.92);
+  }
+  .cc-state--selected{
+    outline: none;
+    filter: brightness(0.85);
+  }
+
+  .cc-tool__kicker{
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: 12px;
+    opacity: .7;
+    margin-bottom: 6px;
+  }
+  .cc-tool__stateTitle{
+    margin: 0 0 10px 0;
+    font-size: 26px;
+    line-height: 1.15;
+  }
+  .cc-tool__muted{
+    margin: 0;
+    opacity: .75;
+  }
+
+  .cc-section{
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(0,0,0,0.10);
+  }
+  .cc-section h4{
+    margin: 0 0 10px 0;
+    font-size: 16px;
+  }
+  .cc-metric{
+    display:flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .cc-metric:last-child{ border-bottom: none; }
+  .cc-metric__label{ opacity: .8; }
+  .cc-metric__value{ font-weight: 600; text-align:right; }
+
+  .cc-badgeRow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin: 10px 0 0 0;
+  }
+  .cc-badge{
+    display:inline-flex;
+    align-items:baseline;
+    gap:8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(0,0,0,0.02);
+  }
+  .cc-badge__label{ font-size: 12px; opacity:.7; text-transform: uppercase; letter-spacing:.05em; }
+  .cc-badge__value{ font-weight:700; }
+/* === Default map appearance === */
+.cc-tool__map path[id] {
+  fill: #e6e6e6;            /* light neutral gray */
+  stroke: #ffffff;         /* state boundaries */
+  stroke-width: 0.75;
+}
+
+/* Hover state */
+.cc-tool__map path[id]:hover {
+  fill: #cfd8e3;            /* soft blue-gray */
+}
+
+/* Selected state */
+.cc-state--selected {
+  fill: #9fb7d9 !important; /* BPC-adjacent blue */
+}
+
+/* States with no data (already dimmed in JS) */
+.cc-tool__map path[id][style*="not-allowed"] {
+  fill: #f2f2f2;
+}
+.cc-tool__map {
+  background: #fafafa;
+}
+
+.cc-tool__map path[id] {
+  transition: fill 120ms ease;
+}
+</style>
+
+<script>
+(function(){
+  // === CONFIG ===
+  const FILLED_SVG_URL = "https://stage.bipartisanpolicy.org/wp-content/uploads/2026/01/us_states_filled.svg";
+  const EXCLUDE_CODES = new Set(["DC","PR"]);
+
+  const mapEl = document.getElementById("cc-map");
+  const panelEl = document.getElementById("cc-panel");
+  const dataScript = document.getElementById("cc-data");
+
+  if (!mapEl || !panelEl || !dataScript) return;
+
+  // === DATA LOAD (from embedded JSON) ===
+  let rows = [];
+  try {
+    rows = JSON.parse((dataScript.textContent || "[]").trim());
+    if (!Array.isArray(rows)) rows = [];
+  } catch(e) {
+    rows = [];
+  }
+
+  // Normalize + index by code
+  const byCode = new Map();
+  rows.forEach(r => {
+    const code = String(r.code || "").trim().toUpperCase();
+    if (!code || EXCLUDE_CODES.has(code)) return;
+    byCode.set(code, { ...r, code });
+  });
+
+  // === FORMATTERS ===
+  const fmtInt = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString();
+  const fmtMoney0 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0});
+  const fmtMoney2 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString(undefined,{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtNum1 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : Number(v).toLocaleString(undefined,{maximumFractionDigits:1});
+  const fmtPct0 = (v) => (v == null || Number.isNaN(Number(v))) ? "N/A" : `${Math.round(Number(v) * 100)}%`;
+
+  // === PANEL RENDER ===
+  function renderPanel(row){
+    if (!row){
+      panelEl.innerHTML = `
+        <div class="cc-tool__panelIntro">
+          <div class="cc-tool__kicker">Selected state</div>
+          <h3 class="cc-tool__stateTitle">Select a state</h3>
+          <p class="cc-tool__muted">Click a state on the map to load data.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const need = Number(row.potential_need);
+    const supply = Number(row.supply);
+    const gap = Number(row.gap);
+
+    const coverage = (Number.isFinite(need) && need > 0 && Number.isFinite(supply)) ? (supply / need) : null;
+    const gapPct = (Number.isFinite(need) && need > 0 && Number.isFinite(gap)) ? (gap / need) : null;
+
+    panelEl.innerHTML = `
+      <div>
+        <div class="cc-tool__kicker">Selected state</div>
+        <h3 class="cc-tool__stateTitle">${row.state} <span style="opacity:.5;font-weight:500;">(${row.code})</span></h3>
+
+        <div class="cc-badgeRow">
+          <div class="cc-badge">
+            <span class="cc-badge__label">Coverage</span>
+            <span class="cc-badge__value">${coverage == null ? "N/A" : fmtPct0(coverage)}</span>
+          </div>
+          <div class="cc-badge">
+            <span class="cc-badge__label">Gap share</span>
+            <span class="cc-badge__value">${gapPct == null ? "N/A" : fmtPct0(gapPct)}</span>
+          </div>
+        </div>
+
+        <div class="cc-section">
+          <h4>Costs &amp; Workforce</h4>
+          <div class="cc-metric">
+            <div class="cc-metric__label">Average annual cost of child care</div>
+            <div class="cc-metric__value">${fmtMoney2(row.avg_annual_cost)}</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric__label">Median hourly wage (ECE workers)</div>
+            <div class="cc-metric__value">${fmtMoney2(row.median_hourly_wage)}</div>
+          </div>
+        </div>
+
+        <div class="cc-section">
+          <h4>Supply &amp; Demand</h4>
+          <div class="cc-metric">
+            <div class="cc-metric__label">Children needing care</div>
+            <div class="cc-metric__value">${fmtInt(row.potential_need)}</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric__label">Licensed child care slots</div>
+            <div class="cc-metric__value">${fmtInt(row.supply)}</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric__label">Child care gap</div>
+            <div class="cc-metric__value">${fmtInt(row.gap)}</div>
+          </div>
+        </div>
+
+        <p class="cc-tool__muted" style="margin-top:12px;font-size:13px;">
+          Data shown for demonstration purposes.
+        </p>
+ <p class="cc-tool__muted" style="margin-top:12px;font-size:13px;">
+          Click <b>here</b> to download the full data sheet for this state.
+        </p>
+
+      </div>
+    `;
+  }
+
+  // === MAP LOAD + BIND ===
+  let selectedCode = null;
+  let svgRoot = null;
+// === MAP BASE STYLE ===
+function applyBaseMapStyle() {
+  if (!svgRoot) return;
+
+  svgRoot.querySelectorAll("path").forEach((p) => {
+    // Neutral default appearance
+    p.style.fill = "#E6E8EC";          // light gray instead of black
+    p.style.stroke = "#C9CDD3";        // subtle boundaries
+    p.style.strokeWidth = "1";
+    p.style.vectorEffect = "non-scaling-stroke";
+    p.style.transition = "fill 120ms ease, opacity 120ms ease";
+    p.style.opacity = "1";
+  });
+}
+
+  async function loadMap(){
+    const res = await fetch(FILLED_SVG_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch SVG: " + res.status);
+    const svgText = await res.text();
+    mapEl.innerHTML = svgText;
+
+    svgRoot = mapEl.querySelector("svg");
+    if (!svgRoot) throw new Error("SVG missing <svg> root");
+
+applyBaseMapStyle();
+
+    // Bind to all state paths that have ids like "AL"
+    const paths = svgRoot.querySelectorAll("path[id]");
+    paths.forEach(p => {
+      const code = (p.getAttribute("id") || "").trim().toUpperCase();
+      if (!code || EXCLUDE_CODES.has(code)) return;
+
+      // If you want to “gray out” states with no data:
+      if (!byCode.has(code)) {
+        p.style.opacity = "0.35";
+        p.style.cursor = "not-allowed";
+      }
+
+      p.addEventListener("mouseenter", () => p.classList.add("cc-state--hover"));
+      p.addEventListener("mouseleave", () => p.classList.remove("cc-state--hover"));
+
+      p.addEventListener("click", () => {
+        if (!byCode.has(code)) return;
+
+        // clear previous selection
+        if (selectedCode) {
+          const prev = svgRoot.querySelector(`path#${CSS.escape(selectedCode)}`);
+          if (prev) prev.classList.remove("cc-state--selected");
+        }
+
+        selectedCode = code;
+        p.classList.add("cc-state--selected");
+        renderPanel(byCode.get(code));
+      });
+    });
+  }
+
+  // Boot
+  renderPanel(null);
+  loadMap().catch(err => {
+    console.error(err);
+    panelEl.innerHTML = `
+      <div class="cc-tool__panelIntro">
+        <div class="cc-tool__kicker">Error</div>
+        <h3 class="cc-tool__stateTitle">Map failed to load</h3>
+        <p class="cc-tool__muted">Check the SVG URL and that it’s publicly accessible.</p>
+      </div>
+    `;
+  });
+})();
+</script>
