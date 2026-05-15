@@ -226,12 +226,12 @@ body { font-family: 'Faustina', Georgia, serif; background: #f4f5f7; color: #333
 .note.info b { color: #3c608a; }
 
 .range-btn {
-  background: #f7fafc; border: 1px solid #cbd5e0; border-radius: 5px;
-  padding: 5px 12px; font-size: .75rem; cursor: pointer; color: #4a5568;
+  background: #fff; border: 1px solid #b8ccdf; border-radius: 5px;
+  padding: 5px 12px; font-size: .75rem; cursor: pointer; color: #3c608a;
   font-family: 'Faustina', Georgia, serif; font-weight: 600; transition: all .15s;
 }
 .range-btn.active { background: #3c608a; border-color: #3c608a; color: #fff; font-weight: 700; }
-.range-btn:hover:not(.active) { background: #eef3f8; border-color: #b8ccdf; }
+.range-btn:hover:not(.active) { background: #eef3f8; border-color: #3c608a; }
 
 .divider { border: none; border-top: 2px solid #e2e8f0; margin: 16px 0; }
 .results-top-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
@@ -1056,6 +1056,12 @@ function jumpToStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function sendHeight() {
+  setTimeout(function() {
+    window.parent.postMessage({ bpcFedTaxHeight: document.body.scrollHeight }, '*');
+  }, 80);
+}
+
 function goStep(n) {
   if (currentStep === 1) updateHints();
   if (n === 6) { showResults(); return; }
@@ -1066,6 +1072,7 @@ function goStep(n) {
   updateProgressDots();
   buildSummaryStrips(n);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  sendHeight();
 }
 
 function buildSummaryStrips(upToStep) {
@@ -1126,6 +1133,7 @@ function backToWizard() {
   document.getElementById('step' + currentStep).style.display = '';
   updateProgressDots();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  sendHeight();
 }
 
 function showResults() {
@@ -1136,6 +1144,9 @@ function showResults() {
   updateProgressDots();
   calculate();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(function() {
+    window.parent.postMessage({ bpcFedTaxHeight: document.body.scrollHeight }, '*');
+  }, 400);
 }
 
 // ============================================================
@@ -1586,6 +1597,7 @@ function drawChart() {
       }
     }
   });
+  sendHeight();
 }
 
 // ============================================================
