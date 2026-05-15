@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Federal Tax Calculator | Bipartisan Policy Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,400;0,600;0,700;1,400&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Faustina', Georgia, serif; background: #f4f5f7; color: #333638; min-height: 100vh; }
+
+/* ── Header ── */
+.bpc-header {
+  background: linear-gradient(135deg, #3c608a 0%, #1f476c 100%);
+  color: #fff; padding: 22px 28px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.bpc-header-inner { max-width: 820px; margin: 0 auto; }
+.bpc-eyebrow {
+  display: inline-block; background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25); border-radius: 20px;
+  padding: 3px 12px; font-size: .65rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px;
+}
+.bpc-header h1 {
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: clamp(1.1rem, 3vw, 1.45rem); font-weight: 700; line-height: 1.25; margin-bottom: 8px;
+}
+.bpc-header p { font-size: .88rem; opacity: .85; line-height: 1.6; max-width: 560px; }
+
+/* ── Wizard shell ── */
+.wizard-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* Progress bar */
+.progress-wrap { margin-bottom: 28px; }
+.progress-steps { display: flex; align-items: center; gap: 0; position: relative; }
+.progress-steps::before { content: ''; position: absolute; top: 16px; left: 0; right: 0; height: 2px; background: #d1dde8; z-index: 0; }
+.step-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; position: relative; z-index: 1; cursor: pointer; }
+.step-dot-wrap:hover .step-dot:not(.active) { filter: brightness(1.1); }
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700;
+  font-family: 'Roboto Slab', Georgia, serif;
+  border: 2px solid #d1dde8; background: #f4f5f7; color: #a0aec0; transition: all .25s;
+}
+.step-dot.done { background: #00ad4d; border-color: #00ad4d; color: #fff; }
+.step-dot.active { background: #3c608a; border-color: #3c608a; color: #fff; box-shadow: 0 0 0 3px rgba(60,96,138,.2); }
+.step-dot-label {
+  font-size: .63rem; color: #a0aec0; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .4px; text-align: center;
+  max-width: 68px; line-height: 1.3;
+}
+.step-dot-label.active { color: #3c608a; }
+.step-dot-label.done { color: #007a37; }
+
+/* Step card */
+.step-card {
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08); border: 1px solid #e2e8f0;
+  overflow: hidden; animation: fadeSlide .2s ease;
+}
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.step-header { padding: 20px 26px 14px; border-bottom: 1px solid #f4f5f7; }
+.step-eyebrow { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: #a0aec0; margin-bottom: 4px; }
+.step-title { font-size: 1.15rem; font-weight: 700; color: #1f476c; margin-bottom: 6px; font-family: 'Roboto Slab', Georgia, serif; }
+.step-link { font-size: .75rem; color: #3c608a; margin-top: 4px; }
+.step-link a { color: #3c608a; text-decoration: none; }
+.step-link a:hover { text-decoration: underline; }
+.step-body { padding: 22px 26px; }
+
+/* Fields */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: .82rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; }
+.field input[type=text], .field input[type=number], .field select {
+  width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e0; border-radius: 8px;
+  font-size: .9rem; font-family: 'Faustina', Georgia, serif;
+  color: #333638; background: #fff; transition: border-color .15s;
+}
+.field input:focus, .field select:focus {
+  outline: none; border-color: #3c608a; box-shadow: 0 0 0 3px rgba(60,96,138,.12);
+}
+.field .hint { font-size: .72rem; color: #a0aec0; margin-top: 4px; line-height: 1.5; }
+.field .hint a { color: #3c608a; text-decoration: none; }
+.field .hint a:hover { text-decoration: underline; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Dollar-prefix inputs */
+.dollar-wrap { position: relative; display: block; }
+.dollar-wrap::before {
+  content: '$'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: #718096; font-size: .88rem; pointer-events: none; z-index: 1; line-height: 1;
+}
+.dollar-wrap input[type=text] { padding-left: 24px !important; }
+
+/* Indented subordinate field */
+.field-indent { margin-left: 24px; padding-left: 12px; border-left: 2px solid #e2e8f0; max-width: calc(100% - 24px); }
+
+.radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio-group label {
+  display: flex; align-items: center; gap: 6px; font-size: .85rem;
+  color: #4a5568; cursor: pointer; padding: 8px 14px;
+  border: 1.5px solid #cbd5e0; border-radius: 8px; transition: all .15s; font-weight: 600;
+}
+.radio-group input[type=radio] { display: none; }
+.radio-group input[type=radio]:checked + span { font-weight: 700; color: #3c608a; }
+.radio-group label:has(input:checked) { border-color: #3c608a; background: #eef3f8; }
+
+.toggle-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f4f5f7; }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-row label { font-size: .84rem; color: #4a5568; flex: 1; }
+.toggle-row input[type=checkbox] { width: 17px; height: 17px; cursor: pointer; accent-color: #3c608a; }
+
+/* Navigation */
+.step-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 26px; border-top: 1px solid #f4f5f7; background: #fafcff;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 22px; border-radius: 8px; font-size: .88rem; font-weight: 700;
+  font-family: 'Faustina', Georgia, serif; cursor: pointer; border: none; transition: all .15s;
+}
+.btn-back { background: #f7fafc; color: #4a5568; border: 1.5px solid #cbd5e0; }
+.btn-back:hover { background: #eef2f7; }
+.btn-next { background: #3c608a; color: #fff; box-shadow: 0 2px 6px rgba(60,96,138,.3); }
+.btn-next:hover { background: #2a4464; }
+.btn-results { background: linear-gradient(135deg, #007a37, #00ad4d); color: #fff; box-shadow: 0 2px 6px rgba(0,122,55,.3); }
+.btn-results:hover { background: linear-gradient(135deg, #005a28, #007a37); }
+.btn-edit { background: #f7fafc; color: #3c608a; border: 1.5px solid #3c608a; font-size: .82rem; padding: 7px 14px; }
+.btn-edit:hover { background: #eef3f8; }
+
+/* Summary strip */
+.summary-strip {
+  background: #eef3f8; border: 1px solid #b8ccdf; border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 20px;
+  display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .75rem; color: #1f476c;
+}
+.summary-strip .si { font-weight: 700; }
+.summary-strip .sl { color: #718096; }
+
+/* Badges */
+.badge {
+  display: inline-block; font-size: .62rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: .4px;
+}
+.badge.new { background: #b8ccdf; color: #1f476c; }
+
+/* ── Results page ── */
+.results-wrap { max-width: 820px; margin: 0 auto; padding: 24px 20px 60px; }
+.result-block {
+  background: #fff; border-radius: 10px; margin-bottom: 12px;
+  overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); border: 1px solid #e2e8f0;
+}
+.result-block-header {
+  padding: 12px 16px; font-size: .7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .8px; color: #718096;
+  background: #f7fafc; border-bottom: 1px solid #e2e8f0;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  user-select: none;
+}
+.result-block-header:hover { background: #eef3f8; }
+.collapse-arrow { font-size: .8rem; color: #a0aec0; transition: transform .2s; }
+.collapse-content { display: none; }
+.collapse-content.open { display: block; }
+
+.result-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 16px; border-bottom: 1px solid #f4f5f7; font-size: .82rem;
+}
+.result-row:last-child { border-bottom: none; }
+.result-row.total { background: #eef3f8; font-weight: 700; font-size: .88rem; color: #1f476c; }
+.result-row.subtotal { background: #f0fff4; font-weight: 600; color: #007a37; }
+.result-row.receipt-gross { background: #fff8f0; }
+.result-row.receipt-step { background: #fff; }
+.result-row.receipt-subtotal { background: #f0fff4; font-weight: 600; }
+.result-row.cap-na { background: #f7fafc; }
+.result-row.cap-applies { background: #fff5f5; }
+.result-row .label { color: #4a5568; }
+.result-row .label.indent { padding-left: 14px; color: #718096; }
+.result-row .label.indent2 { padding-left: 28px; color: #a0aec0; font-size: .78rem; }
+.result-row .value {
+  font-weight: 600; color: #333638;
+  font-family: 'Roboto Slab', Georgia, serif; font-size: .82rem;
+}
+.result-row .value.blue { color: #3c608a; }
+.result-row .value.green { color: #007a37; }
+.result-row .value.red { color: #e43e47; }
+.result-row .value.orange { color: #f47521; }
+.result-row .value.gray { color: #718096; font-weight: 400; }
+.result-row .value.save { color: #007a37; }
+
+.big-result {
+  text-align: center; padding: 22px;
+  background: linear-gradient(135deg, #1f476c, #3c608a);
+  border-radius: 12px; color: #fff; margin-bottom: 14px;
+  box-shadow: 0 2px 10px rgba(31,71,108,.3);
+}
+.big-result .label { font-size: .75rem; opacity: .8; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
+.big-result .amount {
+  font-size: 2.4rem; font-weight: 700; letter-spacing: -1px;
+  font-family: 'Roboto Slab', Georgia, serif;
+}
+.big-result .sub { font-size: .8rem; opacity: .75; margin-top: 6px; }
+
+.big-result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.mini-result {
+  background: #fff; border-radius: 8px; padding: 12px; text-align: center;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.mini-result .ml { font-size: .65rem; color: #718096; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.mini-result .mv { font-size: 1.1rem; font-weight: 700; color: #1f476c; font-family: 'Roboto Slab', Georgia, serif; }
+
+.payroll-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.payroll-card { background: #fff; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
+.payroll-card h4 { font-size: .7rem; text-transform: uppercase; font-weight: 700; color: #718096; margin-bottom: 8px; letter-spacing: .6px; }
+
+.note { font-size: .72rem; color: #718096; background: #fffbeb; border: 1px solid #fbd38d; border-radius: 6px; padding: 8px 10px; margin-top: 8px; line-height: 1.5; }
+.note b { color: #f47521; }
+.note.info { background: #eef3f8; border-color: #b8ccdf; }
+.note.info b { color: #3c608a; }
+
+.range-btn {
+  background: #f7fafc; border: 1px solid #cbd5e0; border-radius: 5px;
+  padding: 5px 12px; font-size: .75rem; cursor: pointer; color: #4a5568;
+  font-family: 'Faustina', Georgia, serif; font-weight: 600; transition: all .15s;
+}
+.range-btn.active { background: #3c608a; border-color: #3c608a; color: #fff; font-weight: 700; }
+.range-btn:hover:not(.active) { background: #eef3f8; border-color: #b8ccdf; }
+
+.divider { border: none; border-top: 2px solid #e2e8f0; margin: 16px 0; }
+.results-top-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.results-top-bar h2 { font-size: 1rem; font-weight: 700; color: #1f476c; flex: 1; font-family: 'Roboto Slab', Georgia, serif; }
+.receipt-intro { font-size: .78rem; color: #718096; padding: 10px 16px 0; line-height: 1.5; }
+
+@media (max-width: 600px) {
+  .big-result-grid { grid-template-columns: 1fr 1fr; }
+  .payroll-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="bpc-header">
+  <div class="bpc-header-inner">
+    <div class="bpc-eyebrow">Bipartisan Policy Center</div>
+    <h1>Federal Income Tax Calculator</h1>
+    <p>2026 tax parameters &middot; Includes One Big Beautiful Bill (OBBB) provisions</p>
+  </div>
+</header>
+
+<!-- ═══════════════ WIZARD ═══════════════ -->
+<div id="wizardView">
+<div class="wizard-shell">
+
+  <!-- Progress dots -->
+  <div class="progress-wrap">
+    <div class="progress-steps" id="progressSteps">
+      <div class="step-dot-wrap" onclick="jumpToStep(1)">
+        <div class="step-dot active" id="dot1">1</div>
+        <div class="step-dot-label active" id="lbl1">Filing Status</div>
+      </div>
+      <div class="step-dot-wrap" onclick="jumpToStep(2)">
+        <div class="step-dot" id="dot2">2</div>
+        <div class="step-dot-label" id="lbl2">Income</div>
+      </div>
+      <div class="step-dot-wrap" onclick="jumpToStep(3)">
+        <div class="step-dot" id="dot3">3</div>
+        <div class="step-dot-label" id="lbl3">Deductions</div>
+      </div>
+      <div class="step-dot-wrap" onclick="jumpToStep(4)">
+        <div class="step-dot" id="dot4">4</div>
+        <div class="step-dot-label" id="lbl4">Above-Line Ded.</div>
+      </div>
+      <div class="step-dot-wrap" onclick="jumpToStep(5)">
+        <div class="step-dot" id="dot5">5</div>
+        <div class="step-dot-label" id="lbl5">Credits</div>
+      </div>
+      <div class="step-dot-wrap" onclick="jumpToStep(6)">
+        <div class="step-dot" id="dot6">6</div>
+        <div class="step-dot-label" id="lbl6">Results</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: Filing Status ── -->
+  <div class="step-card" id="step1">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 1 of 5</div>
+      <div class="step-title">Filing Status</div>
+      <div class="step-link"><a href="https://www.irs.gov/filing/filing-status" target="_blank" rel="noopener">Learn more about filing status here.</a></div>
+    </div>
+    <div class="step-body">
+      <div class="field">
+        <label>How will you file your taxes?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="fs" value="single" checked><span>Single</span></label>
+          <label><input type="radio" name="fs" value="hoh"><span>Head of Household</span></label>
+          <label><input type="radio" name="fs" value="mfj"><span>Married Filing Jointly</span></label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label>Senior Deduction</label>
+        <div class="toggle-row">
+          <label>Taxpayer is age 65 or older <span class="badge new">Senior Ded.</span></label>
+          <input type="checkbox" id="isOver65">
+        </div>
+        <div class="toggle-row" id="spouseOver65Row" style="display:none">
+          <label>Spouse is 65 or older <span class="badge new">Senior Ded.</span></label>
+          <input type="checkbox" id="spouseOver65">
+        </div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <span></span>
+      <button class="btn btn-next" onclick="goStep(2)">Income &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Income ── -->
+  <div class="step-card" id="step2" style="display:none">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 2 of 5</div>
+      <div class="step-title">Income</div>
+    </div>
+    <div class="step-body">
+      <div id="summaryStrip2"></div>
+      <div class="field" id="wagesSelfField">
+        <label id="wagesSelfLabel">Wages &amp; Salary</label>
+        <div class="dollar-wrap">
+          <input type="text" id="wagesSelf" value="75,000" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+      </div>
+      <div class="field" id="wagesSpouseField" style="display:none">
+        <label>Wages &amp; Salary &mdash; Spouse</label>
+        <div class="dollar-wrap">
+          <input type="text" id="wagesSpouse" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Social Security wage cap ($184,500) applied separately per earner</div>
+      </div>
+      <div class="field">
+        <label>Investment Income (total)</label>
+        <div class="dollar-wrap">
+          <input type="text" id="investIncome" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Interest, dividends, capital gains, etc.</div>
+      </div>
+      <div class="field field-indent">
+        <label>&#8627; Portion qualifying as Long-Term Capital Gains / Qualified Dividends</label>
+        <div class="dollar-wrap">
+          <input type="text" id="ltcgIncome" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Must be &le; total investment income above</div>
+      </div>
+      <div class="field">
+        <label>Other Income</label>
+        <div class="dollar-wrap">
+          <input type="text" id="otherIncome" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Business income, rental, alimony, etc.</div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goStep(1)">&larr; Back</button>
+      <button class="btn btn-next" onclick="goStep(3)">Deductions &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Deductions ── -->
+  <div class="step-card" id="step3" style="display:none">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 3 of 5</div>
+      <div class="step-title">Deductions</div>
+    </div>
+    <div class="step-body">
+      <div id="summaryStrip3"></div>
+      <div class="field">
+        <label>Deduction method</label>
+        <div class="radio-group">
+          <label><input type="radio" name="dedType" value="standard" checked onchange="toggleItemized()"><span>Standard Deduction</span></label>
+          <label><input type="radio" name="dedType" value="itemized" onchange="toggleItemized()"><span>Itemize Deductions</span></label>
+        </div>
+        <div class="hint" id="stdDedHint" style="margin-top:6px"></div>
+      </div>
+
+      <div id="stdSection">
+        <div class="field">
+          <label>Charitable Donations <span class="badge new">OBBB</span> <span style="font-weight:400;color:#718096">(non-itemizer deduction)</span></label>
+          <div class="dollar-wrap">
+            <input type="text" id="nonItemCharitable" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+          </div>
+          <div class="hint" id="nonItemCharHint">Capped at $1,000 (single/HoH) or $2,000 (MFJ); no AGI floor applies</div>
+        </div>
+      </div>
+
+      <div id="itemizedSection" style="display:none">
+        <div class="field">
+          <label>State &amp; Local Taxes (SALT)</label>
+          <div class="dollar-wrap">
+            <input type="text" id="saltPaid" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+          </div>
+          <div class="hint" id="saltHint">Cap applies; phases down 30&cent; per $1 above threshold in 2026&ndash;2028</div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Mortgage Interest Paid</label>
+            <div class="dollar-wrap">
+              <input type="text" id="mortgageInterest" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+            </div>
+            <div class="hint">Deductible on up to $750,000 of acquisition debt</div>
+          </div>
+          <div class="field">
+            <label>Outstanding Mortgage Balance</label>
+            <div class="dollar-wrap">
+              <input type="text" id="mortgageBalance" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+            </div>
+            <div class="hint">Used to prorate if balance &gt; $750K</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Charitable Contributions</label>
+          <div class="dollar-wrap">
+            <input type="text" id="charitable" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+          </div>
+          <div class="hint">Deductible portion exceeding 0.5% of AGI</div>
+        </div>
+      </div>
+
+      <div id="blindSection" style="border-top:1px solid #f4f5f7;padding-top:14px;margin-top:6px">
+        <div class="field">
+          <label>Additional Standard Deduction (blind filers)</label>
+          <div class="dollar-wrap">
+            <input type="text" id="blindDeduction" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+          </div>
+          <div class="hint" id="blindHint">$2,050/person (single/HoH) &middot; $1,650/person (MFJ) &middot; enter total dollar amount</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goStep(2)">&larr; Back</button>
+      <button class="btn btn-next" onclick="goStep(4)">Above-Line Ded. &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Above-the-Line Deductions ── -->
+  <div class="step-card" id="step4" style="display:none">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 4 of 5</div>
+      <div class="step-title">Above-the-Line Deductions</div>
+    </div>
+    <div class="step-body">
+      <div id="summaryStrip4"></div>
+      <div id="obbbExpiredNote" style="display:none" class="note" style="margin-bottom:16px"></div>
+      <div class="field">
+        <label>Tips Income (qualifying) <span class="badge new">OBBB</span></label>
+        <div class="dollar-wrap">
+          <input type="text" id="tipsIncome" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Max deduction: $25,000 &middot; Phases out at $150K AGI (single/HoH) / $300K (MFJ)<br>
+          <a href="https://bipartisanpolicy.org/explainer/how-does-no-tax-on-tips-work-in-the-one-big-beautiful-bill/" target="_blank" rel="noopener">Learn more about the tips deduction here.</a></div>
+      </div>
+      <div class="field">
+        <label>Overtime Pay (qualifying) <span class="badge new">OBBB</span></label>
+        <div class="dollar-wrap">
+          <input type="text" id="overtimePay" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint" id="otHint">Max: $12,500 (single/HoH) / $25,000 (MFJ) &middot; Same phaseout thresholds as tips<br>
+          <a href="https://bipartisanpolicy.org/explainer/no-tax-on-overtime-in-2026/" target="_blank" rel="noopener">Learn more about the overtime deduction here.</a></div>
+      </div>
+      <div class="field">
+        <label>Auto Loan Interest (qualifying) <span class="badge new">OBBB</span></label>
+        <div class="dollar-wrap">
+          <input type="text" id="autoInterest" value="0" onfocus="unformatDollar(this)" onblur="formatDollar(this)">
+        </div>
+        <div class="hint">Max $10,000 &middot; Phases out at $100K AGI (single/HoH) / $200K (MFJ)<br>
+          <a href="https://bipartisanpolicy.org/explainer/the-auto-loan-interest-deduction-how-claiming-and-reporting-work/" target="_blank" rel="noopener">Learn more about the auto loan interest deduction here.</a></div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goStep(3)">&larr; Back</button>
+      <button class="btn btn-next" onclick="goStep(5)">Credits &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Credits & Dependents ── -->
+  <div class="step-card" id="step5" style="display:none">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 5 of 5</div>
+      <div class="step-title">Credits &amp; Dependents</div>
+    </div>
+    <div class="step-body">
+      <div id="summaryStrip5"></div>
+      <div class="field">
+        <label>Children Ages 0&ndash;16 <span style="color:#718096;font-weight:400">(Child Tax Credit (CTC) + Earned Income Tax Credit (EITC))</span></label>
+        <input type="number" id="kids0to16" value="0" min="0" max="20">
+        <div class="hint">Qualify for $<span id="ctcAmtHint">2,200</span>/child Child Tax Credit (CTC) and count toward Earned Income Tax Credit (EITC)</div>
+      </div>
+      <div class="field">
+        <label>Children Age 17 <span style="color:#718096;font-weight:400">(EITC + Other Dependent Credit (ODC))</span></label>
+        <input type="number" id="kids17" value="0" min="0" max="20">
+        <div class="hint">Count toward EITC; receive $500 Other Dependent Credit (ODC)</div>
+      </div>
+      <div class="field">
+        <label>Non-Child Dependents <span style="color:#718096;font-weight:400">(ODC only)</span></label>
+        <input type="number" id="nonChildDeps" value="0" min="0" max="20">
+        <div class="hint">Each receives $500 ODC; do not count for EITC</div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goStep(4)">&larr; Back</button>
+      <button class="btn btn-results" onclick="showResults()">See My Results &rarr;</button>
+    </div>
+  </div>
+
+</div><!-- /wizard-shell -->
+</div><!-- /wizardView -->
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div id="resultsView" style="display:none">
+<div class="results-wrap">
+
+  <div class="results-top-bar">
+    <h2>Your Tax Results</h2>
+    <button class="btn btn-edit" onclick="backToWizard()">&larr; Edit Inputs</button>
+  </div>
+
+  <!-- Input summary -->
+  <div class="summary-strip" id="resultsSummary"></div>
+
+  <div class="big-result">
+    <div class="label">Estimated Federal Income Tax Liability</div>
+    <div class="amount" id="totalTax">$0</div>
+    <div class="sub" id="totalTaxSub">Loading...</div>
+  </div>
+
+  <div class="big-result-grid">
+    <div class="mini-result"><div class="ml">Effective Rate</div><div class="mv" id="effRate">0.0%</div></div>
+    <div class="mini-result"><div class="ml">Marginal Rate</div><div class="mv" id="margRate">0.0%</div></div>
+    <div class="mini-result"><div class="ml">LTCG Rate</div><div class="mv" id="ltcgRate">0%</div></div>
+  </div>
+
+  <!-- Tax Receipt -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Tax Receipt</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <p class="receipt-intro">Starting from your gross income, this receipt shows how each deduction and credit reduces your federal income tax.</p>
+      <div id="r_receipt"></div>
+    </div>
+  </div>
+
+  <!-- Income & AGI -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Income &amp; AGI</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <div class="result-row" id="r_wagesSelfRow"><span class="label" id="r_wagesSelfLabel">Wages &amp; Salary</span><span class="value" id="r_wages">$0</span></div>
+      <div class="result-row" id="r_wagesSpouseRow" style="display:none"><span class="label">Wages &amp; Salary &mdash; Spouse</span><span class="value" id="r_wagesSpouseAmt">$0</span></div>
+      <div class="result-row"><span class="label">Investment Income</span><span class="value" id="r_invest">$0</span></div>
+      <div class="result-row"><span class="label">Other Income</span><span class="value" id="r_other">$0</span></div>
+      <div class="result-row subtotal"><span class="label">Gross Income (AGI)</span><span class="value green" id="r_agi">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Taxable Income -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Taxable Income Calculation</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <div class="result-row"><span class="label">Gross Income (AGI)</span><span class="value" id="r_agi2">$0</span></div>
+      <div class="result-row" id="r_stdDedRow">
+        <span class="label indent" id="r_dedLabel">Less: Standard Deduction</span>
+        <span class="value red" id="r_ded">$0</span>
+      </div>
+      <div id="r_itemizedBreakdown" style="display:none">
+        <div class="result-row"><span class="label indent">Less: Itemized Deductions</span><span class="value red" id="r_itemizedTotal">$0</span></div>
+        <div class="result-row" id="r_saltRow"><span class="label indent2">SALT paid: <span id="r_saltPaid">$0</span> &rarr; capped at <span id="r_saltCapAmt">$0</span></span><span class="value" id="r_saltAllowed">$0</span></div>
+        <div class="result-row" id="r_mortRow"><span class="label indent2">Mortgage interest: <span id="r_mortPaid">$0</span><span id="r_mortNote"></span></span><span class="value" id="r_mortAllowed">$0</span></div>
+        <div class="result-row" id="r_charRow"><span class="label indent2">Charitable: <span id="r_charPaid">$0</span> &minus; 0.5% AGI floor (<span id="r_charFloor">$0</span>)</span><span class="value" id="r_charAllowed">$0</span></div>
+        <div class="result-row" id="r_capRow">
+          <span class="label indent" id="r_capLabel" style="color:#f47521"></span>
+          <span class="value" id="r_capValue">$0</span>
+        </div>
+        <div class="result-row" id="r_capDetailRow" style="display:none">
+          <span class="label indent2" id="r_capDetail"></span>
+          <span class="value gray" id="r_capDetailVal"></span>
+        </div>
+      </div>
+      <div class="result-row" id="r_addlStdRow" style="display:none"><span class="label indent">Less: Add'l Std. Ded. (65+/Blind)</span><span class="value red" id="r_addlStd">$0</span></div>
+      <div class="result-row" id="r_tipsRow"       style="display:none"><span class="label indent">Less: Tips Deduction</span><span class="value red" id="r_tips">$0</span></div>
+      <div class="result-row" id="r_otRow"          style="display:none"><span class="label indent">Less: Overtime Deduction</span><span class="value red" id="r_ot">$0</span></div>
+      <div class="result-row" id="r_seniorRow"      style="display:none"><span class="label indent">Less: Senior Deduction (65+)</span><span class="value red" id="r_senior">$0</span></div>
+      <div class="result-row" id="r_autoRow"        style="display:none"><span class="label indent">Less: Auto Loan Interest Ded.</span><span class="value red" id="r_auto">$0</span></div>
+      <div class="result-row" id="r_nonItemCharRow" style="display:none"><span class="label indent">Less: Non-Itemizer Charitable Ded.</span><span class="value red" id="r_nonItemChar">$0</span></div>
+      <div class="result-row subtotal"><span class="label">Taxable Income</span><span class="value green" id="r_ti">$0</span></div>
+      <div class="result-row"><span class="label indent">&#8627; Ordinary Taxable Income</span><span class="value blue" id="r_oti">$0</span></div>
+      <div class="result-row"><span class="label indent">&#8627; LTCG / Qualified Dividends</span><span class="value blue" id="r_ltcgi">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Tax Calculation -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Tax Calculation</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <div class="result-row"><span class="label">Ordinary Income Tax</span><span class="value" id="r_ordTax">$0</span></div>
+      <div class="result-row"><span class="label">LTCG / Qualified Dividend Tax</span><span class="value" id="r_ltcgTax">$0</span></div>
+      <div class="result-row"><span class="label">Net Investment Income Tax (3.8%)</span><span class="value" id="r_niit">$0</span></div>
+      <div class="result-row total"><span class="label">Tax Before Credits</span><span class="value" id="r_tbc">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Credits -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Credits</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <div class="result-row"><span class="label">Child Tax Credit (CTC) &mdash; non-refundable</span><span class="value green" id="r_ctcNR">$0</span></div>
+      <div class="result-row"><span class="label">Tax After Non-Refundable Credits</span><span class="value" id="r_afterNR">$0</span></div>
+      <div class="result-row"><span class="label">Child Tax Credit (CTC) &mdash; refundable portion</span><span class="value green" id="r_ctcR">$0</span></div>
+      <div class="result-row"><span class="label">Earned Income Tax Credit (EITC)</span><span class="value green" id="r_eitc">$0</span></div>
+      <div class="result-row total"><span class="label">Final Federal Income Tax Liability</span><span class="value" id="r_final">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Bracket Breakdown -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Ordinary Income &mdash; Bracket Breakdown</span><span class="collapse-arrow">&#9654;</span>
+    </div>
+    <div class="collapse-content"><div id="r_brackets"></div></div>
+  </div>
+
+  <!-- NIIT Detail -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Net Investment Income Tax Detail</span><span class="collapse-arrow">&#9654;</span>
+    </div>
+    <div class="collapse-content">
+      <div class="result-row"><span class="label">Net Investment Income</span><span class="value" id="r_nii">$0</span></div>
+      <div class="result-row"><span class="label">MAGI (AGI for NIIT purposes)</span><span class="value" id="r_niitMagi">$0</span></div>
+      <div class="result-row"><span class="label">NIIT Threshold</span><span class="value" id="r_niitThresh">$0</span></div>
+      <div class="result-row"><span class="label">Income Subject to NIIT</span><span class="value" id="r_niitBase">$0</span></div>
+      <div class="result-row total"><span class="label">NIIT (3.8%)</span><span class="value" id="r_niit2">$0</span></div>
+    </div>
+  </div>
+
+  <!-- CTC Detail -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Child Tax Credit (CTC) Detail</span><span class="collapse-arrow">&#9654;</span>
+    </div>
+    <div class="collapse-content">
+      <div class="result-row"><span class="label">Children ages 0&ndash;16 &times; per-child CTC</span><span class="value" id="r_ctcChildAmt">$0</span></div>
+      <div class="result-row"><span class="label">Age-17 children + non-child dependents &times; $500 ODC</span><span class="value" id="r_odcAmt">$0</span></div>
+      <div class="result-row"><span class="label">Total CTC + ODC Before Phaseout</span><span class="value" id="r_ctcMax">$0</span></div>
+      <div class="result-row"><span class="label">CTC Phaseout Reduction</span><span class="value red" id="r_ctcPhase">$0</span></div>
+      <div class="result-row"><span class="label">CTC After Phaseout</span><span class="value" id="r_ctcAfterPhase">$0</span></div>
+      <div class="result-row"><span class="label">Non-Refundable CTC Applied</span><span class="value green" id="r_ctcNR2">$0</span></div>
+      <div class="result-row"><span class="label">Refundable CTC (15% of wages above $2,500)</span><span class="value" id="r_ctcRefCalc">$0</span></div>
+      <div class="result-row"><span class="label">Max Refundable CTC (ages 0&ndash;16 &times; max per child)</span><span class="value" id="r_ctcRefMax">$0</span></div>
+      <div class="result-row"><span class="label">Refundable CTC Applied</span><span class="value green" id="r_ctcR2">$0</span></div>
+      <div class="result-row total"><span class="label">Final CTC (Non-Refundable + Refundable)</span><span class="value green" id="r_ctcFinal">$0</span></div>
+    </div>
+  </div>
+
+  <!-- EITC Detail -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Earned Income Tax Credit (EITC) Detail</span><span class="collapse-arrow">&#9654;</span>
+    </div>
+    <div class="collapse-content">
+      <div class="result-row"><span class="label">Earned Income (wages)</span><span class="value" id="r_earnedInc">$0</span></div>
+      <div class="result-row"><span class="label">EITC Qualifying Children (ages 0&ndash;16 + age 17)</span><span class="value" id="r_eitcKids">0</span></div>
+      <div class="result-row"><span class="label">Phase-in Earned Income Amount (plateau start)</span><span class="value" id="r_eitcPhaseIn">$0</span></div>
+      <div class="result-row"><span class="label">Maximum EITC</span><span class="value" id="r_eitcMax">$0</span></div>
+      <div class="result-row"><span class="label">Phaseout Start</span><span class="value" id="r_eitcPhaseStart">$0</span></div>
+      <div class="result-row"><span class="label">EITC Phaseout Reduction</span><span class="value red" id="r_eitcPhaseOut">$0</span></div>
+      <div class="result-row total"><span class="label">Final EITC</span><span class="value green" id="r_eitcFinal">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Payroll -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Payroll Tax Detail</span><span class="collapse-arrow">&#9654;</span>
+    </div>
+    <div class="collapse-content">
+      <div style="padding:12px 16px 0">
+        <div class="payroll-grid">
+          <div class="payroll-card">
+            <h4>Employee Side</h4>
+            <div class="result-row" style="padding:4px 0"><span class="label" style="font-size:.78rem">Social Security (6.2%)</span><span class="value" id="r_empSS">$0</span></div>
+            <div class="result-row" id="r_empSS_selfRow" style="padding:4px 0;display:none"><span class="label indent" style="font-size:.75rem">Self</span><span class="value" id="r_empSS_self" style="font-size:.75rem">$0</span></div>
+            <div class="result-row" id="r_empSS_spouseRow" style="padding:4px 0;display:none"><span class="label indent" style="font-size:.75rem">Spouse</span><span class="value" id="r_empSS_spouse" style="font-size:.75rem">$0</span></div>
+            <div class="result-row" style="padding:4px 0"><span class="label" style="font-size:.78rem">Medicare (1.45%)</span><span class="value" id="r_empMed">$0</span></div>
+            <div class="result-row" style="padding:4px 0"><span class="label" style="font-size:.78rem">Add'l Medicare (0.9%)</span><span class="value" id="r_addlMed">$0</span></div>
+            <div class="result-row total" style="padding:6px 0"><span class="label" style="font-size:.78rem">Total Employee Payroll Tax</span><span class="value" id="r_empTotal">$0</span></div>
+          </div>
+          <div class="payroll-card">
+            <h4>Employer Side</h4>
+            <div class="result-row" style="padding:4px 0"><span class="label" style="font-size:.78rem">Social Security (6.2%)</span><span class="value" id="r_erSS">$0</span></div>
+            <div class="result-row" id="r_erSS_selfRow" style="padding:4px 0;display:none"><span class="label indent" style="font-size:.75rem">Self</span><span class="value" id="r_erSS_self" style="font-size:.75rem">$0</span></div>
+            <div class="result-row" id="r_erSS_spouseRow" style="padding:4px 0;display:none"><span class="label indent" style="font-size:.75rem">Spouse</span><span class="value" id="r_erSS_spouse" style="font-size:.75rem">$0</span></div>
+            <div class="result-row" style="padding:4px 0"><span class="label" style="font-size:.78rem">Medicare (1.45%)</span><span class="value" id="r_erMed">$0</span></div>
+            <div class="result-row total" style="padding:6px 0"><span class="label" style="font-size:.78rem">Total Employer Payroll Tax</span><span class="value" id="r_erTotal">$0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="result-row"><span class="label">SS Taxable Maximum (per worker)</span><span class="value" id="r_ssTaxMax">$0</span></div>
+      <div class="result-row"><span class="label">Add'l Medicare Threshold</span><span class="value" id="r_addlMedThresh">$0</span></div>
+      <div class="result-row total"><span class="label">Combined Employee + Employer Payroll Tax</span><span class="value" id="r_payrollTotal">$0</span></div>
+      <div class="result-row total" style="background:#f0fff4"><span class="label" style="color:#007a37">Total Federal Tax Burden (Income + Payroll)</span><span class="value green" id="r_grandTotal">$0</span></div>
+    </div>
+  </div>
+
+  <!-- Income Spectrum Chart -->
+  <div class="result-block">
+    <div class="result-block-header" onclick="toggleCollapse(this)">
+      <span>Federal Income Tax Across the Income Spectrum</span><span class="collapse-arrow">&#9660;</span>
+    </div>
+    <div class="collapse-content open">
+      <div style="padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <span style="font-size:.72rem;color:#718096;font-weight:600">Wage income range:</span>
+          <button class="range-btn" onclick="setRange(50000,this)">$0&ndash;$50K</button>
+          <button class="range-btn" onclick="setRange(100000,this)">$0&ndash;$100K</button>
+          <button class="range-btn active" onclick="setRange(200000,this)">$0&ndash;$200K</button>
+          <button class="range-btn" onclick="setRange(500000,this)">$0&ndash;$500K</button>
+          <button class="range-btn" onclick="setRange(1000000,this)">$0&ndash;$1M</button>
+        </div>
+        <div style="position:relative"><canvas id="incomeChart"></canvas></div>
+        <div class="note info" style="margin-top:10px" id="chartNote">
+          <b>Note:</b> Chart varies wage/salary income while holding all other inputs constant. The <span style="color:#e43e47;font-weight:700">&#9679;</span> marker shows your current position. Negative values reflect net refunds from EITC and refundable CTC.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-bottom:16px">
+    <b>Disclaimer:</b> For illustrative and educational purposes only. Not tax advice. Key simplifications: (1) AGI approximated as gross income; (2) Only some itemized deductions, above-the-line deductions, and credits included; (3) EITC investment income disqualification limit not enforced; (4) Mortgage interest proration uses outstanding balance vs. $750,000.
+  </div>
+
+</div>
+</div><!-- /resultsView -->
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+var RATES = [0.10, 0.12, 0.22, 0.24, 0.32, 0.35, 0.37];
+var BRACKETS = {
+  single: [0, 12400, 50400, 105700, 201775, 256225, 640600],
+  hoh:    [0, 17700, 67450, 105700, 201750, 256200, 640600],
+  mfj:    [0, 24800, 100800, 211400, 403550, 512450, 768700]
+};
+var STD_DED  = { single: 16100, mfj: 32200, hoh: 24150 };
+var ADDL_STD = { singleHoh: 2050, mfj: 1650 };
+var SALT_CAP = { single: 40400, hoh: 40400, mfj: 40400 };
+var SALT_PD_THRESH = 505000;
+var LTCG_BR = {
+  single: { lo: 49450,  hi: 545000 },
+  hoh:    { lo: 66200,  hi: 579600 },
+  mfj:    { lo: 98900,  hi: 613700 }
+};
+var SS_MAX        = 184500;
+var CTC_PER_CHILD = 2200;
+var CTC_MAX_REFUND = 1700;
+var EITC = {
+  0: { ea: 8680,  ps: 10860, pm: 18140, mc: 664,  pi: 0.0765, po: 0.0765 },
+  1: { ea: 13020, ps: 23890, pm: 31160, mc: 4427, pi: 0.34,   po: 0.1598 },
+  2: { ea: 18290, ps: 23890, pm: 31160, mc: 7316, pi: 0.40,   po: 0.2106 },
+  3: { ea: 18290, ps: 23890, pm: 31160, mc: 8230, pi: 0.45,   po: 0.2106 }
+};
+
+// ============================================================
+// PURE CALCULATION ENGINE
+// ============================================================
+function calcOrdTax(ti, fs) {
+  var br = BRACKETS[fs]; var tax = 0;
+  for (var i = RATES.length - 1; i >= 0; i--) {
+    if (ti > br[i]) { tax += (ti - br[i]) * RATES[i]; ti = br[i]; }
+  }
+  return tax;
+}
+function getMargRate(ti, fs) {
+  var br = BRACKETS[fs];
+  for (var i = RATES.length - 1; i >= 0; i--) { if (ti > br[i]) return RATES[i]; }
+  return RATES[0];
+}
+function calcLTCG(oti, ltcgTI, fs) {
+  if (ltcgTI <= 0) return { tax: 0, rate: 0 };
+  var lo = LTCG_BR[fs].lo, hi = LTCG_BR[fs].hi;
+  var in0  = Math.max(0, Math.min(ltcgTI, lo - oti));
+  var in15 = Math.max(0, Math.min(ltcgTI - in0, hi - Math.max(oti, lo)));
+  var in20 = Math.max(0, ltcgTI - in0 - in15);
+  var tax  = in15 * 0.15 + in20 * 0.20;
+  return { tax: tax, rate: ltcgTI > 0 ? tax / ltcgTI : 0 };
+}
+function phaseout(base, cap, agi, thresh, rate) {
+  return agi <= thresh ? Math.min(base, cap) : Math.max(0, Math.min(base, cap) - (agi - thresh) * rate);
+}
+function calcEITC(wages, agi, fs, nkids) {
+  var p = EITC[nkids];
+  var mc = p.mc;
+  var ps = fs === 'mfj' ? p.pm : p.ps;
+  var credit = Math.min(wages * p.pi, mc);
+  var poi = Math.max(wages, agi);
+  if (poi > ps) credit = Math.max(0, credit - (poi - ps) * p.po);
+  return { credit: credit, mc: mc, ps: ps, reduction: Math.max(0, Math.min(wages * p.pi, mc) - credit) };
+}
+
+function computeCore(wages, p) {
+  var fs = p.fs, investIncome = p.investIncome, ltcgPortion = p.ltcgPortion,
+      otherIncome = p.otherIncome, useItemized = p.useItemized,
+      saltPaidRaw = p.saltPaidRaw, mortgagePaidRaw = p.mortgagePaidRaw,
+      mortgageBalanceRaw = p.mortgageBalanceRaw, charPaidRaw = p.charPaidRaw,
+      nonItemCharAmount = p.nonItemCharAmount, blindDollar = p.blindDollar,
+      tipsIncome = p.tipsIncome, overtimePay = p.overtimePay, autoInterest = p.autoInterest,
+      kids0to16 = p.kids0to16, kids17 = p.kids17, nonChildDeps = p.nonChildDeps,
+      isOver65 = p.isOver65, spouseOver65 = p.spouseOver65;
+  var isMFJ = fs === 'mfj';
+  var wagesSpouse = 0;
+  if (isMFJ) { if (p.wagesSpouse) { wagesSpouse = p.wagesSpouse; } }
+  var totalWages   = wages + wagesSpouse;
+  var eitcKids = Math.min(kids0to16 + kids17, 3);
+  var odcCount = kids17 + nonChildDeps;
+  var grossIncome = totalWages + investIncome + otherIncome;
+  var agi = grossIncome;
+  var stdDed = STD_DED[fs];
+
+  var usedDeduction = stdDed, totalItemized = 0, itemCapAdj = 0;
+  var allowedSalt = 0, allowedMortgage = 0, allowedCharitable = 0;
+  var effSaltCap = 0, charFloor = 0, nonItemCharDed = 0, showItemized = false;
+
+  if (useItemized) {
+    effSaltCap = SALT_CAP[fs];
+    if (agi > SALT_PD_THRESH) effSaltCap = Math.max(10000, effSaltCap - (agi - SALT_PD_THRESH) * 0.30);
+    allowedSalt = Math.min(saltPaidRaw, effSaltCap);
+    var ml = 750000;
+    allowedMortgage = mortgagePaidRaw;
+    if (mortgageBalanceRaw > ml) {
+      if (mortgageBalanceRaw > 0) { allowedMortgage = mortgagePaidRaw * (ml / mortgageBalanceRaw); }
+    }
+    charFloor = agi * 0.005;
+    allowedCharitable = Math.max(0, charPaidRaw - charFloor);
+    totalItemized = allowedSalt + allowedMortgage + allowedCharitable;
+    if (totalItemized >= stdDed) { usedDeduction = totalItemized; showItemized = true; }
+    if (totalItemized > stdDed) {
+      var ts = calcOrdTax(Math.max(0, agi - totalItemized), fs);
+      var td = calcOrdTax(Math.max(0, agi - stdDed), fs);
+      var actualSavings = td - ts;
+      var maxSavings = 0.35 * totalItemized;
+      if (actualSavings > maxSavings) itemCapAdj = actualSavings - maxSavings;
+    }
+  } else {
+    nonItemCharDed = Math.min(nonItemCharAmount, isMFJ ? 2000 : 1000);
+  }
+
+  var addlStd = blindDollar;
+  if (isOver65) addlStd += isMFJ ? ADDL_STD.mfj : ADDL_STD.singleHoh;
+  if (spouseOver65) addlStd += ADDL_STD.mfj;
+
+  var tipsDed = phaseout(tipsIncome, 25000, agi, isMFJ ? 300000 : 150000, 0.10);
+  var otDed   = phaseout(overtimePay, isMFJ ? 25000 : 12500, agi, isMFJ ? 300000 : 150000, 0.10);
+  var seniorDed = 0;
+  if (isOver65 || spouseOver65) {
+    var nb = ((isOver65 ? 1 : 0) + (spouseOver65 ? 1 : 0)) * 6000;
+    var st2 = isMFJ ? 150000 : 75000;
+    seniorDed = agi > st2 ? Math.max(0, nb - (agi - st2) * 0.06) : nb;
+  }
+  var autoDed = phaseout(autoInterest, 10000, agi, isMFJ ? 200000 : 100000, 0.20);
+
+  var ti = Math.max(0, agi - usedDeduction - addlStd + itemCapAdj - nonItemCharDed - tipsDed - otDed - seniorDed - autoDed);
+  var ltcgTI = Math.min(ltcgPortion, ti);
+  var oti    = Math.max(0, ti - ltcgTI);
+  var ordTax  = calcOrdTax(oti, fs);
+  var ltcgRes = calcLTCG(oti, ltcgTI, fs);
+  var niitThr = isMFJ ? 250000 : 200000;
+  var niitBase = Math.max(0, Math.min(investIncome, agi - niitThr));
+  var niit    = niitBase * 0.038;
+  var tbc     = ordTax + ltcgRes.tax + niit;
+
+  var ctcPC    = CTC_PER_CHILD;
+  var mrpc     = CTC_MAX_REFUND;
+  var ctcThr   = isMFJ ? 400000 : 200000;
+  var ctcChild = kids0to16 * ctcPC;
+  var odcAmt   = odcCount * 500;
+  var maxCTC   = ctcChild + odcAmt;
+  var ctcPhRed = Math.floor(Math.max(0, agi - ctcThr) / 1000) * 50;
+  var ctcAP    = Math.max(0, maxCTC - ctcPhRed);
+  var ctcNR    = Math.min(ctcAP, Math.max(0, tbc));
+  var refCalc  = Math.max(0, totalWages - 2500) * 0.15;
+  var maxRef   = kids0to16 * mrpc;
+  var ctcRef   = Math.min(refCalc, maxRef, Math.max(0, ctcAP - ctcNR));
+  var tAfterNR = Math.max(0, tbc - ctcNR);
+  var eitcR    = calcEITC(totalWages, agi, fs, eitcKids);
+  var finalTax = tAfterNR - ctcRef - eitcR.credit;
+
+  var ssTxMx      = SS_MAX;
+  var empSS_self   = Math.min(wages, ssTxMx) * 0.062;
+  var empSS_spouse = Math.min(wagesSpouse, ssTxMx) * 0.062;
+  var empSS        = empSS_self + empSS_spouse;
+  var erSS_self    = empSS_self;
+  var erSS_spouse  = empSS_spouse;
+  var erSS         = erSS_self + erSS_spouse;
+  var empMed  = totalWages * 0.0145;
+  var erMed   = totalWages * 0.0145;
+  var amThr   = isMFJ ? 250000 : 200000;
+  var addlMed = Math.max(0, totalWages - amThr) * 0.009;
+  var empTot  = empSS + empMed + addlMed;
+  var erTot   = erSS + erMed;
+  var payTot  = empTot + erTot;
+
+  return {
+    grossIncome: grossIncome, agi: agi, stdDed: stdDed, usedDeduction: usedDeduction,
+    showItemized: showItemized, totalItemized: totalItemized,
+    allowedSalt: allowedSalt, effSaltCap: effSaltCap, allowedMortgage: allowedMortgage,
+    allowedCharitable: allowedCharitable, charFloor: charFloor,
+    itemCapAdj: itemCapAdj, addlStd: addlStd, tipsDed: tipsDed, otDed: otDed,
+    seniorDed: seniorDed, autoDed: autoDed, nonItemCharDed: nonItemCharDed,
+    ti: ti, oti: oti, ltcgTI: ltcgTI, ordTax: ordTax, ltcgRes: ltcgRes,
+    niitBase: niitBase, niit: niit, tbc: tbc,
+    ctcChild: ctcChild, odcAmt: odcAmt, maxCTC: maxCTC, ctcPhRed: ctcPhRed,
+    ctcAP: ctcAP, ctcNR: ctcNR, refCalc: refCalc, maxRef: maxRef, ctcRef: ctcRef,
+    tAfterNR: tAfterNR, eitcR: eitcR, eitcKids: eitcKids, finalTax: finalTax,
+    totalWages: totalWages, wagesSpouse: wagesSpouse,
+    empSS: empSS, empSS_self: empSS_self, empSS_spouse: empSS_spouse,
+    erSS: erSS, erSS_self: erSS_self, erSS_spouse: erSS_spouse,
+    empMed: empMed, erMed: erMed, addlMed: addlMed, empTot: empTot, erTot: erTot,
+    payTot: payTot, ssTxMx: ssTxMx, amThr: amThr,
+    margRate: getMargRate(oti, fs),
+    effRate: grossIncome > 0 ? finalTax / grossIncome : 0,
+    ltcgEffRate: ltcgTI > 0 ? ltcgRes.tax / ltcgTI : 0
+  };
+}
+
+// ============================================================
+// PARAM COLLECTION
+// ============================================================
+function getParams() {
+  var fs = document.querySelector('input[name="fs"]:checked').value;
+  var isMFJ = fs === 'mfj';
+  var wagesSelf   = parseDollar('wagesSelf');
+  var wagesSpouse = isMFJ ? parseDollar('wagesSpouse') : 0;
+  return {
+    fs: fs, isMFJ: isMFJ,
+    wages:         wagesSelf,
+    wagesSpouse:   wagesSpouse,
+    investIncome:  parseDollar('investIncome'),
+    ltcgPortion:   Math.min(parseDollar('investIncome'), parseDollar('ltcgIncome')),
+    otherIncome:   parseDollar('otherIncome'),
+    useItemized:   document.querySelector('input[name="dedType"]:checked').value === 'itemized',
+    saltPaidRaw:   parseDollar('saltPaid'),
+    mortgagePaidRaw:    parseDollar('mortgageInterest'),
+    mortgageBalanceRaw: parseDollar('mortgageBalance'),
+    charPaidRaw:   parseDollar('charitable'),
+    nonItemCharAmount: parseDollar('nonItemCharitable'),
+    blindDollar:   parseDollar('blindDeduction'),
+    tipsIncome:    parseDollar('tipsIncome'),
+    overtimePay:   parseDollar('overtimePay'),
+    autoInterest:  parseDollar('autoInterest'),
+    kids0to16:   Math.max(0, parseInt(document.getElementById('kids0to16').value) || 0),
+    kids17:      Math.max(0, parseInt(document.getElementById('kids17').value) || 0),
+    nonChildDeps: Math.max(0, parseInt(document.getElementById('nonChildDeps').value) || 0),
+    isOver65:    document.getElementById('isOver65').checked,
+    spouseOver65: isMFJ ? document.getElementById('spouseOver65').checked : false
+  };
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function unformatDollar(el) { el.value = el.value.replace(/,/g, ''); }
+function formatDollar(el) {
+  var raw = el.value.replace(/,/g, '').replace(/[^0-9.]/g, '');
+  if (!raw || raw === '.') { el.value = '0'; return; }
+  var n = parseFloat(raw);
+  if (!isNaN(n)) el.value = Math.round(n).toLocaleString('en-US');
+}
+function parseDollar(id) {
+  var el = document.getElementById(id);
+  if (!el) return 0;
+  return Math.max(0, parseFloat((el.value || '0').replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0);
+}
+function fmt(n) { return n < 0 ? '-$' + Math.round(-n).toLocaleString('en-US') : '$' + Math.round(n).toLocaleString('en-US'); }
+function fmtPct(n) { return (n * 100).toFixed(1) + '%'; }
+
+function toggleCollapse(header) {
+  var content = header.nextElementSibling;
+  var arrow   = header.querySelector('.collapse-arrow');
+  var isOpen  = content.classList.toggle('open');
+  arrow.innerHTML = isOpen ? '&#9660;' : '&#9654;';
+}
+function toggleItemized() {
+  var isI = document.querySelector('input[name="dedType"]:checked').value === 'itemized';
+  document.getElementById('itemizedSection').style.display = isI ? '' : 'none';
+  document.getElementById('stdSection').style.display      = isI ? 'none' : '';
+  document.getElementById('blindSection').style.display    = isI ? 'none' : '';
+  updateStdDedHint();
+}
+function updateStdDedHint() {
+  var fs = document.querySelector('input[name="fs"]:checked').value;
+  var label = fs === 'single' ? 'Single' : fs === 'hoh' ? 'Head of Household' : 'Married Filing Jointly';
+  document.getElementById('stdDedHint').textContent =
+    'Your 2026 standard deduction: ' + fmt(STD_DED[fs]) + ' (' + label + ')';
+}
+function updateHints() {
+  var fs = document.querySelector('input[name="fs"]:checked').value;
+  var isMFJ = fs === 'mfj';
+  document.getElementById('spouseOver65Row').style.display  = isMFJ ? '' : 'none';
+  document.getElementById('wagesSpouseField').style.display = isMFJ ? '' : 'none';
+  document.getElementById('wagesSelfLabel').textContent     = isMFJ ? 'Wages & Salary \u2014 Self' : 'Wages & Salary';
+  var sh = document.getElementById('saltHint');
+  if (sh) sh.textContent = 'Cap: ' + fmt(SALT_CAP[fs]) + ' \u00B7 phases down 30\u00A2/$1 above ' + fmt(SALT_PD_THRESH) + ' AGI (floor: $10,000)';
+  document.getElementById('nonItemCharHint').textContent =
+    'Capped at $' + (isMFJ ? 2000 : 1000).toLocaleString() + ' (' + (isMFJ ? 'MFJ' : 'single/HoH') + '); no AGI floor applies';
+  document.getElementById('blindHint').textContent =
+    '$' + (isMFJ ? ADDL_STD.mfj : ADDL_STD.singleHoh).toLocaleString() + '/person for blind taxpayers \u2014 enter total dollar amount';
+  var otHint = document.getElementById('otHint');
+  if (otHint) otHint.innerHTML = 'Max: $' + (isMFJ ? 25000 : 12500).toLocaleString() + ' \u00B7 Same phaseout thresholds as tips<br><a href="https://bipartisanpolicy.org/explainer/no-tax-on-overtime-in-2026/" target="_blank" rel="noopener">Learn more about the overtime deduction here.</a>';
+  updateStdDedHint();
+}
+
+// ============================================================
+// WIZARD NAVIGATION
+// ============================================================
+var currentStep = 1;
+var highestStep = 1;
+
+function jumpToStep(n) {
+  if (n === 6) { showResults(); return; }
+  if (n === currentStep) {
+    if (document.getElementById('wizardView').style.display !== 'none') return;
+  }
+  if (document.getElementById('resultsView').style.display !== 'none') {
+    document.getElementById('resultsView').style.display = 'none';
+    document.getElementById('wizardView').style.display = '';
+  }
+  for (var i = 1; i <= 5; i++) document.getElementById('step' + i).style.display = 'none';
+  currentStep = n;
+  highestStep = Math.max(highestStep, n);
+  document.getElementById('step' + n).style.display = '';
+  updateProgressDots();
+  buildSummaryStrips(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goStep(n) {
+  if (currentStep === 1) updateHints();
+  if (n === 6) { showResults(); return; }
+  for (var i = 1; i <= 5; i++) document.getElementById('step' + i).style.display = 'none';
+  currentStep = n;
+  highestStep = Math.max(highestStep, n);
+  document.getElementById('step' + n).style.display = '';
+  updateProgressDots();
+  buildSummaryStrips(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildSummaryStrips(upToStep) {
+  var fs = document.querySelector('input[name="fs"]:checked').value;
+  var fsLabel = fs === 'single' ? 'Single' : fs === 'hoh' ? 'Head of Household' : 'Married Filing Jointly';
+  var over65  = document.getElementById('isOver65').checked;
+
+  if (upToStep >= 2) {
+    document.getElementById('summaryStrip2').innerHTML =
+      '<div class="summary-strip"><span class="sl">Filing:</span> <span class="si">' + fsLabel + (over65 ? ' \u00B7 65+' : '') + ' \u00B7 2026</span></div>';
+  }
+  if (upToStep >= 3) {
+    var self_ = parseDollar('wagesSelf');
+    var spouse_ = parseDollar('wagesSpouse');
+    var totalW = self_ + (fs === 'mfj' ? spouse_ : 0);
+    var inv = parseDollar('investIncome'), other = parseDollar('otherIncome');
+    var items = '<span class="sl">Filing:</span> <span class="si">' + fsLabel + (over65 ? ' \u00B7 65+' : '') + '</span>';
+    items += ' <span class="sl">Wages:</span> <span class="si">' + fmt(totalW) + '</span>';
+    if (inv > 0) items += ' <span class="sl">Invest:</span> <span class="si">' + fmt(inv) + '</span>';
+    if (other > 0) items += ' <span class="sl">Other:</span> <span class="si">' + fmt(other) + '</span>';
+    document.getElementById('summaryStrip3').innerHTML = '<div class="summary-strip">' + items + '</div>';
+  }
+  if (upToStep >= 4) {
+    var dedType = document.querySelector('input[name="dedType"]:checked').value;
+    var totalW2 = parseDollar('wagesSelf') + (fs === 'mfj' ? parseDollar('wagesSpouse') : 0);
+    document.getElementById('summaryStrip4').innerHTML =
+      '<div class="summary-strip"><span class="sl">Wages:</span> <span class="si">' + fmt(totalW2) + '</span> <span class="sl">Ded:</span> <span class="si">' + (dedType === 'itemized' ? 'Itemized' : 'Standard') + '</span></div>';
+  }
+  if (upToStep >= 5) {
+    var totalW3 = parseDollar('wagesSelf') + (fs === 'mfj' ? parseDollar('wagesSpouse') : 0);
+    var tips = parseDollar('tipsIncome'), ot = parseDollar('overtimePay'), auto = parseDollar('autoInterest');
+    var items2 = '<span class="sl">Wages:</span> <span class="si">' + fmt(totalW3) + '</span>';
+    if (tips > 0) items2 += ' <span class="sl">Tips:</span> <span class="si">' + fmt(tips) + '</span>';
+    if (ot > 0) items2 += ' <span class="sl">OT:</span> <span class="si">' + fmt(ot) + '</span>';
+    if (auto > 0) items2 += ' <span class="sl">Auto Int:</span> <span class="si">' + fmt(auto) + '</span>';
+    document.getElementById('summaryStrip5').innerHTML = '<div class="summary-strip">' + items2 + '</div>';
+  }
+}
+
+function updateProgressDots() {
+  for (var i = 1; i <= 6; i++) {
+    var dot = document.getElementById('dot' + i);
+    var lbl = document.getElementById('lbl' + i);
+    var isResults = (document.getElementById('resultsView').style.display !== 'none');
+    var isDone   = isResults ? (i < 6) : (i < currentStep);
+    var isActive = isResults ? (i === 6) : (i === currentStep);
+    dot.className = 'step-dot' + (isDone ? ' done' : isActive ? ' active' : '');
+    dot.textContent = isDone ? '\u2713' : i;
+    lbl.className = 'step-dot-label' + (isDone ? ' done' : isActive ? ' active' : '');
+  }
+}
+
+function backToWizard() {
+  document.getElementById('wizardView').style.display = '';
+  document.getElementById('resultsView').style.display = 'none';
+  currentStep = Math.min(highestStep, 5);
+  for (var i = 1; i <= 5; i++) document.getElementById('step' + i).style.display = 'none';
+  document.getElementById('step' + currentStep).style.display = '';
+  updateProgressDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResults() {
+  updateHints();
+  document.getElementById('wizardView').style.display = 'none';
+  document.getElementById('resultsView').style.display = '';
+  highestStep = 6;
+  updateProgressDots();
+  calculate();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// TAX RECEIPT HELPER
+// ============================================================
+function renderReceipt(p, r) {
+  var agi = r.agi;
+
+  var ltcg_g   = Math.min(p.ltcgPortion, agi);
+  var ordTI_g  = Math.max(0, agi - ltcg_g);
+  var taxGross = calcOrdTax(ordTI_g, p.fs) + calcLTCG(ordTI_g, ltcg_g, p.fs).tax + r.niit;
+
+  var ti_mainDed   = Math.max(0, agi - r.usedDeduction + r.itemCapAdj);
+  var ltcg_md      = Math.min(p.ltcgPortion, ti_mainDed);
+  var ordTI_md     = Math.max(0, ti_mainDed - ltcg_md);
+  var taxAfterMain = calcOrdTax(ordTI_md, p.fs) + calcLTCG(ordTI_md, ltcg_md, p.fs).tax + r.niit;
+
+  var mainDedSave = taxGross - taxAfterMain;
+  var atlSave     = taxAfterMain - r.tbc;
+
+  var itemComponents = [];
+  if (r.showItemized) {
+    if (r.allowedSalt       > 0) itemComponents.push({ label: 'SALT',                    amount: r.allowedSalt });
+    if (r.allowedMortgage   > 0) itemComponents.push({ label: 'Mortgage Interest',        amount: r.allowedMortgage });
+    if (r.allowedCharitable > 0) itemComponents.push({ label: 'Charitable Contributions', amount: r.allowedCharitable });
+  }
+
+  var atlComponents = [];
+  if (r.tipsDed       > 0) atlComponents.push({ label: 'Tips Deduction',                          amount: r.tipsDed });
+  if (r.otDed         > 0) atlComponents.push({ label: 'Overtime (qualifying) Deduction',         amount: r.otDed });
+  if (r.seniorDed     > 0) atlComponents.push({ label: 'Senior Deduction',                        amount: r.seniorDed });
+  if (r.autoDed       > 0) atlComponents.push({ label: 'Auto Loan Interest (qualifying)',          amount: r.autoDed });
+  if (r.addlStd       > 0) atlComponents.push({ label: 'Additional Standard Deduction (blind/65+)', amount: r.addlStd });
+  if (r.nonItemCharDed > 0) atlComponents.push({ label: 'Charitable Donations (non-itemizer)',     amount: r.nonItemCharDed });
+
+  var ctcTotal = r.ctcNR + r.ctcRef;
+  var eitcAmt  = r.eitcR.credit;
+
+  var html = '';
+
+  html += '<div class="result-row receipt-gross"><span class="label">Tax on Gross Income (no deductions applied)</span><span class="value" style="color:#f47521">' + fmt(taxGross) + '</span></div>';
+
+  var showItemizedMulti = false;
+  if (r.showItemized) { if (itemComponents.length > 1) { showItemizedMulti = true; } }
+
+  if (showItemizedMulti) {
+    html += '<div class="result-row receipt-step"><span class="label indent">Less: Itemized Deductions &nbsp;<span style="font-weight:400;color:#718096">(saves ' + fmt(mainDedSave) + ' in tax)</span></span><span class="value save">\u2212 ' + fmt(mainDedSave) + '</span></div>';
+    for (var ci = 0; ci < itemComponents.length; ci++) {
+      html += '<div class="result-row receipt-step"><span class="label indent2">' + itemComponents[ci].label + ': ' + fmt(itemComponents[ci].amount) + '</span><span class="value gray"></span></div>';
+    }
+  } else {
+    var mainLabel = r.showItemized
+      ? 'Itemized Deductions (' + fmt(r.usedDeduction) + ')'
+      : 'Standard Deduction (' + fmt(r.usedDeduction) + ')';
+    html += '<div class="result-row receipt-step"><span class="label indent">Less: ' + mainLabel + '</span><span class="value save">\u2212 ' + fmt(mainDedSave) + '</span></div>';
+  }
+
+  if (atlSave > 1) {
+    if (atlComponents.length > 1) {
+      html += '<div class="result-row receipt-step"><span class="label indent">Less: Above-the-Line Deductions &nbsp;<span style="font-weight:400;color:#718096">(saves ' + fmt(atlSave) + ' in tax)</span></span><span class="value save">\u2212 ' + fmt(atlSave) + '</span></div>';
+      for (var ai = 0; ai < atlComponents.length; ai++) {
+        html += '<div class="result-row receipt-step"><span class="label indent2">' + atlComponents[ai].label + ': ' + fmt(atlComponents[ai].amount) + '</span><span class="value gray"></span></div>';
+      }
+    } else if (atlComponents.length === 1) {
+      html += '<div class="result-row receipt-step"><span class="label indent">Less: ' + atlComponents[0].label + ' (' + fmt(atlComponents[0].amount) + ')</span><span class="value save">\u2212 ' + fmt(atlSave) + '</span></div>';
+    }
+  }
+
+  html += '<div class="result-row receipt-subtotal"><span class="label">Tax Before Credits</span><span class="value green">' + fmt(r.tbc) + '</span></div>';
+
+  if (ctcTotal > 0) {
+    var numKids  = p.kids0to16;
+    var hasODC   = r.odcAmt > 0;
+    var hasPhase = r.ctcPhRed > 0;
+    var showExpanded = numKids > 1 || hasODC || hasPhase;
+    if (showExpanded) {
+      html += '<div class="result-row receipt-step"><span class="label indent">Child Tax Credit (CTC) &nbsp;<span style="font-weight:400;color:#718096">(total applied: ' + fmt(ctcTotal) + ')</span></span><span class="value save">\u2212 ' + fmt(ctcTotal) + '</span></div>';
+      for (var ki = 1; ki <= numKids; ki++) {
+        html += '<div class="result-row receipt-step"><span class="label indent2">Child ' + ki + ' CTC: ' + fmt(CTC_PER_CHILD) + '</span><span class="value gray"></span></div>';
+      }
+      if (hasPhase) html += '<div class="result-row receipt-step"><span class="label indent2">Phaseout reduction: \u2212' + fmt(r.ctcPhRed) + '</span><span class="value gray"></span></div>';
+      if (hasODC)   html += '<div class="result-row receipt-step"><span class="label indent2">Other Dependent Credit (ODC): ' + fmt(r.odcAmt) + '</span><span class="value gray"></span></div>';
+    } else {
+      html += '<div class="result-row receipt-step"><span class="label indent">Child Tax Credit (CTC)</span><span class="value save">\u2212 ' + fmt(ctcTotal) + '</span></div>';
+    }
+  }
+
+  if (eitcAmt > 0) {
+    html += '<div class="result-row receipt-step"><span class="label indent">Earned Income Tax Credit (EITC)</span><span class="value save">\u2212 ' + fmt(eitcAmt) + '</span></div>';
+  }
+
+  html += '<div class="result-row total"><span class="label">Final Tax Liability</span><span class="value">' + fmt(r.finalTax) + '</span></div>';
+
+  document.getElementById('r_receipt').innerHTML = html;
+}
+
+// ============================================================
+// CALCULATE & RENDER RESULTS
+// ============================================================
+function calculate() {
+  var p = getParams();
+  var r = computeCore(p.wages, p);
+
+  var fsLabel = p.fs === 'single' ? 'Single' : p.fs === 'hoh' ? 'Head of Household' : 'Married Filing Jointly';
+  var dedLabel = p.useItemized ? 'Itemized' : 'Standard';
+  var totalWagesDisplay = p.wages + (p.wagesSpouse || 0);
+  document.getElementById('resultsSummary').innerHTML =
+    '<span class="sl">Filing:</span> <span class="si">' + fsLabel + ' \u00B7 2026</span>' +
+    '<span class="sl">Wages:</span> <span class="si">' + fmt(totalWagesDisplay) + '</span>' +
+    (p.investIncome > 0 ? '<span class="sl">Investment:</span> <span class="si">' + fmt(p.investIncome) + '</span>' : '') +
+    (p.otherIncome  > 0 ? '<span class="sl">Other:</span> <span class="si">' + fmt(p.otherIncome) + '</span>' : '') +
+    '<span class="sl">Deduction:</span> <span class="si">' + dedLabel + '</span>';
+
+  document.getElementById('totalTax').textContent    = fmt(r.finalTax);
+  var subText = '2026 \u00B7 ' + fsLabel + ' \u00B7 Gross Income: ' + fmt(r.grossIncome);
+  if (p.isMFJ) {
+    if (p.wagesSpouse > 0) {
+      subText += ' (Self wages: ' + fmt(p.wages) + ' + Spouse: ' + fmt(p.wagesSpouse) + ')';
+    }
+  }
+  document.getElementById('totalTaxSub').textContent = subText;
+  document.getElementById('effRate').textContent  = fmtPct(Math.max(0, r.effRate));
+  document.getElementById('margRate').textContent = fmtPct(r.margRate);
+  document.getElementById('ltcgRate').textContent = fmtPct(r.ltcgEffRate);
+
+  // Income
+  document.getElementById('r_wagesSelfLabel').textContent = p.isMFJ ? 'Wages & Salary \u2014 Self' : 'Wages & Salary';
+  document.getElementById('r_wages').textContent = fmt(p.wages);
+  var showSpouseRow = false;
+  if (p.isMFJ) { if ((p.wagesSpouse || 0) > 0) { showSpouseRow = true; } }
+  document.getElementById('r_wagesSpouseRow').style.display = showSpouseRow ? '' : 'none';
+  if (showSpouseRow) document.getElementById('r_wagesSpouseAmt').textContent = fmt(p.wagesSpouse);
+  document.getElementById('r_invest').textContent = fmt(p.investIncome);
+  document.getElementById('r_other').textContent  = fmt(p.otherIncome);
+  document.getElementById('r_agi').textContent    = fmt(r.agi);
+  document.getElementById('r_agi2').textContent   = fmt(r.agi);
+
+  // Deductions
+  if (r.showItemized) {
+    document.getElementById('r_stdDedRow').style.display         = 'none';
+    document.getElementById('r_itemizedBreakdown').style.display = '';
+    document.getElementById('r_itemizedTotal').textContent       = '-' + fmt(r.totalItemized);
+    document.getElementById('r_saltPaid').textContent    = fmt(p.saltPaidRaw);
+    document.getElementById('r_saltCapAmt').textContent  = fmt(r.effSaltCap);
+    document.getElementById('r_saltAllowed').textContent = fmt(r.allowedSalt);
+    document.getElementById('r_saltRow').style.display   = p.saltPaidRaw > 0 ? '' : 'none';
+    var mn = '';
+    if (p.mortgageBalanceRaw > 750000) { if (p.mortgageBalanceRaw > 0) { mn = ' (prorated: balance > $750K limit)'; } }
+    document.getElementById('r_mortPaid').textContent    = fmt(p.mortgagePaidRaw);
+    document.getElementById('r_mortNote').textContent    = mn;
+    document.getElementById('r_mortAllowed').textContent = fmt(r.allowedMortgage);
+    document.getElementById('r_mortRow').style.display   = p.mortgagePaidRaw > 0 ? '' : 'none';
+    document.getElementById('r_charPaid').textContent    = fmt(p.charPaidRaw);
+    document.getElementById('r_charFloor').textContent   = fmt(r.charFloor);
+    document.getElementById('r_charAllowed').textContent = fmt(r.allowedCharitable);
+    document.getElementById('r_charRow').style.display   = p.charPaidRaw > 0 ? '' : 'none';
+    var capRow    = document.getElementById('r_capRow');
+    var capDetail = document.getElementById('r_capDetailRow');
+    if (r.totalItemized > r.stdDed) {
+      if (r.itemCapAdj > 0) {
+        capRow.className = 'result-row cap-applies';
+        document.getElementById('r_capLabel').innerHTML =
+          '35% Value Cap <em style="color:#f47521;font-style:normal">(applies \u2014 you are in the 37% bracket)</em>';
+        document.getElementById('r_capValue').className = 'value orange';
+        document.getElementById('r_capValue').textContent = '+' + fmt(r.itemCapAdj) + ' added back to taxable income';
+        var savingsAt37 = r.totalItemized * 0.37, savingsAt35 = r.totalItemized * 0.35;
+        capDetail.style.display = '';
+        document.getElementById('r_capDetail').textContent =
+          'Without cap: 37% \u00D7 ' + fmt(r.totalItemized) + ' = ' + fmt(savingsAt37) + ' saved \u2192 capped at 35% \u00D7 ' + fmt(r.totalItemized) + ' = ' + fmt(savingsAt35) + ' saved';
+        document.getElementById('r_capDetailVal').textContent = '\u0394 = ' + fmt(r.itemCapAdj);
+      } else {
+        capRow.className = 'result-row cap-na';
+        document.getElementById('r_capLabel').innerHTML =
+          '35% Value Cap <em style="color:#718096;font-style:normal">(not applicable \u2014 marginal rate is ' + fmtPct(r.margRate) + ', \u2264 35%)</em>';
+        document.getElementById('r_capValue').className = 'value gray';
+        document.getElementById('r_capValue').textContent = '$0';
+        capDetail.style.display = 'none';
+      }
+    } else {
+      capRow.className = 'result-row cap-na';
+      document.getElementById('r_capLabel').innerHTML =
+        '35% Value Cap <em style="color:#718096;font-style:normal">(not applicable \u2014 standard deduction used)</em>';
+      document.getElementById('r_capValue').className = 'value gray';
+      document.getElementById('r_capValue').textContent = '$0';
+      capDetail.style.display = 'none';
+    }
+  } else {
+    document.getElementById('r_stdDedRow').style.display         = '';
+    document.getElementById('r_itemizedBreakdown').style.display = 'none';
+    var lbl = (p.useItemized && r.totalItemized < r.stdDed)
+      ? 'Standard Deduction (exceeds itemized)' : 'Standard Deduction';
+    document.getElementById('r_dedLabel').textContent = 'Less: ' + lbl;
+    document.getElementById('r_ded').textContent      = '-' + fmt(r.usedDeduction);
+  }
+
+  document.getElementById('r_addlStdRow').style.display = r.addlStd > 0 ? '' : 'none';
+  document.getElementById('r_addlStd').textContent      = r.addlStd > 0 ? '-' + fmt(r.addlStd) : '$0';
+
+  function showRow(rid, vid, v) {
+    document.getElementById(rid).style.display = v > 0 ? '' : 'none';
+    document.getElementById(vid).textContent   = v > 0 ? '-' + fmt(v) : '$0';
+  }
+  showRow('r_tipsRow',       'r_tips',        r.tipsDed);
+  showRow('r_otRow',         'r_ot',          r.otDed);
+  showRow('r_seniorRow',     'r_senior',      r.seniorDed);
+  showRow('r_autoRow',       'r_auto',        r.autoDed);
+  showRow('r_nonItemCharRow','r_nonItemChar', r.nonItemCharDed);
+
+  document.getElementById('r_ti').textContent    = fmt(r.ti);
+  document.getElementById('r_oti').textContent   = fmt(r.oti);
+  document.getElementById('r_ltcgi').textContent = fmt(r.ltcgTI);
+  document.getElementById('r_ordTax').textContent  = fmt(r.ordTax);
+  document.getElementById('r_ltcgTax').textContent = fmt(r.ltcgRes.tax);
+  document.getElementById('r_niit').textContent    = fmt(r.niit);
+  document.getElementById('r_tbc').textContent     = fmt(r.tbc);
+
+  // Bracket breakdown
+  var brs = BRACKETS[p.fs];
+  var bhtml = '';
+  for (var bi = 0; bi < RATES.length; bi++) {
+    var bS = brs[bi], bE = bi < RATES.length - 1 ? brs[bi + 1] : Infinity;
+    if (r.oti <= bS) continue;
+    var amt = Math.min(r.oti - bS, bE === Infinity ? (r.oti - bS) : bE - bS);
+    if (amt > 0) {
+      var rangeEnd = bE === Infinity ? '\u221E' : fmt(bE);
+      bhtml += '<div class="result-row"><span class="label">' + (RATES[bi] * 100).toFixed(0) + '% on ' + fmt(amt) + ' (' + fmt(bS) + '\u2013' + rangeEnd + ')</span><span class="value">' + fmt(amt * RATES[bi]) + '</span></div>';
+    }
+  }
+  document.getElementById('r_brackets').innerHTML = bhtml ||
+    '<div class="result-row"><span class="label" style="color:#718096">No ordinary taxable income</span><span class="value">$0</span></div>';
+
+  // Credits
+  document.getElementById('r_ctcNR').textContent   = r.ctcNR > 0 ? '-' + fmt(r.ctcNR) : '$0';
+  document.getElementById('r_afterNR').textContent  = fmt(r.tAfterNR);
+  document.getElementById('r_ctcR').textContent    = r.ctcRef > 0 ? '-' + fmt(r.ctcRef) : '$0';
+  document.getElementById('r_eitc').textContent    = r.eitcR.credit > 0 ? '-' + fmt(r.eitcR.credit) : '$0';
+  document.getElementById('r_final').textContent   = fmt(r.finalTax);
+
+  // NIIT detail
+  document.getElementById('r_nii').textContent        = fmt(p.investIncome);
+  document.getElementById('r_niitMagi').textContent   = fmt(r.agi);
+  document.getElementById('r_niitThresh').textContent = fmt(p.isMFJ ? 250000 : 200000);
+  document.getElementById('r_niitBase').textContent   = fmt(r.niitBase);
+  document.getElementById('r_niit2').textContent      = fmt(r.niit);
+
+  // CTC detail
+  document.getElementById('r_ctcChildAmt').textContent   = fmt(r.ctcChild);
+  document.getElementById('r_odcAmt').textContent        = fmt(r.odcAmt);
+  document.getElementById('r_ctcMax').textContent        = fmt(r.maxCTC);
+  document.getElementById('r_ctcPhase').textContent      = r.ctcPhRed > 0 ? '-' + fmt(r.ctcPhRed) : '$0';
+  document.getElementById('r_ctcAfterPhase').textContent = fmt(r.ctcAP);
+  document.getElementById('r_ctcNR2').textContent        = r.ctcNR > 0 ? '-' + fmt(r.ctcNR) : '$0';
+  document.getElementById('r_ctcRefCalc').textContent    = fmt(r.refCalc);
+  document.getElementById('r_ctcRefMax').textContent     = fmt(r.maxRef);
+  document.getElementById('r_ctcR2').textContent         = fmt(r.ctcRef);
+  document.getElementById('r_ctcFinal').textContent      = fmt(r.ctcNR + r.ctcRef);
+
+  // EITC detail
+  document.getElementById('r_earnedInc').textContent      = fmt(r.totalWages);
+  document.getElementById('r_eitcKids').textContent       = r.eitcKids + (r.eitcKids === 3 ? '+' : '');
+  document.getElementById('r_eitcPhaseIn').textContent    = fmt(EITC[r.eitcKids].ea);
+  document.getElementById('r_eitcMax').textContent        = fmt(r.eitcR.mc);
+  document.getElementById('r_eitcPhaseStart').textContent = fmt(r.eitcR.ps);
+  document.getElementById('r_eitcPhaseOut').textContent   = r.eitcR.reduction > 0 ? '-' + fmt(r.eitcR.reduction) : '$0';
+  document.getElementById('r_eitcFinal').textContent      = fmt(r.eitcR.credit);
+
+  // Payroll
+  document.getElementById('r_empSS').textContent    = fmt(r.empSS);
+  document.getElementById('r_empMed').textContent   = fmt(r.empMed);
+  document.getElementById('r_addlMed').textContent  = fmt(r.addlMed);
+  document.getElementById('r_empTotal').textContent = fmt(r.empTot);
+  document.getElementById('r_erSS').textContent     = fmt(r.erSS);
+  document.getElementById('r_erMed').textContent    = fmt(r.erMed);
+  document.getElementById('r_erTotal').textContent  = fmt(r.erTot);
+
+  var showPerEarner = false;
+  if (p.isMFJ) { if (p.wagesSpouse > 0) { showPerEarner = true; } }
+  ['r_empSS_selfRow', 'r_empSS_spouseRow', 'r_erSS_selfRow', 'r_erSS_spouseRow'].forEach(function(id) {
+    document.getElementById(id).style.display = showPerEarner ? '' : 'none';
+  });
+  if (showPerEarner) {
+    document.getElementById('r_empSS_self').textContent   = fmt(r.empSS_self);
+    document.getElementById('r_empSS_spouse').textContent = fmt(r.empSS_spouse);
+    document.getElementById('r_erSS_self').textContent    = fmt(r.erSS_self);
+    document.getElementById('r_erSS_spouse').textContent  = fmt(r.erSS_spouse);
+  }
+  document.getElementById('r_ssTaxMax').textContent = fmt(r.ssTxMx);
+  document.getElementById('r_addlMedThresh').textContent = fmt(r.amThr) + " (wages above this subject to add'l 0.9%)";
+  document.getElementById('r_payrollTotal').textContent = fmt(r.payTot);
+  document.getElementById('r_grandTotal').textContent   = fmt(r.finalTax + r.payTot);
+
+  // Chart note
+  var chartNote = document.getElementById('chartNote');
+  if (chartNote) {
+    var noteHtml = '<b>Note:</b> Chart varies wage/salary income while holding all other inputs constant. The <span style="color:#e43e47;font-weight:700">&#9679;</span> marker shows your current position. Negative values reflect net refunds from EITC and refundable CTC.';
+    if (p.isMFJ) {
+      if (p.wagesSpouse > 0) {
+        var selfPct  = Math.round(p.wages / (p.wages + p.wagesSpouse) * 100);
+        var spousePct = Math.round(p.wagesSpouse / (p.wages + p.wagesSpouse) * 100);
+        noteHtml = '<b>Note:</b> Chart shows total household wages (self + spouse) from $0 to the selected range, keeping the self/spouse ratio fixed at ' + selfPct + '%/' + spousePct + '%. Effective rate = tax \u00F7 total wages. The <span style="color:#e43e47;font-weight:700">&#9679;</span> marker shows your current total wage position. Negative values reflect net refunds from EITC and refundable CTC.';
+      }
+    }
+    chartNote.innerHTML = noteHtml;
+  }
+
+  renderReceipt(p, r);
+  drawChart();
+}
+
+// ============================================================
+// INCOME SPECTRUM CHART
+// ============================================================
+var chartInstance = null;
+var chartMax = 200000;
+
+function setRange(max, btn) {
+  chartMax = max;
+  document.querySelectorAll('.range-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  drawChart();
+}
+
+function drawChart() {
+  var p = getParams();
+  var POINTS = 150;
+  var wages_arr = [], tax_arr = [], rate_arr = [];
+
+  var spouseWages   = 0;
+  if (p.isMFJ) { if (p.wagesSpouse) { spouseWages = p.wagesSpouse; } }
+  var totalInput    = p.wages + spouseWages;
+  var hasTwoEarners = spouseWages > 0;
+  var selfRatio = 1;
+  if (hasTwoEarners) { if (totalInput > 0) { selfRatio = p.wages / totalInput; } }
+
+  for (var i = 0; i <= POINTS; i++) {
+    var totalW  = Math.round(i * chartMax / POINTS);
+    var selfW   = hasTwoEarners ? Math.round(totalW * selfRatio)  : totalW;
+    var spouseW = hasTwoEarners ? (totalW - selfW)                : 0;
+    var pChart  = hasTwoEarners ? Object.assign({}, p, { wagesSpouse: spouseW }) : p;
+    var res     = computeCore(selfW, pChart);
+    var tax     = res.finalTax;
+    wages_arr.push(totalW);
+    tax_arr.push(Math.round(tax));
+    rate_arr.push(totalW > 0 ? parseFloat((tax / totalW * 100).toFixed(2)) : 0);
+  }
+
+  var curW = p.wages + spouseWages;
+  var closestIdx = 0;
+  wages_arr.forEach(function(w, idx) {
+    if (Math.abs(w - curW) < Math.abs(wages_arr[closestIdx] - curW)) closestIdx = idx;
+  });
+  var taxMarker  = wages_arr.map(function(_, idx) { return idx === closestIdx ? tax_arr[idx] : null; });
+  var rateMarker = wages_arr.map(function(_, idx) { return idx === closestIdx ? rate_arr[idx] : null; });
+
+  function fmtAxis(v) { return v >= 1000000 ? '$' + (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? '$' + (v / 1000).toFixed(0) + 'K' : '$' + v; }
+  var labels = wages_arr.map(fmtAxis);
+  function fmtDollar(v) { return '$' + Math.round(v).toLocaleString('en-US'); }
+
+  var ctx = document.getElementById('incomeChart').getContext('2d');
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  chartInstance = new Chart(ctx, {
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'line', label: 'Federal Income Tax', data: tax_arr,
+          borderColor: '#3c608a', backgroundColor: 'rgba(60,96,138,0.07)',
+          fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 3,
+          borderWidth: 2.5, yAxisID: 'y'
+        },
+        {
+          type: 'line', label: 'Effective Tax Rate', data: rate_arr,
+          borderColor: '#e43e47', borderDash: [6, 3],
+          fill: false, tension: 0.35, pointRadius: 0, pointHoverRadius: 3,
+          borderWidth: 2, yAxisID: 'y1'
+        },
+        {
+          type: 'scatter', label: 'Your Position (tax)',
+          data: taxMarker.map(function(v, idx) { return v !== null ? { x: labels[idx], y: v } : null; }).filter(Boolean),
+          backgroundColor: '#e43e47', borderColor: '#fff', borderWidth: 2,
+          pointRadius: 8, pointHoverRadius: 10, yAxisID: 'y', showLine: false
+        },
+        {
+          type: 'scatter', label: 'Your Position (rate)',
+          data: rateMarker.map(function(v, idx) { return v !== null ? { x: labels[idx], y: v } : null; }).filter(Boolean),
+          backgroundColor: '#e43e47', borderColor: '#fff', borderWidth: 2,
+          pointRadius: 8, pointHoverRadius: 10, yAxisID: 'y1', showLine: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { font: { size: 11 }, filter: function(item) { return item.datasetIndex < 2; } } },
+        tooltip: {
+          callbacks: {
+            title: function(ctx2) { return 'Wages: ' + ctx2[0].label; },
+            label: function(ctx2) {
+              if (ctx2.datasetIndex === 0) {
+                var v = ctx2.raw;
+                return v < 0
+                  ? '  Net Refund (EITC/CTC): ' + fmtDollar(Math.abs(v))
+                  : '  Federal Income Tax: ' + fmtDollar(v);
+              }
+              if (ctx2.datasetIndex === 1) {
+                var rate = ctx2.raw;
+                return rate < 0
+                  ? '  Effective Rate: ' + rate.toFixed(1) + '% (net transfer)'
+                  : '  Effective Rate: ' + rate.toFixed(1) + '%';
+              }
+              return null;
+            },
+            afterBody: function(ctx2) {
+              if (ctx2[0].dataIndex === closestIdx) return ['\u2190 Your current income'];
+              return [];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { maxTicksLimit: 10, font: { size: 11 }, color: '#718096' },
+          grid: { color: '#f4f5f7' }
+        },
+        y: {
+          position: 'left',
+          title: { display: true, text: 'Federal Income Tax', font: { size: 11 }, color: '#3c608a' },
+          ticks: {
+            callback: function(v) {
+              var a = Math.abs(v), s = v < 0 ? '-' : '';
+              return a >= 1000000 ? s + '$' + (a / 1000000).toFixed(1) + 'M' : a >= 1000 ? s + '$' + (a / 1000).toFixed(0) + 'K' : s + '$' + a;
+            },
+            font: { size: 11 }, color: '#718096'
+          },
+          grid: {
+            color: function(ctx3) { return ctx3.tick.value === 0 ? 'rgba(0,0,0,0.3)' : '#f4f5f7'; },
+            lineWidth: function(ctx3) { return ctx3.tick.value === 0 ? 1.5 : 1; }
+          }
+        },
+        y1: {
+          position: 'right',
+          title: { display: true, text: 'Effective Rate (%)', font: { size: 11 }, color: '#e43e47' },
+          ticks: { callback: function(v) { return v.toFixed(0) + '%'; }, font: { size: 11 }, color: '#718096' },
+          grid: { drawOnChartArea: false }
+        }
+      }
+    }
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.querySelectorAll('input[name="fs"]').forEach(function(r) {
+  r.addEventListener('change', updateHints);
+});
+updateHints();
+</script>
+</body>
+</html>
