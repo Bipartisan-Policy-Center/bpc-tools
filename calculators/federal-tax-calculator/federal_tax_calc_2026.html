@@ -1615,19 +1615,11 @@ document.querySelectorAll('input[name="fs"]').forEach(function(r) {
 });
 updateHints();
 
-// Send height on initial load (covers mobile layout reflow after fonts load)
-window.addEventListener('load', function() { sendHeight(); });
-
-// ResizeObserver catches any subsequent reflows (font swap, content change)
-if (typeof ResizeObserver !== 'undefined') {
-  var _rszTimer = null;
-  new ResizeObserver(function() {
-    clearTimeout(_rszTimer);
-    _rszTimer = setTimeout(function() {
-      window.parent.postMessage({ bpcFedTaxHeight: document.body.scrollHeight }, '*');
-    }, 100);
-  }).observe(document.body);
-}
+// Send height on load, then once more after fonts have swapped in
+window.addEventListener('load', function() {
+  sendHeight();
+  setTimeout(function() { sendHeight(); }, 800);
+});
 </script>
 </body>
 </html>
