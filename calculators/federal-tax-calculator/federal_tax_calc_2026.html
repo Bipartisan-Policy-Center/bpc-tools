@@ -34,7 +34,7 @@ body { font-family: 'Faustina', Georgia, serif; background: #f4f5f7; color: #333
 
 /* Progress bar */
 .progress-wrap { margin-bottom: 28px; }
-.progress-steps { display: flex; align-items: center; gap: 0; position: relative; }
+.progress-steps { display: flex; align-items: flex-start; gap: 0; position: relative; }
 .progress-steps::before { content: ''; position: absolute; top: 16px; left: 0; right: 0; height: 2px; background: #d1dde8; z-index: 0; }
 .step-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; position: relative; z-index: 1; cursor: pointer; }
 .step-dot-wrap:hover .step-dot:not(.active) { filter: brightness(1.1); }
