@@ -1061,6 +1061,7 @@ function jumpToStep(n) {
   updateProgressDots();
   buildSummaryStrips(n);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  sendHeight();
 }
 
 function sendHeight() {
