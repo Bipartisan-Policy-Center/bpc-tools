@@ -266,10 +266,15 @@ function buildYearSel(){
   [...YEARS].reverse().forEach(yr=>{const o=document.createElement('option');o.value=yr;o.textContent=yr;s.appendChild(o)});
 }
 
+function notifyHeight(){
+  if(window.parent!==window)
+    window.parent.postMessage({bpcHeight:document.body.scrollHeight},'*');
+}
 function switchTab(t){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='trend')||(i===1&&t==='detail')));
   document.getElementById('tab-trend').classList.toggle('active',t==='trend');
   document.getElementById('tab-detail').classList.toggle('active',t==='detail');
+  setTimeout(notifyHeight,120);
 }
 function setInfl(v){
   inflMode=v;
@@ -431,7 +436,7 @@ function updateDetail(){
   </div>`;
 }
 
-buildMetricSel();buildYearSel();updateChart();updateDetail();
+buildMetricSel();buildYearSel();updateChart();updateDetail();setTimeout(notifyHeight,200);
 </script>
 <div class="bpc-footer">
   <span>Bipartisan Policy Center &bull; <a href="https://bipartisanpolicy.org" target="_blank" rel="noopener">bipartisanpolicy.org</a></span>

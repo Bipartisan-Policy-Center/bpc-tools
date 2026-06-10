@@ -355,10 +355,15 @@ function buildSelects(){
   });
 }
 
+function notifyHeight(){
+  if(window.parent!==window)
+    window.parent.postMessage({bpcHeight:document.body.scrollHeight},'*');
+}
 function switchTab(t){
   const tabs=['trend','compare','detail','expenses'];
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
   tabs.forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  setTimeout(notifyHeight,120);
 }
 function setInfl(v){
   inflMode=v;
@@ -577,7 +582,7 @@ function updateExpenses(){
   </div>`;
 }
 
-buildSelects();updateTrend();updateCompare();updateDetail();updateExpenses();
+buildSelects();updateTrend();updateCompare();updateDetail();updateExpenses();setTimeout(notifyHeight,200);
 </script>
 <div class="bpc-footer">
   <span>Bipartisan Policy Center &bull; <a href="https://bipartisanpolicy.org" target="_blank" rel="noopener">bipartisanpolicy.org</a></span>
