@@ -30,6 +30,13 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 | CBO Scoring | `tables/cbo-scoring/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/tables/cbo-scoring/) |
 | ECE State Data | `tables/ece-data/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/tables/ece-data/) |
 
+## Explorers
+
+| Tool | Folder | Live URL |
+|---|---|---|
+| 501(c)(3) Organizations Explorer | `explorers/501c3/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/501c3/) |
+| 501(c)(3)–(9) Organizations Explorer | `explorers/501c3-9/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/501c3-9/) |
+
 ## Org Charts
 
 | Tool | Folder | Live URL |
