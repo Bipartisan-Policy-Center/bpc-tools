@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPC | Tax-Exempt Excise Taxes: 2016–2024</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto+Slab:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Faustina',Georgia,serif;background:#f5f6f6;color:#333638;font-size:14px}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #d3d8d6;padding:0 28px}
+.tab-btn{padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#6b7280;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn.active{color:#1f476c;border-bottom-color:#e43e47}
+.tab-content{display:none;padding:18px 28px}
+.tab-content.active{display:block}
+.controls{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.cg{display:flex;flex-direction:column;gap:5px}
+.cg label{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.4px}
+select{padding:7px 10px;border:1.5px solid #d3d8d6;border-radius:6px;font-size:13px;color:#333638;background:white;cursor:pointer;font-family:inherit;max-width:340px}
+select:focus{outline:none;border-color:#3c608a}
+.btn-group{display:flex}
+.btn-group button{padding:7px 14px;border:1.5px solid #d3d8d6;border-radius:0;border-right-width:0;font-size:13px;color:#333638;background:white;cursor:pointer;font-family:inherit}
+.btn-group button:first-child{border-radius:6px 0 0 6px}
+.btn-group button:last-child{border-radius:0 6px 6px 0;border-right-width:1.5px}
+.btn-group button.active{background:#1f476c;color:white;border-color:#1f476c}
+.chart-card{background:#fff;border-radius:10px;padding:18px 22px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.chart-title{font-size:15px;font-weight:700;font-family:'Roboto Slab',Georgia,serif;color:#333638;margin-bottom:3px}
+.chart-sub{font-size:12px;color:#6b7280;margin-bottom:14px}
+.chart-wrap{position:relative;height:380px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.stat-card{background:#f8fafc;border:1.5px solid #d3d8d6;border-radius:8px;padding:10px 14px}
+.stat-card .lbl{font-size:10.5px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.stat-card .val{font-size:18px;font-weight:700;color:#1f476c;font-family:'Roboto Slab',Georgia,serif;margin:2px 0}
+.stat-card .chg{font-size:11px}
+.pos{color:#00ad4d}.neg{color:#e43e47}
+.legend-grid{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:#555b5e}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sc{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;margin-top:4px}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f1f5f9;padding:7px 10px;font-size:10.5px;font-weight:700;color:#555b5e;text-align:right;border-bottom:1.5px solid #d3d8d6;white-space:nowrap;position:sticky;top:0}
+thead th:first-child{text-align:left;min-width:280px}
+tbody tr{border-bottom:1px solid #f1f5f9}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:7px 10px;font-size:12.5px;text-align:right}
+tbody td:first-child{text-align:left;font-size:12px}
+tbody tr.tot td{font-weight:700;background:#f1f5f9;border-top:1.5px solid #d3d8d6}
+.na{color:#94a3b8;font-style:italic}
+.sup{color:#94a3b8;font-style:italic}
+.note{font-size:11px;color:#94a3b8;margin-top:10px;font-style:italic}
+.tbl-wrap{overflow-x:auto}
+.sh{color:white;padding:9px 14px;font-size:12.5px;font-weight:700;font-family:'Roboto Slab',Georgia,serif;background:#1f476c}
+/* ── BPC Header ── */
+.bpc-header{background:linear-gradient(135deg,#3c608a 0%,#1f476c 100%);color:#fff;padding:22px 28px 20px;border-bottom:4px solid #e43e47;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bpc-logo{display:block;height:26px;width:auto;margin-bottom:10px}
+.bpc-header h1{font-family:'Roboto Slab',Georgia,serif;font-size:clamp(1.05rem,3vw,1.35rem);font-weight:700;line-height:1.25;margin-bottom:6px}
+.bpc-header p{font-size:.82rem;opacity:.82;line-height:1.5}
+/* ── BPC Footer ── */
+.bpc-footer{background:#1f476c;color:rgba(255,255,255,.6);font-size:11px;padding:10px 28px;display:flex;justify-content:space-between;align-items:center;border-top:3px solid #e43e47;font-family:'Faustina',Georgia,serif;flex-wrap:wrap;gap:6px}
+.bpc-footer a{color:rgba(255,255,255,.75);text-decoration:none}
+.bpc-footer a:hover{color:#fff;text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="bpc-header">
+  <img src="bpc-logo-white.png" alt="Bipartisan Policy Center" class="bpc-logo">
+  <h1>Tax-Exempt Excise Taxes: 2016–2024</h1>
+  <p>Bipartisan Policy Center &bull; IRS Statistics of Income (SOI) &bull; Form 4720 &bull; Dollar amounts are whole dollars &bull; Estimates based on samples</p>
+</header>
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('share')">Share Analysis</button>
+  <button class="tab-btn" onclick="switchTab('trend')">Trend Analysis</button>
+  <button class="tab-btn" onclick="switchTab('detail')">Year Detail</button>
+</div>
+
+<!-- SHARE ANALYSIS TAB -->
+<div id="tab-share" class="tab-content active">
+  <div class="controls">
+    <div class="cg"><label>View</label>
+      <div class="btn-group">
+        <button id="btnComp" class="active" onclick="setShareView('comp')">Composition</button>
+        <button id="btnSingle" onclick="setShareView('single')">Single Tax Share</button>
+      </div>
+    </div>
+    <div class="cg" id="cgShareTax" style="display:none"><label>Tax Type</label>
+      <select id="shareTaxSel" onchange="updateShare()"></select>
+    </div>
+    <div class="cg" id="cgCompMode"><label>Amount</label>
+      <div class="btn-group">
+        <button id="btnPctComp" class="active" onclick="setCompMode('pct')">% of Total</button>
+        <button id="btnAmtComp" onclick="setCompMode('amt')">$ Amount</button>
+      </div>
+    </div>
+    <div class="cg" id="cgInflShare"><label>Dollar Values</label>
+      <div class="btn-group">
+        <button id="btnNomS" class="active" onclick="setInfl(false)">Nominal</button>
+        <button id="btnInflS" onclick="setInfl(true)">2025 $</button>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title" id="shareTitle">Composition of Total Excise Taxes</div>
+    <div class="chart-sub" id="shareSub"></div>
+    <div class="chart-wrap"><canvas id="shareChart"></canvas></div>
+    <div class="legend-grid" id="shareLegend"></div>
+  </div>
+  <p class="note">** = Data combined to prevent disclosure of specific taxpayer information. * = Same (alternate notation). These values appear as gaps. Dollar amounts are whole dollars.</p>
+</div>
+
+<!-- TREND ANALYSIS TAB -->
+<div id="tab-trend" class="tab-content">
+  <div class="controls">
+    <div class="cg"><label>Tax Type</label><select id="trendTaxSel" onchange="updateTrend()"></select></div>
+    <div class="cg"><label>Metric</label>
+      <div class="btn-group">
+        <button id="btnAmt" class="active" onclick="setTrendMetric('amt')">$ Amount</button>
+        <button id="btnRet" onclick="setTrendMetric('ret')"># Returns</button>
+      </div>
+    </div>
+    <div class="cg"><label>Chart Type</label>
+      <div class="btn-group">
+        <button id="btnLine" class="active" onclick="setChartType('line')">Line</button>
+        <button id="btnBar" onclick="setChartType('bar')">Bar</button>
+      </div>
+    </div>
+    <div class="cg"><label>Dollar Values</label>
+      <div class="btn-group">
+        <button id="btnNomT" class="active" onclick="setInfl(false)">Nominal</button>
+        <button id="btnInflT" onclick="setInfl(true)">2025 $</button>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title" id="trendTitle">Loading...</div>
+    <div class="chart-sub" id="trendSub"></div>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    <div class="stats-row" id="trendStats"></div>
+  </div>
+  <p class="note">** = Data combined to prevent disclosure. Dollar amounts are whole dollars.</p>
+</div>
+
+<!-- YEAR DETAIL TAB -->
+<div id="tab-detail" class="tab-content">
+  <div class="controls">
+    <div class="cg"><label>Tax Year</label><select id="yearSel" onchange="updateDetail()"></select></div>
+    <div class="cg"><label>Dollar Values</label>
+      <div class="btn-group">
+        <button id="btnNomD" class="active" onclick="setInfl(false)">Nominal</button>
+        <button id="btnInflD" onclick="setInfl(true)">2025 $</button>
+      </div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sh" id="detailHdr">Year Detail</div>
+    <div class="tbl-wrap"><div id="detailContent"></div></div>
+  </div>
+  <p class="note">** = Data combined to prevent disclosure of specific taxpayer information. % of Total computed from disclosed values only.</p>
+</div>
+
+<script>
+const R={"years":["2016","2017","2018","2019","2020","2021","2022","2023","2024"],"taxes":["Total Organizational Taxes","Tax on CRT Unrelated Taxable Income","Tax on Disqualifying Lobbying Expenditures","Tax on Excess Business Holdings","Tax on Excess Executive Compensation","Tax on Excess Lobbying Expenditures","Tax on Failure to Meet Section 501(r) Requirements","Tax on Investments Jeopardizing Charitable Purposes","Tax on Net Investment Income (Colleges & Universities)","Tax on Political Expenditures","Tax on Premiums on Personal Benefit Contracts","Tax on Prohibited Tax Shelter Transactions","Tax on Taxable Distributions (Sponsoring Orgs/DAFs)","Tax on Taxable Expenditures","Tax on Undistributed Income"],"data":{"2016":{"0":[1687,10365410.0],"1":[119,1113285.0],"2":[0,0.0],"3":[10,84020.0],"4":null,"5":[22,331796.0],"6":"D","7":[0,0.0],"8":null,"9":[20,7870.0],"10":[9,254496.0],"11":[0,0.0],"12":[13,360115.0],"13":[129,624615.0],"14":[1372,7589209.0]},"2017":{"0":[1716,12762930.0],"1":[145,1810901.0],"2":"D","3":[8,386850.0],"4":null,"5":[23,266113.0],"6":[5,250000.0],"7":"D","8":null,"9":[29,9738.0],"10":"D","11":[0,0.0],"12":[7,27078.0],"13":[140,1647389.0],"14":[1366,8364790.0]},"2018":{"0":[2032,17985051.0],"1":[130,3010019.0],"2":[0,0.0],"3":[5,2063178.0],"4":null,"5":[24,73336.0],"6":[11,179667.0],"7":"D","8":null,"9":[14,26553.0],"10":"D","11":[0,0.0],"12":"D","13":[184,669278.0],"14":[1677,11963029.0]},"2019":{"0":[1919,139808704.0],"1":[95,1916328.0],"2":"D","3":[11,1999962.0],"4":[380,125511110.0],"5":[23,731429.0],"6":"D","7":[0,0.0],"8":[0,0.0],"9":[20,5861.0],"10":"D","11":[0,0.0],"12":[6,5250.0],"13":[159,1005580.0],"14":[1235,8633184.0]},"2020":{"0":[971,107249430.0],"1":[50,609710.0],"2":[0,0.0],"3":[0,0.0],"4":[302,96168764.0],"5":[7,110256.0],"6":"D","7":[0,0.0],"8":"D","9":[8,878.0],"10":[9,3166581.0],"11":[0,0.0],"12":"D","13":[76,1813745.0],"14":[524,5379496.0]},"2021":{"0":[1547,291129057.0],"1":[43,1906090.0],"2":"D","3":[13,424175.0],"4":[516,210061282.0],"5":[22,128784.0],"6":"D","7":[0,0.0],"8":[33,68088096.0],"9":"D","10":"D","11":[0,0.0],"12":[7,112913.0],"13":[94,441567.0],"14":[834,9966150.0]},"2022":{"0":[4524,956547432.0],"1":[175,10880447.0],"2":"D","3":[15,2590570.0],"4":[1710,670899001.0],"5":[52,595299.0],"6":[17,838682.0],"7":"D","8":[58,243710847.0],"9":[20,15487.0],"10":"D","11":"D","12":[15,179819.0],"13":[290,1561774.0],"14":[2232,25275506.0]},"2023":{"0":[3708,994744987.0],"1":[132,17835738.0],"2":"D","3":[7,2887421.0],"4":[1274,569745191.0],"5":[44,227031.0],"6":[7,152107.0],"7":"D","8":[56,380934219.0],"9":[17,9465.0],"10":"D","11":"D","12":[10,1150071.0],"13":[258,3887969.0],"14":[1961,17915775.0]},"2024":{"0":[3099,733556694.0],"1":[132,7964410.0],"2":[9,356662.0],"3":[5,279827.0],"4":[1150,539476294.0],"5":[29,393563.0],"6":[8,450000.0],"7":"D","8":[45,168823327.0],"9":[11,2248.0],"10":"D","11":"D","12":[6,101894.0],"13":[252,1606533.0],"14":[1515,14101936.0]}},"suppressed":{"2016":[false,false,false,false,false,false,true,false,false,false,false,false,false,false,false],"2017":[false,false,true,false,false,false,false,true,false,false,true,false,false,false,false],"2018":[false,false,false,false,false,false,false,true,false,false,true,false,true,false,false],"2019":[false,false,true,false,false,false,true,false,false,false,true,false,false,false,false],"2020":[false,false,false,false,false,false,true,false,true,false,false,false,true,false,false],"2021":[false,false,true,false,false,false,true,false,false,true,true,false,false,false,false],"2022":[false,false,true,false,false,false,false,true,false,false,true,true,false,false,false],"2023":[false,false,true,false,false,false,false,true,false,false,true,true,false,false,false],"2024":[false,false,false,false,false,false,false,true,false,false,true,true,false,false,false]}};
+const INFL={'2016':1.34148,'2017':1.31348,'2018':1.28221,'2019':1.25937,'2020':1.24379,'2021':1.18817,'2022':1.10025,'2023':1.05664,'2024':1.02634};
+const YEARS=R.years,TAXES=R.taxes,DATA=R.data,SUPP=R.suppressed;
+let inflMode=false,shareView='comp',compMode='pct',trendMetric='amt',chartType='line';
+
+function adj(v,yr){return(inflMode&&v!=null)?v*(INFL[yr]||1):v}
+
+function gv(yr,ti){
+  const v=DATA[yr]&&DATA[yr][String(ti)];
+  if(v==='D')return 'D';
+  if(!v||v===null)return null;
+  return v;
+}
+function getAmt(yr,ti){const v=gv(yr,ti);return(v==='D'||!v)?null:v[1];}
+function getRet(yr,ti){const v=gv(yr,ti);return(v==='D'||!v)?null:v[0];}
+function getTotal(yr){return getAmt(yr,0);}
+
+const COLORS=[
+  '#3c608a','#1b83c6','#6f173a','#b71d51','#e43e47','#f47521',
+  '#00ad4d','#fcbb13','#1f476c','#b91f24','#0891b2','#333638',
+  '#7c3aed','#c05e0a','#2e7d5e'
+];
+const COLORS_A=COLORS.map(c=>c+'cc');
+
+function fD(v){if(v==null||isNaN(v))return'—';const a=Math.abs(v);let s,sfx;if(a>=1e9){s=(a/1e9).toFixed(2);sfx='B';}else if(a>=1e6){s=(a/1e6).toFixed(2);sfx='M';}else if(a>=1e3){s=(a/1e3).toFixed(1);sfx='K';}else{s=Math.round(a).toString();sfx='';}return(v<0?'-':'')+'$'+s+sfx;}
+function fDF(v){if(v==null||isNaN(v))return'—';return(v<0?'-':'')+'$'+Math.round(Math.abs(v)).toLocaleString();}
+function fC(v){return(v==null||isNaN(v))?'—':Math.round(v).toLocaleString();}
+function fP(v){return(v==null||isNaN(v))?'—':(v*100).toFixed(1)+'%';}
+
+function buildSelects(){
+  const ss=document.getElementById('shareTaxSel');
+  TAXES.slice(1).forEach((t,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=t;ss.appendChild(o)});
+  const ts=document.getElementById('trendTaxSel');
+  TAXES.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t;ts.appendChild(o)});
+  const ys=document.getElementById('yearSel');
+  [...YEARS].reverse().forEach(yr=>{const o=document.createElement('option');o.value=yr;o.textContent=yr;ys.appendChild(o)});
+}
+
+function notifyHeight(){
+  if(window.parent!==window)
+    window.parent.postMessage({bpcHeight:document.body.scrollHeight},'*');
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['share','trend','detail'][i]===t));
+  ['share','trend','detail'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  if(t==='share')updateShare();else if(t==='trend')updateTrend();else updateDetail();
+  setTimeout(notifyHeight,120);
+}
+
+function setShareView(v){
+  shareView=v;
+  document.getElementById('btnComp').classList.toggle('active',v==='comp');
+  document.getElementById('btnSingle').classList.toggle('active',v==='single');
+  document.getElementById('cgShareTax').style.display=v==='single'?'':'none';
+  document.getElementById('cgCompMode').style.display=v==='comp'?'':'none';
+  document.getElementById('cgInflShare').style.display=(v==='single'||(v==='comp'&&compMode==='amt'))?'':'none';
+  updateShare();
+}
+function setCompMode(m){
+  compMode=m;
+  document.getElementById('btnPctComp').classList.toggle('active',m==='pct');
+  document.getElementById('btnAmtComp').classList.toggle('active',m==='amt');
+  document.getElementById('cgInflShare').style.display=m==='amt'?'':'none';
+  updateShare();
+}
+function setTrendMetric(m){
+  trendMetric=m;
+  document.getElementById('btnAmt').classList.toggle('active',m==='amt');
+  document.getElementById('btnRet').classList.toggle('active',m==='ret');
+  document.querySelector('#tab-trend .cg:last-child').style.display=m==='ret'?'none':'';
+  updateTrend();
+}
+function setChartType(t){
+  chartType=t;
+  document.getElementById('btnLine').classList.toggle('active',t==='line');
+  document.getElementById('btnBar').classList.toggle('active',t==='bar');
+  updateTrend();
+}
+function setInfl(v){
+  inflMode=v;
+  ['btnNomS','btnNomT','btnNomD'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',!v)});
+  ['btnInflS','btnInflT','btnInflD'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',v)});
+  const active=document.querySelector('.tab-content.active');
+  if(active.id==='tab-share')updateShare();
+  else if(active.id==='tab-trend')updateTrend();
+  else updateDetail();
+}
+
+let sChart=null,tChart=null;
+
+function updateShare(){
+  if(sChart)sChart.destroy();
+
+  if(shareView==='single'){
+    const ti=parseInt(document.getElementById('shareTaxSel').value);
+    const taxName=TAXES[ti];
+    const vals=YEARS.map(yr=>{
+      const tot=getTotal(yr),v=getAmt(yr,ti);
+      return(tot&&v!=null)?v/tot:null;
+    });
+    document.getElementById('shareTitle').textContent=taxName+' — Share of Total Excise Taxes';
+    document.getElementById('shareSub').textContent='As % of Total Organizational Taxes • 2016–2024';
+    document.getElementById('shareLegend').innerHTML='';
+    const vv=vals.filter(v=>v!=null),yvv=YEARS.filter((_,i)=>vals[i]!=null);
+    sChart=new Chart(document.getElementById('shareChart').getContext('2d'),{
+      type:'line',
+      data:{labels:YEARS,datasets:[{label:taxName,data:vals,borderColor:COLORS[ti],backgroundColor:COLORS[ti]+'22',borderWidth:2.5,pointRadius:5,pointHoverRadius:7,fill:true,tension:0.3,spanGaps:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?' '+fP(ctx.raw):'No data'}}},scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{size:11}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},callback:v=>fP(v)},min:0}}}
+    });
+
+  } else {
+    const activeTaxes=[];
+    for(let ti=1;ti<TAXES.length;ti++){
+      const hasData=YEARS.some(yr=>{const v=getAmt(yr,ti);return v!=null&&v>0;});
+      if(hasData)activeTaxes.push(ti);
+    }
+    const datasets=activeTaxes.map(ti=>({
+      label:TAXES[ti],
+      data:YEARS.map(yr=>{
+        const v=getAmt(yr,ti);
+        if(v==null)return null;
+        if(compMode==='pct'){
+          const tot=getTotal(yr);
+          return(tot&&tot>0)?v/tot:null;
+        } else {
+          return adj(v,yr);
+        }
+      }),
+      backgroundColor:COLORS[ti]+'cc',
+      borderColor:COLORS[ti],
+      borderWidth:1,
+      spanGaps:false,
+    }));
+
+    const isPct=compMode==='pct';
+    const inflLbl=inflMode&&!isPct?' · Adj. to 2025 $':'';
+    document.getElementById('shareTitle').textContent='Composition of Total Organizational Excise Taxes';
+    document.getElementById('shareSub').textContent=(isPct?'% share of total':'$ amounts')+inflLbl+' · 2016–2024';
+    sChart=new Chart(document.getElementById('shareChart').getContext('2d'),{
+      type:'bar',
+      data:{labels:YEARS,datasets},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{
+          callbacks:{
+            label:ctx=>ctx.raw!=null?' '+TAXES[activeTaxes[ctx.datasetIndex]]+': '+(isPct?fP(ctx.raw):fD(ctx.raw)):'No data'
+          }
+        }},
+        scales:{
+          x:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11}}},
+          y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},callback:v=>isPct?fP(v):fD(v)},min:0}
+        }
+      }
+    });
+    document.getElementById('shareLegend').innerHTML=activeTaxes.map(ti=>
+      `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[ti]}"></div><span>${TAXES[ti]}</span></div>`
+    ).join('');
+  }
+}
+
+function updateTrend(){
+  const ti=parseInt(document.getElementById('trendTaxSel').value);
+  const isAmt=trendMetric==='amt';
+  const taxName=TAXES[ti];
+  const vals=YEARS.map(yr=>{
+    const v=isAmt?getAmt(yr,ti):getRet(yr,ti);
+    return(isAmt&&v!=null)?adj(v,yr):v;
+  });
+  document.getElementById('trendTitle').textContent=taxName;
+  document.getElementById('trendSub').textContent=(isAmt?'Dollar Amount':'Number of Returns')+(isAmt&&inflMode?' · Adj. to 2025 $':'')+' · 2016–2024';
+  const color=COLORS[ti]||'#3c608a';
+  if(tChart)tChart.destroy();
+  tChart=new Chart(document.getElementById('trendChart').getContext('2d'),{
+    type:chartType,
+    data:{labels:YEARS,datasets:[{label:taxName,data:vals,borderColor:color,backgroundColor:chartType==='bar'?color+'cc':color+'22',borderWidth:chartType==='line'?2.5:1,pointRadius:4,pointHoverRadius:6,fill:chartType==='line',tension:0.3,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?' '+(isAmt?fD(ctx.raw):fC(ctx.raw)):'No data'}}},
+      scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{size:11}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},callback:v=>isAmt?fD(v):fC(v)}}}}
+  });
+  const vv=vals.filter(v=>v!=null),yvv=YEARS.filter((_,i)=>vals[i]!=null);
+  if(vv.length===0){document.getElementById('trendStats').innerHTML='<div class="stat-card"><div class="lbl">Note</div><div class="val" style="font-size:13px">All values suppressed or not available.</div></div>';return;}
+  const first=vv[0],last=vv[vv.length-1],mx=Math.max(...vv),mn=Math.min(...vv);
+  const mxYr=yvv[vv.indexOf(mx)],mnYr=yvv[vv.indexOf(mn)];
+  const chg=first?(last-first)/Math.abs(first):null;
+  const fmt=isAmt?fD:fC;
+  document.getElementById('trendStats').innerHTML=[
+    {l:'Latest ('+yvv[yvv.length-1]+')',v:fmt(last)},
+    {l:'Earliest ('+yvv[0]+')',v:fmt(first)},
+    {l:'Change',v:chg!=null?((chg>=0?'+':'')+(chg*100).toFixed(1)+'%'):'—',c:chg!=null?(chg>=0?'pos':'neg'):''},
+    {l:'Peak',v:fmt(mx),sub:mxYr},
+    {l:'Trough',v:fmt(mn),sub:mnYr},
+  ].map(s=>`<div class="stat-card"><div class="lbl">${s.l}</div><div class="val">${s.v}</div><div class="chg ${s.c||''}">${s.sub?s.sub:s.c==='pos'?'▲':s.c==='neg'?'▼':''}</div></div>`).join('');
+}
+
+function updateDetail(){
+  const yr=document.getElementById('yearSel').value;
+  const dolLabel=inflMode?'2025 $ Amount':'Amount ($)';
+  document.getElementById('detailHdr').textContent='Year Detail — '+yr;
+  const totAmt=getTotal(yr);
+  const rows=TAXES.map((tax,ti)=>{
+    const v=gv(yr,ti);
+    const isTotal=ti===0;
+    let nCell,amtCell,pctCell;
+    if(v==='D'){
+      nCell='<span class="sup">**</span>';
+      amtCell='<span class="sup">**</span>';
+      pctCell='<span class="na">—</span>';
+    } else if(!v){
+      nCell='<span class="na">—</span>';
+      amtCell='<span class="na">—</span>';
+      pctCell='<span class="na">—</span>';
+    } else {
+      nCell=fC(v[0]);
+      const a=adj(v[1],yr);
+      amtCell=fDF(a);
+      pctCell=(!isTotal&&totAmt&&v[1]!=null)?fP(v[1]/totAmt):'<span class="na">—</span>';
+    }
+    return`<tr${isTotal?' class="tot"':''}><td>${tax}</td><td>${nCell}</td><td>${amtCell}</td><td>${pctCell}</td></tr>`;
+  }).join('');
+  document.getElementById('detailContent').innerHTML=
+    `<table><thead><tr><th>Tax Type</th><th># Returns</th><th>${dolLabel}</th><th>% of Total</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+buildSelects();updateShare();updateTrend();updateDetail();setTimeout(notifyHeight,200);
+</script>
+<div class="bpc-footer">
+  <span>Bipartisan Policy Center &bull; <a href="https://bipartisanpolicy.org" target="_blank" rel="noopener">bipartisanpolicy.org</a></span>
+  <span>Source: IRS Statistics of Income (SOI), Form 4720, 2016&ndash;2024</span>
+</div>
+</body>
+</html>
