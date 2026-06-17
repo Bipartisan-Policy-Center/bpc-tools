@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPC | Unrelated Business Income (UBI): 2008–2018</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto+Slab:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Faustina',Georgia,serif;background:#f5f6f6;color:#333638;font-size:14px}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #d3d8d6;padding:0 28px}
+.tab-btn{padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#6b7280;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn.active{color:#1f476c;border-bottom-color:#e43e47}
+.tab-content{display:none;padding:18px 28px}
+.tab-content.active{display:block}
+.controls{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.cg{display:flex;flex-direction:column;gap:5px}
+.cg label{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.4px}
+select{padding:7px 10px;border:1.5px solid #d3d8d6;border-radius:6px;font-size:13px;color:#333638;background:white;cursor:pointer;font-family:inherit}
+select:focus{outline:none;border-color:#3c608a}
+#metricSel{min-width:300px}
+#orgSel{min-width:280px}
+.btn-group{display:flex}
+.btn-group button{padding:7px 14px;border:1.5px solid #d3d8d6;border-radius:0;border-right-width:0;font-size:13px;color:#333638;background:white;cursor:pointer;font-family:inherit}
+.btn-group button:first-child{border-radius:6px 0 0 6px}
+.btn-group button:last-child{border-radius:0 6px 6px 0;border-right-width:1.5px}
+.btn-group button.active{background:#1f476c;color:white;border-color:#1f476c}
+.chart-card{background:#fff;border-radius:10px;padding:18px 22px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.chart-title{font-size:15px;font-weight:700;font-family:'Roboto Slab',Georgia,serif;color:#333638;margin-bottom:3px}
+.chart-sub{font-size:12px;color:#6b7280;margin-bottom:14px}
+.chart-wrap{position:relative;height:360px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.stat-card{background:#f8fafc;border:1.5px solid #d3d8d6;border-radius:8px;padding:10px 14px}
+.stat-card .lbl{font-size:10.5px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.stat-card .val{font-size:19px;font-weight:700;color:#1f476c;font-family:'Roboto Slab',Georgia,serif;margin:2px 0}
+.stat-card .chg{font-size:11px}
+.pos{color:#00ad4d}.neg{color:#e43e47}
+.sc{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;margin-top:14px}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f1f5f9;padding:7px 10px;font-size:10.5px;font-weight:700;color:#555b5e;text-align:right;border-bottom:1.5px solid #d3d8d6;white-space:nowrap;position:sticky;top:0}
+thead th:first-child{text-align:left;min-width:220px}
+tbody tr{border-bottom:1px solid #f1f5f9}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:6px 10px;font-size:12.5px;text-align:right;white-space:nowrap}
+tbody td:first-child{text-align:left;font-weight:600;color:#1f476c}
+tbody tr.tot td{font-weight:700;background:#f1f5f9;color:#333638}
+.na{color:#94a3b8;font-style:italic}
+.suppressed{color:#94a3b8;font-style:italic}
+.note{font-size:11px;color:#94a3b8;margin-top:10px;font-style:italic;padding:4px 0}
+.d-note{background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:11.5px;color:#92400e;margin-bottom:10px}
+.tbl-wrap{overflow-x:auto;max-height:600px;overflow-y:auto}
+.sh{color:white;padding:9px 14px;font-size:12.5px;font-weight:700;font-family:'Roboto Slab',Georgia,serif;background:#1f476c}
+/* ── BPC Header ── */
+.bpc-header{background:linear-gradient(135deg,#3c608a 0%,#1f476c 100%);color:#fff;padding:22px 28px 20px;border-bottom:4px solid #e43e47;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bpc-logo{display:block;height:26px;width:auto;margin-bottom:10px}
+.bpc-header h1{font-family:'Roboto Slab',Georgia,serif;font-size:clamp(1.05rem,3vw,1.35rem);font-weight:700;line-height:1.25;margin-bottom:6px}
+.bpc-header p{font-size:.82rem;opacity:.82;line-height:1.5}
+/* ── BPC Footer ── */
+.bpc-footer{background:#1f476c;color:rgba(255,255,255,.6);font-size:11px;padding:10px 28px;display:flex;justify-content:space-between;align-items:center;border-top:3px solid #e43e47;font-family:'Faustina',Georgia,serif;flex-wrap:wrap;gap:6px}
+.bpc-footer a{color:rgba(255,255,255,.75);text-decoration:none}
+.bpc-footer a:hover{color:#fff;text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="bpc-header">
+  <img src="bpc-logo-white.png" alt="Bipartisan Policy Center" class="bpc-logo">
+  <h1>Unrelated Business Income (UBI) Tax Returns: 2008–2018</h1>
+  <p>Bipartisan Policy Center &bull; IRS Statistics of Income (SOI) data &bull; Dollar amounts in millions &bull; Estimates based on samples &bull; Data available for 2008–2013, 2015, 2017, 2018</p>
+</header>
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('trend')">Trend Analysis</button>
+  <button class="tab-btn" onclick="switchTab('detail')">Year Detail</button>
+</div>
+
+<!-- TREND TAB -->
+<div id="tab-trend" class="tab-content active">
+  <div class="controls">
+    <div class="cg"><label>Metric</label><select id="metricSel" onchange="updateChart()"></select></div>
+    <div class="cg"><label>Organization</label><select id="orgSel" onchange="updateChart()"></select></div>
+    <div class="cg"><label>Chart Type</label>
+      <div class="btn-group">
+        <button id="btnLine" class="active" onclick="setChartType('line')">Line</button>
+        <button id="btnBar" onclick="setChartType('bar')">Bar</button>
+      </div>
+    </div>
+    <div class="cg"><label>Dollar Values</label>
+      <div class="btn-group">
+        <button id="btnNom" class="active" onclick="setInfl(false)">Nominal</button>
+        <button id="btnInfl" onclick="setInfl(true)">2025 $</button>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title" id="chartTitle">Loading...</div>
+    <div class="chart-sub" id="chartSub"></div>
+    <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+  <p class="note">Dollar amounts in millions. "d" = data deleted to avoid disclosure of information about specific taxpayers. These values appear as gaps in trend lines. Data not available for 2014 and 2016.</p>
+</div>
+
+<!-- YEAR DETAIL TAB -->
+<div id="tab-detail" class="tab-content">
+  <div class="controls">
+    <div class="cg"><label>Tax Year</label>
+      <select id="yearSel" onchange="updateDetail()"></select>
+    </div>
+    <div class="cg"><label>Dollar Values</label>
+      <div class="btn-group">
+        <button id="btnNom2" class="active" onclick="setInfl(false)">Nominal</button>
+        <button id="btnInfl2" onclick="setInfl(true)">2025 $</button>
+      </div>
+    </div>
+  </div>
+  <div class="d-note">&#9432; "d" = Data deleted to avoid disclosure of information about specific taxpayers &bull; "—" = Not reported / zero returns</div>
+  <div class="sc">
+    <div class="sh" id="detailHeader">Year Detail</div>
+    <div class="tbl-wrap"><div id="detailContent"></div></div>
+  </div>
+  <p class="note">Dollar amounts in millions (Nominal) or millions of 2025 dollars (2025 $). Some organizations may not appear in all years.</p>
+</div>
+
+<script>
+const R={"years":["2008","2009","2010","2011","2012","2013","2015","2017","2018"],"orgs":["All Organizations","115 Income of States, Municipalities, etc.","220(e) Archer Medical Savings Accounts","401(a) Qualified Pension, Profit-Sharing Plans","408(e) Traditional IRAs","408(A) Roth IRAs","501(c)(2) Title-Holding Corporations","501(c)(3) Religious, Educational, Charitable","501(c)(4) Civic Leagues & Social Welfare","501(c)(5) Labor, Agricultural & Horticultural","501(c)(6) Business Leagues & Chambers of Commerce","501(c)(7) Social and Recreational Clubs","501(c)(8) Fraternal Beneficiary Societies","501(c)(9) Voluntary Employees' Beneficiary Assoc.","501(c)(10) Domestic Fraternal Societies","501(c)(11) Teachers' Retirement Fund Assoc.","501(c)(12) Benevolent Life Insurance Assoc.","501(c)(13) Cemetery Companies","501(c)(14) State-Chartered Credit Unions","501(c)(15) Mutual Insurance Companies","501(c)(16) Crop Operations Finance Corps.","501(c)(17) Supplemental Unemployment Benefit Trusts","501(c)(18) Employee-Funded Pension Trusts","501(c)(19) War Veterans' Posts & Organizations","501(c)(21) Black Lung Benefit Trusts","501(c)(22) Withdrawal Liability Payment Funds","501(c)(23) Veterans' Assoc. Founded Before 1880","501(c)(24) Trusts (Section 4049 of ERISA)","501(c)(25) Title-Holding Companies (5 or Fewer)","501(c)(26) High-Risk Health Insurance Plans","501(c)(27) Workers' Compensation Reinsurance Plans","529(a) Qualified State Tuition Plans","530(a) Coverdell Education Savings Accounts"],"items":["Number of Returns","Gross Unrelated Business Income","Total Deductions","UBI Taxable Income (Less Deficit)","Unrelated Business Taxable Income","Total Tax"],"data":{"2008":{"0":[42066.0,10300903.0,10218223.0,82682.0,1209470.0,336314.0],"2":[0.0,0.0,0.0,0.0,0.0,0.0],"3":[417.0,140835.0,73997.0,66838.0,73196.0,23408.0],"4":[6279.0,49205.0,16393.0,32812.0,33650.0,9082.0],"5":[171.0,8569.0,760.0,7809.0,7809.0,2231.0],"6":[311.0,53541.0,51092.0,2449.0,6222.0,1667.0],"7":[14057.0,6418708.0,6614711.0,-196003.0,572933.0,167022.0],"8":[1356.0,540059.0,527916.0,12143.0,42439.0,13228.0],"9":[2171.0,265624.0,260643.0,4982.0,25560.0,6716.0],"10":[5352.0,1009264.0,1014260.0,-4995.0,78893.0,23356.0],"11":[6102.0,649284.0,601135.0,48149.0,93699.0,23894.0],"12":[1027.0,85478.0,84635.0,843.0,6632.0,1139.0],"13":[550.0,434174.0,245523.0,188651.0,229327.0,55179.0],"14":[306.0,26104.0,27352.0,-1248.0,676.0,101.0],"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[278.0,75961.0,71789.0,4172.0,10245.0,2416.0],"17":null,"18":[1637.0,312529.0,395367.0,-82837.0,16659.0,4515.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":[0.0,0.0,0.0,0.0,0.0,0.0],"23":[1986.0,219486.0,219557.0,-71.0,11243.0,2297.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":[0.0,0.0,0.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":[0.0,0.0,0.0,0.0,0.0,0.0]},"2009":{"0":[42469.0,9700964.0,9821097.0,-120133.0,930795.0,263147.0],"2":null,"3":[389.0,80583.0,78770.0,1813.0,43176.0,14405.0],"4":[7025.0,36342.0,17352.0,18991.0,20197.0,5162.0],"5":[351.0,6420.0,1839.0,4580.0,4840.0,1507.0],"6":[313.0,35584.0,37635.0,-2051.0,2698.0,673.0],"7":[14169.0,6313123.0,6499786.0,-186663.0,505479.0,151218.0],"8":[1466.0,494826.0,491797.0,3029.0,20654.0,5886.0],"9":[2084.0,248036.0,245404.0,2631.0,27882.0,7253.0],"10":[5417.0,922867.0,936812.0,-13945.0,68446.0,20251.0],"11":[5890.0,549272.0,551590.0,-2318.0,51965.0,11499.0],"12":[1242.0,69338.0,67257.0,2081.0,7432.0,1525.0],"13":[509.0,411579.0,279007.0,132572.0,147328.0,36320.0],"14":[107.0,12641.0,13035.0,-394.0,295.0,52.0],"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[269.0,82106.0,73904.0,8202.0,12945.0,3336.0],"17":[103.0,6298.0,8423.0,-2125.0,176.0,26.0],"18":[1219.0,251294.0,328873.0,-77578.0,9034.0,2537.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":[0.0,0.0,0.0,0.0,0.0,0.0],"23":[1874.0,171214.0,173498.0,-2284.0,7897.0,1411.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":null,"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":null,"30":null,"31":null,"32":[0.0,0.0,0.0,0.0,0.0,0.0]},"2010":{"0":[43184.0,10966456.0,10882576.0,83880.0,1217989.0,332465.0],"2":null,"3":[628.0,306160.0,222930.0,83230.0,110151.0,25295.0],"4":[7645.0,44591.0,21185.0,23406.0,25093.0,6345.0],"5":[280.0,9095.0,2420.0,6675.0,7016.0,2278.0],"6":[261.0,35419.0,34548.0,871.0,3752.0,854.0],"7":[15085.0,7115467.0,7238438.0,-122971.0,647457.0,185533.0],"8":[1553.0,535998.0,535534.0,464.0,16438.0,4707.0],"9":[2007.0,266998.0,248782.0,18216.0,42404.0,12022.0],"10":[4835.0,977431.0,972162.0,5270.0,76186.0,23220.0],"11":[5788.0,665519.0,639456.0,26064.0,72714.0,19089.0],"12":[1051.0,63392.0,63044.0,347.0,6235.0,1272.0],"13":[391.0,416236.0,280484.0,135753.0,182380.0,44413.0],"14":[90.0,13612.0,14794.0,-1183.0,353.0,55.0],"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[356.0,76951.0,68559.0,8393.0,10994.0,3048.0],"17":null,"18":[1284.0,249724.0,326711.0,-76987.0,8690.0,2442.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":null,"23":[1818.0,173272.0,176929.0,-3656.0,6876.0,1479.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":[0.0,0.0,0.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":[0.0,0.0,0.0,0.0,0.0,0.0]},"2011":{"0":[45384.0,11371974.0,11229268.0,142705.0,1354719.0,350770.0],"2":null,"3":[574.0,250513.0,164345.0,86168.0,125654.0,26938.0],"4":[9364.0,62452.0,28661.0,33790.0,35551.0,9787.0],"5":[177.0,2270.0,592.0,1678.0,1756.0,586.0],"6":[297.0,37638.0,33979.0,3659.0,7346.0,2057.0],"7":[15981.0,7496577.0,7608039.0,-111462.0,728789.0,199237.0],"8":[1626.0,640565.0,654210.0,-13645.0,19336.0,5134.0],"9":[1934.0,242534.0,235285.0,7248.0,28519.0,7212.0],"10":[5057.0,979760.0,976690.0,3070.0,87023.0,26891.0],"11":[5584.0,663936.0,639562.0,24374.0,61055.0,15121.0],"12":[1062.0,64348.0,63209.0,1139.0,6442.0,1261.0],"13":[403.0,407131.0,228205.0,178927.0,219951.0,48291.0],"14":null,"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[285.0,73386.0,65629.0,7757.0,13322.0,3403.0],"17":null,"18":[1237.0,263020.0,332453.0,-69433.0,10451.0,2884.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":null,"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":[0.0,0.0,0.0,0.0,0.0,0.0],"23":[1601.0,164882.0,168133.0,-3251.0,8051.0,1646.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":[0.0,0.0,0.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":[0.0,0.0,0.0,0.0,0.0,0.0]},"2012":{"0":[46168.0,12066356.0,11703675.0,362681.0,1584782.0,426272.0],"2":null,"3":[821.0,334904.0,259026.0,75878.0,106164.0,35054.0],"4":[10872.0,98422.0,33779.0,64643.0,65816.0,18866.0],"5":[284.0,10462.0,1192.0,9270.0,9310.0,2463.0],"6":[275.0,36013.0,36574.0,-561.0,3704.0,1064.0],"7":[16261.0,7961514.0,7970019.0,-8505.0,855717.0,236963.0],"8":[1366.0,625652.0,625665.0,-13.0,20897.0,5672.0],"9":[1495.0,229750.0,220793.0,8957.0,24229.0,5968.0],"10":[5033.0,945458.0,995176.0,-49717.0,79573.0,23822.0],"11":[4978.0,678291.0,623622.0,54669.0,85031.0,22924.0],"12":[1029.0,88216.0,85640.0,2576.0,9314.0,2246.0],"13":[374.0,487803.0,211855.0,275948.0,282488.0,59442.0],"14":null,"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[323.0,64359.0,65654.0,-1295.0,8603.0,2545.0],"17":null,"18":[1199.0,300974.0,364804.0,-63830.0,21758.0,6554.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":null,"23":[1643.0,179190.0,178360.0,830.0,9951.0,2054.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":null,"28":null,"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":[0.0,0.0,0.0,0.0,0.0,0.0],"31":null,"32":null},"2013":{"0":[46380.0,12963173.0,12053640.0,909533.0,1986548.0,581003.0],"1":[48.0,85931.0,90870.0,-4939.0,3290.0,1085.0],"2":[0.0,0.0,0.0,0.0,0.0,0.0],"3":[876.0,438415.0,220871.0,217544.0,225761.0,68606.0],"4":[10906.0,99948.0,36538.0,63410.0,65783.0,18456.0],"5":[369.0,15415.0,8090.0,7325.0,11560.0,3860.0],"6":[264.0,60333.0,47605.0,12728.0,20412.0,6850.0],"7":[16416.0,8199608.0,8073543.0,126065.0,898844.0,278773.0],"8":[1584.0,677943.0,660407.0,17536.0,36171.0,11145.0],"9":[1411.0,237468.0,227888.0,9580.0,25883.0,6411.0],"10":[4714.0,988652.0,982921.0,5731.0,74913.0,23865.0],"11":[5197.0,732989.0,704613.0,28376.0,69346.0,18224.0],"12":[1074.0,103199.0,87688.0,15511.0,21467.0,7403.0],"13":[319.0,740385.0,252889.0,487496.0,495222.0,126646.0],"14":null,"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[344.0,75112.0,67111.0,8001.0,12907.0,3731.0],"17":null,"18":[1168.0,285539.0,367694.0,-82154.0,12944.0,3406.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":[0.0,0.0,0.0,0.0,0.0,0.0],"23":[1540.0,196267.0,196674.0,-407.0,8821.0,1695.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[0.0,0.0,0.0,0.0,0.0,0.0],"27":null,"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":[0.0,0.0,0.0,0.0,0.0,0.0],"31":null,"32":[0.0,0.0,0.0,0.0,0.0,0.0]},"2015":{"0":[63171.0,13871870.0,13249452.0,622079.0,2273190.0,648383.0],"1":[0.0,0.0,0.0,0.0,0.0,0.0],"2":null,"3":[813.0,334258.0,158908.0,175350.0,210244.0,56944.0],"4":[18875.0,116510.0,43954.0,72557.0,73160.0,19469.0],"5":[652.0,13145.0,2507.0,10639.0,10641.0,3833.0],"6":[142.0,27461.0,30937.0,-3476.0,1461.0,340.0],"7":[31655.0,9517105.0,9737858.0,-220753.0,1129773.0,348221.0],"8":[921.0,705735.0,710588.0,-4852.0,20808.0,6121.0],"9":[980.0,201471.0,191386.0,10085.0,25719.0,7203.0],"10":[2997.0,944714.0,890821.0,53893.0,107175.0,35219.0],"11":[3045.0,639971.0,606163.0,33468.0,61265.0,16366.0],"12":[625.0,82586.0,76292.0,6295.0,11060.0,3131.0],"13":[364.0,772751.0,191450.0,581301.0,588165.0,141604.0],"14":[60.0,15513.0,17699.0,-2187.0,359.0,55.0],"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[259.0,72433.0,62385.0,10049.0,14849.0,4636.0],"17":[65.0,3433.0,3377.0,55.0,null,null],"18":[718.0,257850.0,357747.0,-99897.0,10798.0,3212.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":null,"23":[967.0,157593.0,158500.0,-907.0,6121.0,1401.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":null,"27":[0.0,0.0,0.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":null},"2017":{"0":[80711.0,15375111.0,13714707.0,1645381.0,3186492.0,871366.0],"1":[0.0,0.0,0.0,0.0,0.0,0.0],"2":[21.0,109.0,145.0,-36.0,0.0,0.0],"3":[559.0,438060.0,215683.0,222377.0,251140.0,80273.0],"4":[29779.0,232073.0,54985.0,177088.0,177965.0,47066.0],"5":[510.0,10566.0,1957.0,8609.0,8619.0,2557.0],"6":[124.0,26590.0,29891.0,-3301.0,1454.0,265.0],"7":[39847.0,10567637.0,10066198.0,486416.0,1722257.0,469921.0],"8":[742.0,669090.0,662817.0,6273.0,23595.0,6998.0],"9":[895.0,192190.0,183081.0,9109.0,22367.0,5744.0],"10":[2419.0,905525.0,890891.0,14634.0,77487.0,23481.0],"11":[3053.0,651815.0,611603.0,40212.0,68955.0,17604.0],"12":[507.0,64830.0,63298.0,1532.0,3407.0,931.0],"13":[401.0,1004856.0,220931.0,783926.0,788246.0,204095.0],"14":[38.0,12495.0,12767.0,-273.0,86.0,13.0],"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[138.0,71465.0,60405.0,11061.0,16340.0,5253.0],"17":[56.0,4332.0,5751.0,-1420.0,578.0,138.0],"18":[721.0,329647.0,441178.0,-111530.0,16821.0,5396.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[0.0,0.0,0.0,0.0,0.0,0.0],"22":null,"23":[845.0,184580.0,184907.0,-326.0,5820.0,1254.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[29.0,618.0,432.0,187.0,187.0,28.0],"27":[18.0,274.0,274.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":null},"2018":{"0":[92916.0,15000708.0,8286308.0,2486552.0,3100535.0,691449.0],"1":[0.0,0.0,0.0,0.0,0.0,0.0],"2":[29.0,1825.0,1162.0,2510.0,2510.0,524.0],"3":[625.0,494032.0,111366.0,291572.0,316777.0,79866.0],"4":[54626.0,366027.0,101439.0,224748.0,227551.0,46724.0],"5":[1719.0,15217.0,4441.0,9759.0,9793.0,2399.0],"6":[127.0,24921.0,24677.0,188.0,3908.0,821.0],"7":[25820.0,10575929.0,5620517.0,1084653.0,1494104.0,316075.0],"8":[700.0,589133.0,513253.0,-24097.0,15100.0,3126.0],"9":[881.0,147509.0,129792.0,11722.0,25431.0,4889.0],"10":[2311.0,726897.0,622745.0,32586.0,74078.0,16796.0],"11":[3361.0,562778.0,488004.0,61487.0,79111.0,16353.0],"12":[558.0,74102.0,69737.0,12977.0,15434.0,3181.0],"13":[375.0,980993.0,195613.0,787793.0,804164.0,193552.0],"14":null,"15":[0.0,0.0,0.0,0.0,0.0,0.0],"16":[171.0,57923.0,68773.0,-12986.0,5983.0,1249.0],"17":null,"18":[752.0,159112.0,136361.0,3220.0,19746.0,3978.0],"19":[0.0,0.0,0.0,0.0,0.0,0.0],"20":[0.0,0.0,0.0,0.0,0.0,0.0],"21":[23.0,268.0,46.0,23.0,23.0,0.0],"22":null,"23":[755.0,188911.0,174807.0,-342.0,4061.0,832.0],"24":[0.0,0.0,0.0,0.0,0.0,0.0],"25":[0.0,0.0,0.0,0.0,0.0,0.0],"26":[23.0,242.0,166.0,76.0,76.0,16.0],"27":[8.0,658.0,658.0,0.0,0.0,0.0],"28":[0.0,0.0,0.0,0.0,0.0,0.0],"29":[0.0,0.0,0.0,0.0,0.0,0.0],"30":null,"31":null,"32":null}},"disclosed":{"2008":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,false,false,true],"2009":[true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false,false,false,true],"2010":[true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,false,true,true,true,true,true,true,true,false,false,true],"2011":[true,true,false,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,true,true,false,true,true,true,true,true,true,true,true,true,false,false,true],"2012":[true,true,false,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,true,true,true,true,false,true,true,true,true,false,false,true,true,false,false],"2013":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,true,true,true,true,true,true,true,true,true,false,true,true,true,false,true],"2015":[true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,false,true,true,true,false,false,false],"2017":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,false,false,false],"2018":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,true,true,true,true,false,true,true,true,true,true,true,true,false,false,false]}};
+const INFL={'2008':1.49573,'2009':1.50053,'2010':1.47637,'2011':1.43143,'2012':1.40236,'2013':1.38210,'2014':1.36012,'2015':1.35848,'2016':1.34148,'2017':1.31348,'2018':1.28221,'2019':1.25937,'2020':1.24379,'2021':1.18817,'2022':1.10025};
+const CHART_YEARS=['2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018'];const YEARS=R.years,ORGS=R.orgs,ITEMS=R.items,DATA=R.data,DISC=R.disclosed;
+let inflMode=false;
+function adj(v,yr){return(inflMode&&v!=null)?v*(INFL[yr]||1):v}
+
+function gv(yr,oi,ii){
+  const row=DATA[yr];
+  if(!row)return null;
+  const vals=row[String(oi)];
+  if(vals===undefined){
+    if(DISC[yr]&&DISC[yr][oi]===false)return 'd';
+    return null;
+  }
+  if(vals===null)return 'd';
+  const v=vals[ii];
+  return(v===undefined||v===null)?null:v;
+}
+function gvNum(yr,oi,ii){const v=gv(yr,oi,ii);return(v==='d'||v==null)?null:v}
+function sd(a,b){return(a==null||b==null||b===0)?null:a/b}
+
+const FMT_COLORS={dollar:{l:'#1b83c6',f:'rgba(27,131,198,0.13)'},count:{l:'#00ad4d',f:'rgba(0,173,77,0.13)'},pct:{l:'#6f173a',f:'rgba(111,23,58,0.1)'},ratio:{l:'#f47521',f:'rgba(244,117,33,0.1)'}};
+function fD(v){if(v==null||isNaN(v))return'—';const vm=v/1000;const a=Math.abs(vm);let s;if(a>=1e6)s=(vm/1e6).toFixed(1)+'T';else if(a>=1e3)s=(vm/1e3).toFixed(1)+'B';else s=vm.toFixed(1)+'M';return(vm<0?'(':'')+'$'+Math.abs(vm<0?-1*parseFloat(s):parseFloat(s)).toLocaleString()+s.replace(/[\d.-]/g,'')+(vm<0?')':'');}
+function fDF(v){if(v==null||isNaN(v))return'—';const r=Math.round(Math.abs(v)/1000);return(v<0?'(':'')+'$'+r.toLocaleString()+(v<0?')':'')}
+function fC(v){return(v==null||isNaN(v))?'—':Math.round(v).toLocaleString()}
+function fP(v){return(v==null||isNaN(v))?'—':(v*100).toFixed(1)+'%'}
+function fmt(v,f){if(f==='dollar')return fD(v);if(f==='count')return fC(v);if(f==='pct')return fP(v);return v!=null?v.toFixed(2):'—'}
+function fmtF(v,f){if(f==='dollar')return fDF(v);return fmt(v,f)}
+
+const GROUPS=[
+{g:'Key Metrics',items:[
+  {id:'returns',label:'Number of Returns',fmt:'count',ii:0},
+  {id:'gross_ubi',label:'Gross Unrelated Business Income',fmt:'dollar',ii:1},
+  {id:'deductions',label:'Total Deductions',fmt:'dollar',ii:2},
+  {id:'ubi_deficit',label:'UBI Taxable Income (Less Deficit)',fmt:'dollar',ii:3},
+  {id:'ubi_taxable',label:'Unrelated Business Taxable Income',fmt:'dollar',ii:4},
+  {id:'total_tax',label:'Total Tax',fmt:'dollar',ii:5},
+]},
+{g:'Derived Metrics',items:[
+  {id:'_eff_rate',label:'Effective UBI Tax Rate (Tax / Taxable Income)',fmt:'pct',
+   fn:(yr,oi)=>{const tx=gvNum(yr,oi,5),tb=gvNum(yr,oi,4);return(tx!=null&&tb!=null&&tb>0)?tx/tb:null}},
+]},
+];
+
+function getMetric(id){for(const g of GROUPS)for(const m of g.items)if(m.id===id)return m;return null}
+function getVal(m,yr,oi){
+  let v;
+  if(m.fn){v=m.fn(yr,oi);}
+  else{v=gvNum(yr,oi,m.ii);}
+  return(inflMode&&m.fmt==='dollar'&&v!=null)?v*(INFL[yr]||1):v;
+}
+
+let chart=null,chartType='line';
+
+function buildSelects(){
+  const ms=document.getElementById('metricSel');
+  GROUPS.forEach(g=>{
+    const og=document.createElement('optgroup');og.label=g.g;
+    g.items.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;og.appendChild(o)});
+    ms.appendChild(og);
+  });
+  const os=document.getElementById('orgSel');
+  ORGS.forEach((org,i)=>{const o=document.createElement('option');o.value=i;o.textContent=org;os.appendChild(o)});
+  const ys=document.getElementById('yearSel');
+  [...YEARS].reverse().forEach(yr=>{const o=document.createElement('option');o.value=yr;o.textContent=yr;ys.appendChild(o)});
+}
+
+function notifyHeight(){
+  if(window.parent!==window)
+    window.parent.postMessage({bpcHeight:document.body.scrollHeight},'*');
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['trend','detail'][i]===t));
+  ['trend','detail'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  if(t==='trend')updateChart();else updateDetail();
+  setTimeout(notifyHeight,120);
+}
+
+function setChartType(t){
+  chartType=t;
+  document.getElementById('btnLine').classList.toggle('active',t==='line');
+  document.getElementById('btnBar').classList.toggle('active',t==='bar');
+  updateChart();
+}
+
+function setInfl(v){
+  inflMode=v;
+  ['btnNom','btnNom2'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',!v)});
+  ['btnInfl','btnInfl2'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',v)});
+  const active=document.querySelector('.tab-content.active');
+  if(active&&active.id==='tab-trend')updateChart();
+  else if(active&&active.id==='tab-detail')updateDetail();
+}
+
+function updateChart(){
+  const mid=document.getElementById('metricSel').value;
+  const oi=parseInt(document.getElementById('orgSel').value);
+  const m=getMetric(mid);if(!m)return;
+  const isPct=m.fmt==='pct';
+  const barBtn=document.getElementById('btnBar');
+  if(isPct&&chartType==='bar'){chartType='line';document.getElementById('btnLine').classList.add('active');barBtn.classList.remove('active');}
+  barBtn.style.display=isPct?'none':'';
+  const vals=CHART_YEARS.map(yr=>getVal(m,yr,oi));
+  const orgLabel=ORGS[oi];
+  document.getElementById('chartTitle').textContent=m.label;
+  document.getElementById('chartSub').textContent=orgLabel+' · 2008–2018 (2014 & 2016 not available)'+(inflMode&&m.fmt==='dollar'?' · Adj. to 2025 $':'');
+  const c=FMT_COLORS[m.fmt]||FMT_COLORS.dollar;
+  if(chart)chart.destroy();
+  chart=new Chart(document.getElementById('mainChart').getContext('2d'),{
+    type:chartType,
+    data:{labels:CHART_YEARS,datasets:[{label:m.label,data:vals,borderColor:c.l,backgroundColor:chartType==='bar'?c.l+'cc':c.f,borderWidth:chartType==='line'?2.5:1,pointRadius:4,pointHoverRadius:6,fill:chartType==='line',tension:0.3,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?' '+fmt(ctx.raw,m.fmt):'No data'}}},
+      scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#6b7280'}},
+              y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#6b7280',callback:v=>fmt(v,m.fmt)}}}}
+  });
+  const vv=vals.filter(v=>v!=null);
+  const yvv=CHART_YEARS.filter((_,i)=>vals[i]!=null);
+  if(vv.length===0){
+    document.getElementById('statsRow').innerHTML='<div class="stat-card"><div class="lbl">Note</div><div class="val" style="font-size:13px">All values suppressed or not available for this selection.</div></div>';
+    return;
+  }
+  const first=vv[0],last=vv[vv.length-1],mn=Math.min(...vv),mx=Math.max(...vv);
+  const mxYr=yvv[vv.indexOf(mx)],mnYr=yvv[vv.indexOf(mn)];
+  const chg=first&&last?(last-first)/Math.abs(first):null;
+  document.getElementById('statsRow').innerHTML=[
+    {l:'Latest ('+yvv[yvv.length-1]+')',v:fmt(last,m.fmt)},
+    {l:'Earliest ('+yvv[0]+')',v:fmt(first,m.fmt)},
+    {l:'Change',v:chg!=null?((chg>=0?'+':'')+(chg*100).toFixed(1)+'%'):'—',c:chg!=null?(chg>=0?'pos':'neg'):''},
+    {l:'Peak',v:fmt(mx,m.fmt),sub:mxYr},
+    {l:'Trough',v:fmt(mn,m.fmt),sub:mnYr},
+  ].map(s=>`<div class="stat-card"><div class="lbl">${s.l}</div><div class="val">${s.v}</div><div class="chg ${s.c||''}">${s.sub?s.sub:s.c==='pos'?'▲':s.c==='neg'?'▼':''}</div></div>`).join('');
+}
+
+function cellFmt(yr,oi,ii,fmt_){
+  const raw=gv(yr,oi,ii);
+  if(raw==='d')return'<span class="suppressed">d</span>';
+  if(raw==null)return'<span class="na">—</span>';
+  const v=(inflMode&&fmt_==='dollar')?raw*(INFL[yr]||1):raw;
+  return fmtF(v,fmt_);
+}
+function effRate(yr,oi){
+  const tx=gvNum(yr,oi,5),tb=gvNum(yr,oi,4);
+  if(gv(yr,oi,5)==='d'||gv(yr,oi,4)==='d')return'<span class="suppressed">d</span>';
+  if(tx==null||tb==null||tb===0)return'<span class="na">—</span>';
+  return fP(tx/tb);
+}
+
+function updateDetail(){
+  const yr=document.getElementById('yearSel').value;
+  const dolLabel=inflMode?'Millions of 2025 Dollars':'Millions of Dollars';
+  document.getElementById('detailHeader').textContent='Year Detail — '+yr;
+  const cols=[
+    {h:'# Returns',fn:(oi)=>cellFmt(yr,oi,0,'count')},
+    {h:'Gross UBI ('+dolLabel+')',fn:(oi)=>cellFmt(yr,oi,1,'dollar')},
+    {h:'Total Deductions ('+dolLabel+')',fn:(oi)=>cellFmt(yr,oi,2,'dollar')},
+    {h:'UBI (Less Deficit) ('+dolLabel+')',fn:(oi)=>cellFmt(yr,oi,3,'dollar')},
+    {h:'UBI Taxable ('+dolLabel+')',fn:(oi)=>cellFmt(yr,oi,4,'dollar')},
+    {h:'Total Tax ('+dolLabel+')',fn:(oi)=>cellFmt(yr,oi,5,'dollar')},
+    {h:'Eff. Tax Rate',fn:(oi)=>effRate(yr,oi)},
+  ];
+  const hdr='<tr><th>Organization</th>'+cols.map(c=>`<th>${c.h}</th>`).join('')+'</tr>';
+  const rows=ORGS.map((org,oi)=>{
+    const isAll=oi===0;
+    const cells=cols.map(c=>`<td>${c.fn(oi)}</td>`).join('');
+    return`<tr${isAll?' class="tot"':''}><td>${org}</td>${cells}</tr>`;
+  }).join('');
+  document.getElementById('detailContent').innerHTML=`<table><thead>${hdr}</thead><tbody>${rows}</tbody></table>`;
+}
+
+buildSelects();updateChart();updateDetail();setTimeout(notifyHeight,200);
+</script>
+<div class="bpc-footer">
+  <span>Bipartisan Policy Center &bull; <a href="https://bipartisanpolicy.org" target="_blank" rel="noopener">bipartisanpolicy.org</a></span>
+  <span>Source: IRS Statistics of Income (SOI), 2008&ndash;2018</span>
+</div>
+</body>
+</html>
