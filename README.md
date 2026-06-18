@@ -12,6 +12,7 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 |---|---|---|
 | Auto Loan Interest Deduction | `calculators/auto-loan-interest/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/auto-loan-interest/) |
 | EITC / CTC Calculator | `calculators/eitc-ctc/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/eitc-ctc/) |
+| FSTC Scholarship Calculator | `calculators/fstc-scholarship/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/fstc-scholarship/) |
 | Overtime Tax Calculator | `calculators/overtime-tax/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/overtime-tax/) |
 
 ## Maps & Dashboards
