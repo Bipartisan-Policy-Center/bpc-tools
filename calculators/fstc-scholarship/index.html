@@ -85,7 +85,7 @@ body {
   font-family: var(--font-sans);
   background: var(--bg);
   color: var(--ink);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -172,11 +172,21 @@ body {
 
 /* Collapse right panel when no state selected — avoids dead space */
 .grid-two.no-state {
-  grid-template-columns: minmax(300px, 480px);
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
+}
+.grid-two.no-state > div:not(.results-panel):not(.full) {
+  width: 100%;
+  max-width: 560px;
 }
 .grid-two.no-state .results-panel {
   display: none;
+}
+.grid-two.no-state .full {
+  width: 100%;
+  flex-basis: 100%;
 }
 
 @media (max-width: 900px) {
@@ -201,7 +211,7 @@ body {
 }
 
 .card-eyebrow {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -211,7 +221,7 @@ body {
 
 .card h2 {
   font-family: var(--font-serif);
-  font-size: 17px;
+  font-size: 19px;
   font-weight: normal;
   margin-bottom: 18px;
   padding-bottom: 12px;
@@ -311,7 +321,7 @@ body {
   font-family: var(--font-mono);
 }
 .step-title {
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--ink);
   text-transform: uppercase;
@@ -329,7 +339,7 @@ body {
   margin-bottom: 6px;
 }
 .param-name {
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
@@ -337,7 +347,7 @@ body {
 }
 .param-val {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--bpc-blue);
 }
@@ -401,8 +411,8 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 .option-tab:hover:not(.active) { background: var(--bpc-blue-light); border-color: var(--bpc-blue-mid); }
 .option-tab.active { background: var(--bpc-blue); border-color: var(--bpc-blue); color: white; }
-.opt-num { font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
-.opt-label { font-size: 10px; font-weight: 500; line-height: 1.3; }
+.opt-num { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+.opt-label { font-size: 11px; font-weight: 500; line-height: 1.3; }
 
 /* ─────────────────────────────────────────────
    OPTION PANELS
@@ -539,7 +549,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .r-card.purple { background: var(--purple-light);border-color: var(--purple-border); }
 .r-num {
   font-family: var(--font-serif);
-  font-size: 26px;
+  font-size: 29px;
   line-height: 1;
   margin-bottom: 5px;
 }
@@ -548,7 +558,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .r-card.gold .r-num   { color: var(--gold); }
 .r-card.green .r-num  { color: var(--green); }
 .r-card.purple .r-num { color: var(--purple); }
-.r-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.r-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
 /* ─────────────────────────────────────────────
    SUMMARY SENTENCE
@@ -578,7 +588,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   margin-bottom: 9px;
 }
 .bar-row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
-.bar-lbl { font-size: 11px; color: var(--muted); width: 130px; flex-shrink: 0; }
+.bar-lbl { font-size: 12px; color: var(--muted); width: 140px; flex-shrink: 0; }
 .bar-track { flex: 1; height: 18px; background: #eaecef; border-radius: 2px; overflow: hidden; }
 .bar-fill {
   height: 100%;
@@ -664,8 +674,8 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   flex-wrap: wrap;
 }
 .cb-item { flex: 1; min-width: 110px; }
-.cb-num { font-family: var(--font-serif); font-size: 22px; color: white; }
-.cb-lbl { font-size: 10px; color: #a09890; margin-top: 2px; line-height: 1.4; }
+.cb-num { font-family: var(--font-serif); font-size: 24px; color: white; }
+.cb-lbl { font-size: 11px; color: #a09890; margin-top: 2px; line-height: 1.4; }
 
 /* ─────────────────────────────────────────────
    ELIGIBILITY METHOD NOTE
@@ -690,12 +700,12 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 .rev-title {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: normal;
   margin-bottom: 3px;
 }
 .rev-subtitle {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--muted);
   margin-bottom: 14px;
   line-height: 1.55;
@@ -704,7 +714,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .scholarship-tbl {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: 13px;
   min-width: 440px;
 }
 .scholarship-tbl thead tr { background: var(--ink); }
