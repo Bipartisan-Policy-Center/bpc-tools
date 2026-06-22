@@ -87,6 +87,7 @@ body {
   color: var(--ink);
   font-size: 15px;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 /* ─────────────────────────────────────────────
@@ -94,7 +95,7 @@ body {
 ───────────────────────────────────────────── */
 .header {
   background: var(--bpc-blue);
-  padding: 32px 40px 28px;
+  padding: 22px 32px 20px;
 }
 
 .header-brand {
@@ -117,19 +118,19 @@ body {
 }
 
 .header-desc {
-  font-size: 13.5px;
+  font-size: 13px;
   color: rgba(255,255,255,0.85);
   max-width: 780px;
-  line-height: 1.7;
-  margin-bottom: 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
   font-weight: 400;
 }
 
 .header-meta {
-  font-size: 11px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 10px;
-  line-height: 1.6;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  line-height: 1.5;
 }
 
 /* Expenses info button */
@@ -157,7 +158,7 @@ body {
 .body-wrap {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 24px 72px;
+  padding: 20px 24px 24px;
 }
 
 .grid-two {
@@ -172,6 +173,7 @@ body {
 /* Collapse right panel when no state selected — avoids dead space */
 .grid-two.no-state {
   grid-template-columns: minmax(300px, 480px);
+  justify-content: center;
 }
 .grid-two.no-state .results-panel {
   display: none;
@@ -982,7 +984,7 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
 <div class="header">
   <div class="header-brand">Bipartisan Policy Center</div>
   <h1>Federal Scholarship Tax Credit Calculator</h1>
-  <p class="header-desc">The Federal Scholarship Tax Credit (FSTC) program, enacted as part of the One Big Beautiful Bill Act, allows taxpayers to redirect up to $1,700 of their federal tax liability as donations to scholarship-granting organizations serving K–12 public school students. This calculator estimates how many taxpayer donors would be needed to fund scholarships at scale in any state — and what share of eligible taxpayers that represents. Adjust the scholarship cost, target student population, and participation method to explore different program scenarios.</p>
+  <p class="header-desc">Select any state to estimate how many taxpayer donors would be needed to fund scholarships at scale under the FSTC program. Adjust scholarship cost, target student population, and participation method to explore different scenarios.</p>
   <button class="info-btn" onclick="document.getElementById('expensesModal').classList.add('open')">
     <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6.25" stroke="currentColor" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     What are qualified educational expenses?
