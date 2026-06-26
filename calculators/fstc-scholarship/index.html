@@ -38,11 +38,11 @@
 body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
 
 /* ── HEADER ── */
-.header { background: var(--accent); padding: 32px 40px 28px; }
-.header-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 10px; }
-.header h1 { font-family: var(--font-serif); font-size: clamp(18px, 2.4vw, 30px); color: #ffffff; line-height: 1.2; max-width: 840px; margin-bottom: 14px; font-weight: normal; }
-.header-desc { font-size: 13.5px; color: rgba(255,255,255,0.85); max-width: 760px; line-height: 1.7; font-weight: 400; margin-bottom: 16px; }
-.header-meta { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 10px; line-height: 1.5; }
+.header { background: var(--accent); padding: 18px 28px 16px; }
+.header-eyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+.header h1 { font-family: var(--font-serif); font-size: clamp(15px, 1.6vw, 22px); color: #ffffff; line-height: 1.2; max-width: 840px; margin-bottom: 10px; font-weight: normal; }
+.header-desc { display: none; }
+.header-meta { display: none; }
 .expenses-btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 16px; font-size: 12.5px; font-weight: 600;
@@ -53,7 +53,7 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); 
 .expenses-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.85); }
 
 /* ── LAYOUT ── */
-.body-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 40px; }
+.body-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 20px 32px; }
 .grid-two { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
 .full { grid-column: 1 / -1; }
 .results-panel { min-width: 0; }
@@ -281,14 +281,12 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
 <body>
 
 <div class="header">
-  <div class="header-eyebrow">Bipartisan Policy Center &middot; Federal Tax Credit Scholarship &middot; State-Level Calculator</div>
-  <h1>The Federal Scholarship Tax Credit Program: How Many Taxpayers Need to Contribute for Large Scale Programs Serving Public School Students?</h1>
-  <p class="header-desc">The Federal Scholarship Tax Credit (FSTC) program, enacted as part of the One Big Beautiful Bill Act, allows taxpayers to redirect up to $1,700 of their federal tax liability as donations to scholarship-granting organizations serving K&ndash;12 public school students. This calculator estimates how many taxpayer donors would be needed to fund scholarships at scale in any state &mdash; and what share of eligible taxpayers that represents. Adjust the scholarship cost, target student population, and participation method to explore different program scenarios.</p>
+  <div class="header-eyebrow">Bipartisan Policy Center &middot; Federal Tax Credit Scholarship</div>
+  <h1>State-Level Donor Calculator</h1>
   <button class="expenses-btn" onclick="document.getElementById('expensesModal').classList.add('open')">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="7" cy="7" r="6.25" stroke="currentColor" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     What are qualified educational expenses?
   </button>
-  <p class="header-meta">Based on NCES Fall 2023 enrollment, NCES FRPL rates, Census ACS income data, and IRS SOI TY2022 returns.</p>
 </div>
 
 <div class="body-wrap">
