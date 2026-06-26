@@ -1,1039 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--
-╔══════════════════════════════════════════════════════════════════════════════╗
-║ FEDERAL SCHOLARSHIP TAX CREDIT CALCULATOR                                    ║
-║ Version: 1.0                                                                 ║
-║ Organization: Bipartisan Policy Center (BPC)                                ║
-║                                                                              ║
-║ DESCRIPTION:                                                                 ║
-║ State-level calculator estimating how many taxpayer donors are needed to     ║
-║ fund scholarships under the Federal Scholarship Tax Credit (FSTC) program   ║
-║ enacted in the One Big Beautiful Bill Act. Users select a state, set a       ║
-║ scholarship cost, choose an eligibility method, and set a target student     ║
-║ population.                                                                  ║
-║                                                                              ║
-║ DATA SOURCES:                                                                ║
-║ - NCES Common Core of Data, Fall 2023 enrollment                            ║
-║ - NCES CCD 2022-23 FRPL rates                                               ║
-║ - Census ACS 5-yr estimates (300% poverty proxy for 300% AMI eligibility)   ║
-║ - IRS SOI TY2022 individual returns (22in55cmcsv.csv)                        ║
-║                                                                              ║
-║ EMBEDDING:                                                                   ║
-║ Designed for iframe embedding on bipartisanpolicy.org. Sends dynamic        ║
-║ height via postMessage so the host page can resize the iframe.               ║
-║ WordPress embed: <iframe src="[URL]" ...></iframe>                           ║
-║                                                                              ║
-║ DEPENDENCIES:                                                                ║
-║ None — pure HTML/CSS/JavaScript. No external fonts or libraries.            ║
-║                                                                              ║
-║ CONTACT:                                                                     ║
-║ Digital: avarisco@bipartisanpolicy.org                                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
--->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Federal Scholarship Tax Credit Calculator | Bipartisan Policy Center</title>
-<meta name="description" content="Estimate how many taxpayer donors are needed to fund K–12 scholarships at scale under the Federal Scholarship Tax Credit program. Select any state and adjust parameters to model different scenarios.">
-
 <style>
-/* ─────────────────────────────────────────────
-   BPC DESIGN TOKENS
-───────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --bpc-blue:        #1b4fd8;
-  --bpc-blue-dark:   #153ea8;
-  --bpc-blue-light:  #e8f0fe;
-  --bpc-blue-mid:    #dbe8fd;
-
-  /* Semantic */
-  --bg:              #f5f7fa;
-  --surface:         #ffffff;
-  --ink:             #1a1a1a;
-  --muted:           #6c757d;
-  --border:          #dee2e6;
-  --border-dark:     #c6cdd5;
-
-  /* Accent palette */
-  --red:             #c0392b;
-  --red-light:       #fdf3f0;
-  --red-border:      #f0bdb0;
-  --green:           #2e7d4f;
-  --green-light:     #edf7f1;
-  --green-border:    #a8d4b5;
-  --gold:            #b8860b;
-  --gold-light:      #fdf8ee;
-  --gold-border:     #d4c07a;
-  --purple:          #5b4a8a;
-  --purple-light:    #f0edf8;
-  --purple-border:   #c4b8e4;
-
-  /* Typography */
-  --font-sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --font-serif: Georgia, 'Times New Roman', Times, serif;
-  --font-mono:  'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  --bg:           #f5f7fa;
+  --surface:      #ffffff;
+  --ink:          #1a1a1a;
+  --muted:        #6c757d;
+  --border:       #dee2e6;
+  --border-dark:  #c6cdd5;
+  --accent:       #1b4fd8;
+  --accent-dark:  #153ea8;
+  --accent-light: #e8f0fe;
+  --accent-mid:   #dbe8fd;
+  --accent2:      #c0392b;
+  --accent2-light:#fdf3f0;
+  --accent2-border:#f0bdb0;
+  --accent3:      #2e7d4f;
+  --accent3-light:#edf7f1;
+  --accent3-border:#a8d4b5;
+  --gold:         #b8860b;
+  --gold-light:   #fdf8ee;
+  --gold-border:  #d4c07a;
+  --purple:       #5b4a8a;
+  --purplelight:  #f0edf8;
+  --purpleborder: #c4b8e4;
+  --highlight:    #e8f0fe;
+  --font-sans:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-serif:   Georgia, 'Times New Roman', Times, serif;
+  --font-mono:    'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 }
 
-/* ─────────────────────────────────────────────
-   RESET & BASE
-───────────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
 
-body {
-  font-family: var(--font-sans);
-  background: var(--bg);
-  color: var(--ink);
-  font-size: 16px;
-  line-height: 1.6;
-  overflow-x: hidden;
+/* ── HEADER ── */
+.header { background: var(--accent); padding: 32px 40px 28px; }
+.header-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 10px; }
+.header h1 { font-family: var(--font-serif); font-size: clamp(18px, 2.4vw, 30px); color: #ffffff; line-height: 1.2; max-width: 840px; margin-bottom: 14px; font-weight: normal; }
+.header-desc { font-size: 13.5px; color: rgba(255,255,255,0.85); max-width: 760px; line-height: 1.7; font-weight: 400; margin-bottom: 16px; }
+.header-meta { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 10px; line-height: 1.5; }
+.expenses-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; font-size: 12.5px; font-weight: 600;
+  font-family: var(--font-sans); background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.5); color: rgba(255,255,255,0.9);
+  border-radius: 3px; cursor: pointer; transition: all 0.18s; letter-spacing: 0.01em;
 }
+.expenses-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.85); }
 
-/* ─────────────────────────────────────────────
-   HEADER
-───────────────────────────────────────────── */
-.header {
-  background: var(--bpc-blue);
-  padding: 22px 32px 20px;
-}
-
-.header-brand {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 8px;
-}
-
-.header h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(18px, 2.5vw, 30px);
-  font-weight: normal;
-  color: #ffffff;
-  line-height: 1.25;
-  max-width: 820px;
-  margin-bottom: 12px;
-}
-
-.header-desc {
-  font-size: 13px;
-  color: rgba(255,255,255,0.85);
-  max-width: 780px;
-  line-height: 1.6;
-  margin-bottom: 10px;
-  font-weight: 400;
-}
-
-.header-meta {
-  font-size: 10.5px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 8px;
-  line-height: 1.5;
-}
-
-/* Expenses info button */
-.info-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--font-sans);
-  background: transparent;
-  border: 1.5px solid rgba(255,255,255,0.55);
-  color: rgba(255,255,255,0.9);
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.18s;
-  letter-spacing: 0.01em;
-}
-.info-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.85); }
-
-/* ─────────────────────────────────────────────
-   LAYOUT
-───────────────────────────────────────────── */
-.body-wrap {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 24px 24px;
-}
-
-.grid-two {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
+/* ── LAYOUT ── */
+.body-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 40px; }
+.grid-two { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
 .full { grid-column: 1 / -1; }
+.results-panel { min-width: 0; }
 
-/* Collapse right panel when no state selected — avoids dead space */
-.grid-two.no-state {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-.grid-two.no-state > div:not(.results-panel):not(.full) {
-  width: 100%;
-  max-width: 560px;
-}
-.results-panel {
-  min-width: 0;
-}
-.grid-two.no-state .results-panel {
-  display: none;
-}
-.grid-two.no-state .full {
-  width: 100%;
-  flex-basis: 100%;
-}
-
-@media (max-width: 1060px) {
+@media (max-width: 860px) {
   .grid-two { grid-template-columns: 1fr; }
+  .body-wrap { padding: 18px 14px 32px; }
 }
-
 @media (max-width: 640px) {
   .header { padding: 22px 18px 20px; }
-  .body-wrap { padding: 16px 14px 48px; }
+  #result-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .r-num { font-size: 22px; }
+  #summary-sentence { font-size: 13px; padding: 12px 14px; }
+  .flow { padding-bottom: 8px; }
+  .flow-node { min-width: 70px; padding: 10px 6px; }
+  .context-band { gap: 16px; }
+  .cb-item { min-width: calc(50% - 16px); }
+  .cb-num { font-size: 20px; }
+  .option-tabs { flex-direction: column; gap: 4px; }
+  .option-tab { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 10px 12px; }
+  .elig-tabs { flex-direction: column; }
+  .elig-tab { border-right: none !important; border-bottom: 1px solid var(--border); }
+  .elig-tab:last-child { border-bottom: none; }
+  .card { padding: 18px 16px; }
+  .scholarship-tbl { font-size: 11.5px; min-width: 400px; }
+}
+@media (max-width: 400px) {
+  #result-grid-4 { grid-template-columns: 1fr !important; }
+  .result-grid { grid-template-columns: 1fr; }
+  .body-wrap { padding: 14px 10px; }
 }
 
-/* ─────────────────────────────────────────────
-   CARDS
-───────────────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 22px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
+/* ── CARDS ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.card-eyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.card h2 { font-family: var(--font-serif); font-size: 18px; font-weight: normal; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 
-.card-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--bpc-blue);
-  margin-bottom: 4px;
-}
+/* ── STATE SELECT ── */
+.state-select-wrap { position: relative; margin-bottom: 18px; }
+.state-select-wrap select { width: 100%; padding: 10px 36px 10px 12px; font-family: var(--font-sans); font-size: 14px; font-weight: 500; background: var(--surface); border: 1.5px solid var(--border); border-radius: 4px; color: var(--ink); appearance: none; cursor: pointer; transition: border-color 0.18s; }
+.state-select-wrap select:focus { outline: none; border-color: var(--accent); }
+.state-select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px; }
 
-.card h2 {
-  font-family: var(--font-serif);
-  font-size: 19px;
-  font-weight: normal;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-  color: var(--ink);
-}
-
-/* ─────────────────────────────────────────────
-   CONTROLS — STATE SELECT
-───────────────────────────────────────────── */
-.state-select-wrap {
-  position: relative;
-  margin-bottom: 16px;
-}
-.state-select-wrap select {
-  width: 100%;
-  padding: 10px 36px 10px 12px;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 500;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 4px;
-  color: var(--ink);
-  appearance: none;
-  cursor: pointer;
-  transition: border-color 0.18s;
-}
-.state-select-wrap select:focus { outline: none; border-color: var(--bpc-blue); }
-.state-select-wrap::after {
-  content: '▾';
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  pointer-events: none;
-  font-size: 11px;
-}
-
-/* ─────────────────────────────────────────────
-   FIXED ASSUMPTION CHIP
-───────────────────────────────────────────── */
-.fixed-chip {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  background: var(--bpc-blue-light);
-  border: 1px solid var(--bpc-blue-mid);
-  border-radius: 4px;
-  padding: 12px 14px;
-  margin-bottom: 18px;
-}
-.fc-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.fc-val {
-  font-family: var(--font-mono);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--bpc-blue);
-  white-space: nowrap;
-  padding-top: 2px;
-}
-.fc-note {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 3px;
-  line-height: 1.5;
-}
-
-/* ─────────────────────────────────────────────
-   STEP HEADERS
-───────────────────────────────────────────── */
-.step-header {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 18px 0 10px;
-}
-.step-num {
-  flex-shrink: 0;
-  width: 22px; height: 22px;
-  background: var(--bpc-blue);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-}
-.step-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--ink);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ─────────────────────────────────────────────
-   PARAM BLOCKS / SLIDERS
-───────────────────────────────────────────── */
+/* ── PARAMS ── */
 .param-block { margin-bottom: 18px; }
-.param-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 6px;
-}
-.param-name {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.param-val {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--bpc-blue);
-}
-input[type=range] {
-  width: 100%;
-  -webkit-appearance: none;
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px; height: 16px;
-  background: var(--bpc-blue);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.15s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.22);
-}
+.param-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.param-name { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.param-val { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--accent); }
+input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; background: var(--accent); border-radius: 50%; cursor: pointer; transition: transform 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.22); }
 input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-.range-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-.param-note {
-  font-size: 11px;
-  color: #9E9080;
-  margin-top: 5px;
-  line-height: 1.5;
-  font-style: italic;
-}
+.range-labels { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+.param-note { font-size: 11px; color: #9e9080; margin-top: 5px; line-height: 1.5; font-style: italic; }
 
-/* ─────────────────────────────────────────────
-   OPTION TABS (A / B / C)
-───────────────────────────────────────────── */
-.option-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.option-tab {
-  flex: 1;
-  padding: 8px 6px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition: all 0.18s;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.option-tab:hover:not(.active) { background: var(--bpc-blue-light); border-color: var(--bpc-blue-mid); }
-.option-tab.active { background: var(--bpc-blue); border-color: var(--bpc-blue); color: white; }
-.opt-num { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
-.opt-label { font-size: 11px; font-weight: 500; line-height: 1.3; }
+/* ── FIXED CHIP ── */
+.fixed-chip { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 4px; padding: 12px 14px; margin-bottom: 18px; }
+.fixed-chip .fc-label { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.fixed-chip .fc-val { font-family: var(--font-mono); font-size: 18px; font-weight: 600; color: var(--accent); white-space: nowrap; padding-top: 2px; }
+.fixed-chip .fc-note { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
 
-/* ─────────────────────────────────────────────
-   OPTION PANELS
-───────────────────────────────────────────── */
-.option-panel {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px;
-  margin-bottom: 4px;
-}
-.opt-desc {
-  font-size: 11.5px;
-  color: var(--muted);
-  line-height: 1.55;
-  margin-bottom: 12px;
-  font-style: italic;
-}
-
-/* ─────────────────────────────────────────────
-   ELIGIBILITY TOGGLE
-───────────────────────────────────────────── */
-.elig-toggle-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 7px;
-  display: block;
-}
-.elig-tabs {
-  display: flex;
-  border: 1.5px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-.elig-tab {
-  flex: 1;
-  padding: 9px 8px;
-  background: var(--surface);
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--muted);
-  text-align: center;
-  transition: all 0.18s;
-  border-right: 1px solid var(--border);
-  line-height: 1.4;
-}
+/* ── ELIGIBILITY TOGGLE ── */
+.elig-toggle-wrap { margin-bottom: 18px; }
+.elig-toggle-label { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 7px; display: block; }
+.elig-tabs { display: flex; border: 1.5px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.elig-tab { flex: 1; padding: 9px 8px; background: var(--surface); border: none; cursor: pointer; font-family: var(--font-sans); font-size: 11.5px; font-weight: 500; color: var(--muted); text-align: center; transition: all 0.18s; border-right: 1px solid var(--border); line-height: 1.4; }
 .elig-tab:last-child { border-right: none; }
-.elig-tab.active-frpl { background: var(--red); color: white; }
+.elig-tab.active-frpl { background: var(--accent2); color: white; }
 .elig-tab.active-ami  { background: var(--purple); color: white; }
-.elig-tab:hover:not(.active-frpl):not(.active-ami) { background: var(--bg); }
+.elig-tab:hover:not(.active-frpl):not(.active-ami) { background: var(--accent-light); border-color: var(--accent-mid); }
 
-.elig-panel {
-  border-radius: 4px;
-  padding: 12px 14px;
-  font-size: 11.5px;
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-.elig-panel.panel-frpl { background: var(--red-light); border: 1px solid var(--red-border); color: #5a2a10; }
-.elig-panel.panel-ami  { background: var(--purple-light); border: 1px solid var(--purple-border); color: #2e1f5a; }
+.elig-panel { border-radius: 4px; padding: 12px 14px; font-size: 11.5px; line-height: 1.6; margin-bottom: 10px; }
+.elig-panel.panel-frpl { background: var(--accent2-light); border: 1px solid var(--accent2-border); color: #5a2a10; }
+.elig-panel.panel-ami  { background: var(--purplelight); border: 1px solid var(--purpleborder); color: #2e1f5a; }
 .elig-panel strong { font-weight: 700; }
-.elig-panel .method-badge {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 10px;
-  margin-bottom: 5px;
-}
-.panel-frpl .method-badge { background: var(--red); color: white; }
+.elig-panel .method-badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; margin-bottom: 5px; }
+.panel-frpl .method-badge { background: var(--accent2); color: white; }
 .panel-ami  .method-badge { background: var(--purple); color: white; }
 
-/* Quick button */
-.quick-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--font-sans);
-  border: 1.5px solid var(--red);
-  background: transparent;
-  color: var(--red);
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.18s;
-  margin-top: 7px;
-}
-.quick-btn:hover { background: var(--red); color: white; }
+/* Quick btn */
+.quick-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; font-family: var(--font-sans); border: 1.5px solid var(--accent2); background: transparent; color: var(--accent2); border-radius: 20px; cursor: pointer; transition: all 0.18s; margin-top: 7px; }
+.quick-btn:hover { background: var(--accent2); color: white; }
 .quick-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .quick-btn .dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
 .quick-btn.purple { border-color: var(--purple); color: var(--purple); }
 .quick-btn.purple:hover { background: var(--purple); color: white; }
 
 /* State info box */
-#state-info-box {
-  background: var(--bpc-blue-light);
-  border: 1px solid var(--bpc-blue-mid);
-  border-radius: 4px;
-  padding: 11px 13px;
-  margin-top: 12px;
-  font-size: 11.5px;
-  color: var(--bpc-blue-dark);
-  line-height: 1.7;
-}
+#state-info-box { background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 4px; padding: 11px 13px; margin-top: 12px; font-size: 11.5px; color: var(--accent-dark); line-height: 1.7; }
 
-/* ─────────────────────────────────────────────
-   RESULT CARDS
-───────────────────────────────────────────── */
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.r-card {
-  border-radius: 4px;
-  padding: 14px 13px;
-  border: 1px solid transparent;
-}
-.r-card.blue   { background: var(--bpc-blue-light); border-color: var(--bpc-blue-mid); }
-.r-card.red    { background: var(--red-light);  border-color: var(--red-border); }
-.r-card.gold   { background: var(--gold-light); border-color: var(--gold-border); }
-.r-card.green  { background: var(--green-light);border-color: var(--green-border); }
-.r-card.purple { background: var(--purple-light);border-color: var(--purple-border); }
-.r-num {
-  font-family: var(--font-serif);
-  font-size: 29px;
-  line-height: 1;
-  margin-bottom: 5px;
-}
-.r-card.blue .r-num   { color: var(--bpc-blue); }
-.r-card.red .r-num    { color: var(--red); }
+/* ── STEP HEADERS ── */
+.step-header { display: flex; align-items: center; gap: 9px; margin: 18px 0 10px; }
+.step-num { flex-shrink: 0; width: 22px; height: 22px; background: var(--accent); color: #fff; border-radius: 50%; font-family: var(--font-mono); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.step-title { font-size: 12px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ── OPTION TABS ── */
+.option-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.option-tab { flex: 1; padding: 8px 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; font-family: var(--font-sans); transition: all 0.18s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.option-tab:hover:not(.active) { background: var(--accent-light); border-color: var(--accent-mid); }
+.option-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+.opt-num { font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
+.opt-label { font-size: 10.5px; font-weight: 500; line-height: 1.3; }
+
+/* ── OPTION PANELS ── */
+.option-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 14px; margin-bottom: 4px; }
+.opt-desc { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; font-style: italic; }
+
+/* ── RESULT CARDS ── */
+.result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.r-card { border-radius: 4px; padding: 14px 13px; border: 1px solid transparent; }
+.r-card.blue   { background: var(--accent-light);  border-color: var(--accent-mid); }
+.r-card.green  { background: var(--accent3-light); border-color: var(--accent3-border); }
+.r-card.gold   { background: var(--gold-light);    border-color: var(--gold-border); }
+.r-card.red    { background: var(--accent2-light); border-color: var(--accent2-border); }
+.r-card.purple { background: var(--purplelight);   border-color: var(--purpleborder); }
+.r-num { font-family: var(--font-serif); font-size: 28px; line-height: 1; margin-bottom: 5px; }
+.r-card.blue .r-num   { color: var(--accent); }
+.r-card.green .r-num  { color: var(--accent3); }
 .r-card.gold .r-num   { color: var(--gold); }
-.r-card.green .r-num  { color: var(--green); }
+.r-card.red .r-num    { color: var(--accent2); }
 .r-card.purple .r-num { color: var(--purple); }
 .r-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
-/* ─────────────────────────────────────────────
-   SUMMARY SENTENCE
-───────────────────────────────────────────── */
-#summary-sentence {
-  display: none;
-  background: var(--bpc-blue);
-  color: #fff;
-  border-radius: 4px;
-  padding: 14px 17px;
-  margin-top: 14px;
-  font-family: var(--font-serif);
-  font-size: 14.5px;
-  line-height: 1.65;
-}
+/* ── SUMMARY SENTENCE ── */
+#summary-sentence { display: none; background: var(--accent); color: #fff; border-radius: 4px; padding: 14px 17px; margin-top: 14px; font-family: var(--font-serif); font-size: 14.5px; line-height: 1.65; }
 
-/* ─────────────────────────────────────────────
-   POPULATION BARS
-───────────────────────────────────────────── */
+/* ── POPULATION BARS ── */
 .prop-section { margin-top: 8px; }
-.prop-title {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  margin-bottom: 9px;
-}
+.prop-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 9px; }
 .bar-row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
-.bar-lbl { font-size: 12px; color: var(--muted); width: 140px; flex-shrink: 0; }
+.bar-lbl { font-size: 11.5px; color: var(--muted); width: 140px; flex-shrink: 0; }
 .bar-track { flex: 1; height: 18px; background: #eaecef; border-radius: 2px; overflow: hidden; }
-.bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  padding-left: 6px;
-  transition: width 0.5s cubic-bezier(.4,0,.2,1);
-  min-width: 2px;
-}
-.bar-fill span {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: white;
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-/* Method tags */
-.method-tag-inline {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  padding: 1px 5px;
-  border-radius: 8px;
-  margin-left: 4px;
-  vertical-align: middle;
-}
-.tag-frpl { background: var(--red); color: white; }
+.bar-fill { height: 100%; border-radius: 2px; display: flex; align-items: center; padding-left: 6px; transition: width 0.5s cubic-bezier(.4,0,.2,1); min-width: 2px; }
+.bar-fill span { font-family: var(--font-mono); font-size: 10px; color: white; white-space: nowrap; font-weight: 500; }
+.method-tag-inline { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 8px; margin-left: 4px; vertical-align: middle; }
+.tag-frpl { background: var(--accent2); color: white; }
 .tag-ami  { background: var(--purple); color: white; }
 
-/* ─────────────────────────────────────────────
-   FUNDING FLOW DIAGRAM
-───────────────────────────────────────────── */
+/* ── FUNDING FLOW ── */
 .spacer { height: 16px; }
-.flow {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  margin-top: 12px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-.flow-node {
-  flex: 1;
-  min-width: 76px;
-  padding: 11px 7px;
-  text-align: center;
-  position: relative;
-}
-.flow-node:not(:last-child)::after {
-  content: '→';
-  position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gold);
-  font-size: 14px;
-  z-index: 1;
-}
-.flow-node .fn {
-  font-family: var(--font-serif);
-  font-size: 15px;
-  line-height: 1;
-  margin-bottom: 3px;
-}
+.flow { display: flex; align-items: stretch; gap: 0; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+.flow-node { flex: 1; min-width: 76px; padding: 11px 7px; text-align: center; position: relative; }
+.flow-node:not(:last-child)::after { content: '→'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 14px; z-index: 1; }
+.flow-node .fn { font-family: var(--font-serif); font-size: 15px; line-height: 1; margin-bottom: 3px; }
 .flow-node .fd { font-size: 9px; color: var(--muted); line-height: 1.4; }
 .fn1 { background: #f0f2f5; } .fn1 .fn { color: #3d5061; }
-.fn2 { background: var(--red-light); } .fn2 .fn { color: var(--red); }
+.fn2 { background: var(--accent2-light); } .fn2 .fn { color: var(--accent2); }
 .fn3 { background: var(--gold-light); } .fn3 .fn { color: var(--gold); }
-.fn4 { background: var(--green-light); } .fn4 .fn { color: var(--green); }
+.fn4 { background: var(--accent3-light); } .fn4 .fn { color: var(--accent3); }
 
-/* ─────────────────────────────────────────────
-   CONTEXT BAND
-───────────────────────────────────────────── */
-.context-band {
-  background: var(--ink);
-  color: #d4cec8;
-  padding: 15px 18px;
-  border-radius: 4px;
-  margin-top: 16px;
-  display: flex;
-  gap: 22px;
-  flex-wrap: wrap;
-}
+/* ── CONTEXT BAND ── */
+.context-band { background: var(--ink); color: #d4cec8; padding: 15px 18px; border-radius: 4px; margin-top: 16px; display: flex; gap: 22px; flex-wrap: wrap; }
 .cb-item { flex: 1; min-width: 110px; }
 .cb-num { font-family: var(--font-serif); font-size: 24px; color: white; }
-.cb-lbl { font-size: 11px; color: #a09890; margin-top: 2px; line-height: 1.4; }
+.cb-lbl { font-size: 10.5px; color: #a09890; margin-top: 2px; line-height: 1.4; }
 
-/* ─────────────────────────────────────────────
-   ELIGIBILITY METHOD NOTE
-───────────────────────────────────────────── */
-#elig-method-note {
-  font-size: 11px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  line-height: 1.5;
-  background: var(--bpc-blue-light);
-  border-left: 3px solid var(--bpc-blue);
-}
+/* ── ELIGIBILITY METHOD NOTE ── */
+#elig-method-note { font-size: 11px; padding: 8px 12px; border-radius: 4px; margin-bottom: 10px; line-height: 1.5; background: var(--accent-light); border-left: 3px solid var(--accent); }
 
-/* ─────────────────────────────────────────────
-   SCHOLARSHIP COST COMPARISON TABLE
-───────────────────────────────────────────── */
-.rev-section {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 2px solid var(--border);
-}
-.rev-title {
-  font-family: var(--font-serif);
-  font-size: 17px;
-  font-weight: normal;
-  margin-bottom: 3px;
-}
-.rev-subtitle {
-  font-size: 12.5px;
-  color: var(--muted);
-  margin-bottom: 14px;
-  line-height: 1.55;
-}
+/* ── SCHOLARSHIP TABLE ── */
+.rev-section { margin-top: 24px; padding-top: 20px; border-top: 2px solid var(--border); }
+.rev-title { font-family: var(--font-serif); font-size: 17px; font-weight: normal; margin-bottom: 3px; }
+.rev-subtitle { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; line-height: 1.55; }
 .scholarship-tbl-wrap { overflow-x: auto; margin-top: 4px; }
-.scholarship-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  min-width: 440px;
-}
+.scholarship-tbl { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 440px; }
 .scholarship-tbl thead tr { background: var(--ink); }
-.scholarship-tbl thead th {
-  padding: 9px 11px;
-  text-align: right;
-  font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.05em;
-  color: #d4cec8;
-  white-space: nowrap;
-  text-transform: uppercase;
-}
+.scholarship-tbl thead th { padding: 9px 11px; text-align: right; font-weight: 600; font-size: 10px; letter-spacing: 0.05em; color: #d4cec8; white-space: nowrap; text-transform: uppercase; }
 .scholarship-tbl thead th:first-child { text-align: left; }
 .scholarship-tbl tbody tr { border-bottom: 1px solid #eaecef; transition: background 0.1s; }
-.scholarship-tbl tbody tr:hover { background: var(--bpc-blue-light); }
+.scholarship-tbl tbody tr:hover { background: var(--accent-light); }
 .scholarship-tbl tbody td { padding: 8px 11px; text-align: right; color: #3a3026; font-size: 12.5px; white-space: nowrap; }
-.scholarship-tbl tbody td:first-child {
-  text-align: left;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--red);
-}
-.scholarship-tbl .td-students { font-weight: 700; color: var(--green); font-size: 13px; }
+.scholarship-tbl tbody td:first-child { text-align: left; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent2); }
+.scholarship-tbl .td-students { font-weight: 700; color: var(--accent3); font-size: 13px; }
 .scholarship-tbl .td-pct { color: var(--muted); font-size: 11.5px; }
 .scholarship-tbl .td-total { font-family: var(--font-mono); font-size: 11.5px; color: var(--gold); }
-.scholarship-tbl tr.cur-row { background: var(--green-light) !important; }
-.scholarship-tbl tr.cur-row td:first-child { border-left: 3px solid var(--bpc-blue); padding-left: 8px; }
-.cur-tag {
-  display: inline-block;
-  background: var(--bpc-blue);
-  color: white;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 10px;
-  margin-left: 5px;
-  vertical-align: middle;
-  letter-spacing: 0.04em;
-  font-family: var(--font-sans);
-}
-.toggle-btn {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  background: transparent;
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 12px;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all 0.18s;
-}
-.toggle-btn:hover { border-color: var(--bpc-blue); color: var(--bpc-blue); }
+.scholarship-tbl tr.cur-row { background: var(--accent3-light) !important; }
+.scholarship-tbl tr.cur-row td:first-child { border-left: 3px solid var(--accent); padding-left: 8px; }
+.cur-tag { display: inline-block; background: var(--accent); color: white; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 5px; vertical-align: middle; letter-spacing: 0.04em; font-family: var(--font-sans); }
+.toggle-btn { font-family: var(--font-sans); font-size: 11px; font-weight: 600; background: transparent; border: 1.5px solid var(--border); border-radius: 20px; padding: 4px 12px; cursor: pointer; color: var(--muted); transition: all 0.18s; }
+.toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ─────────────────────────────────────────────
-   METHODOLOGY SECTION
-───────────────────────────────────────────── */
-.methodology-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-}
+/* ── METHODOLOGY ── */
+.methodology-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; list-style: none; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 .methodology-toggle::-webkit-details-marker { display: none; }
-.methodology-toggle .toggle-arrow {
-  font-size: 13px;
-  color: var(--muted);
-  transition: transform 0.2s;
-}
+.methodology-toggle .toggle-arrow { font-size: 13px; color: var(--muted); transition: transform 0.2s; }
 details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
 .methodology-body { margin-top: 16px; }
-
 .data-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
-.data-tbl th {
-  text-align: left;
-  padding: 7px 10px;
-  background: var(--bg);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border);
-}
+.data-tbl th { text-align: left; padding: 7px 10px; background: var(--bg); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--border); }
 .data-tbl td { padding: 9px 10px; border-bottom: 1px solid #eaecef; vertical-align: top; line-height: 1.5; color: #3a3026; }
 .data-tbl td:first-child { font-weight: 600; color: var(--ink); width: 200px; font-size: 12px; }
 .data-tbl tr:last-child td { border-bottom: none; }
-.mono {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--bpc-blue);
-  background: var(--bpc-blue-light);
-  padding: 1px 5px;
-  border-radius: 2px;
-}
+.mono { font-family: var(--font-mono); font-size: 11px; color: var(--accent); background: var(--accent-light); padding: 1px 5px; border-radius: 2px; }
 .note-sm { font-size: 10.5px; color: var(--muted); font-style: italic; line-height: 1.6; }
-.warn-box {
-  background: var(--gold-light);
-  border: 1px solid var(--gold-border);
-  border-radius: 4px;
-  padding: 11px 13px;
-  font-size: 11.5px;
-  color: #5a4a10;
-  line-height: 1.6;
-  margin-top: 12px;
-}
+.warn-box { background: var(--gold-light); border: 1px solid var(--gold-border); border-radius: 4px; padding: 11px 13px; font-size: 11.5px; color: #5a4a10; line-height: 1.6; margin-top: 12px; }
 .warn-box strong { color: #3a2800; }
 
-/* ─────────────────────────────────────────────
-   MODALS
-───────────────────────────────────────────── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(26,26,26,0.6);
-  backdrop-filter: blur(3px);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+/* ── MODALS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(26,26,26,0.6); backdrop-filter: blur(3px); align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
-.modal-box {
-  background: var(--surface);
-  border-radius: 6px;
-  max-width: 620px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  animation: modalIn 0.2s ease-out;
-}
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.modal-header {
-  background: var(--bpc-blue);
-  padding: 22px 26px 18px;
-  border-radius: 6px 6px 0 0;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-.modal-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
-  margin-bottom: 5px;
-}
-.modal-header h3 {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: normal;
-  color: #ffffff;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-.modal-header p { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.5; }
-.modal-close {
-  position: absolute;
-  top: 16px; right: 18px;
-  background: none;
-  border: none;
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
-  padding: 4px 8px;
-  border-radius: 3px;
-  transition: color 0.15s;
-}
-.modal-close:hover { color: #fff; }
-.modal-body { padding: 24px; }
+.modal-box { background: var(--surface); border-radius: 6px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.35); animation: modalIn 0.2s ease-out; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.modal-header { background: var(--accent); padding: 22px 26px 18px; border-radius: 6px 6px 0 0; position: sticky; top: 0; z-index: 1; }
+.modal-eyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+.modal-header h3 { font-family: var(--font-serif); font-size: 21px; color: #ffffff; line-height: 1.2; margin-bottom: 4px; font-weight: normal; }
+.modal-header p { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+.modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; color: rgba(255,255,255,0.65); cursor: pointer; font-size: 22px; line-height: 1; padding: 4px 8px; border-radius: 3px; transition: color 0.15s; }
+.modal-close:hover { color: #ffffff; }
+.modal-body { padding: 26px; }
 .expense-group { margin-bottom: 22px; }
 .expense-group:last-child { margin-bottom: 0; }
-.expense-group-title {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--border);
-}
-.expense-items { display: flex; flex-direction: column; gap: 7px; }
-.expense-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-  padding: 9px 11px;
-  background: var(--bg);
-  border-radius: 4px;
-  border-left: 3px solid var(--border);
-}
-.expense-item.grp1 { border-left-color: var(--bpc-blue); }
-.expense-item.grp2 { border-left-color: var(--green); }
+.expense-group-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.expense-items { display: flex; flex-direction: column; gap: 8px; }
+.expense-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: var(--bg); border-radius: 3px; border-left: 3px solid var(--border); }
+.expense-item.grp1 { border-left-color: var(--accent); }
+.expense-item.grp2 { border-left-color: var(--accent3); }
 .expense-item.grp3 { border-left-color: var(--gold); }
-.expense-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
-.expense-text { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
-.expense-text strong { font-weight: 700; display: block; margin-bottom: 1px; }
-.expense-text span { font-size: 11px; color: var(--muted); }
-.modal-caveat {
-  margin-top: 18px;
-  padding: 11px 13px;
-  background: var(--gold-light);
-  border: 1px solid var(--gold-border);
-  border-radius: 4px;
-  font-size: 11.5px;
-  color: #5a4a10;
-  line-height: 1.6;
-}
+.expense-icon { font-size: 17px; flex-shrink: 0; margin-top: 2px; }
+.expense-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
+.expense-text strong { font-weight: 700; display: block; margin-bottom: 2px; }
+.expense-text span { font-size: 11.5px; color: var(--muted); }
+.modal-caveat { margin-top: 18px; padding: 12px 14px; background: var(--gold-light); border: 1px solid var(--gold-border); border-radius: 4px; font-size: 11.5px; color: #5a4a10; line-height: 1.6; }
 .modal-caveat strong { color: #3a2800; }
-
-/* ─────────────────────────────────────────────
-   RESPONSIVE
-───────────────────────────────────────────── */
-@media (max-width: 640px) {
-  #result-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-  .r-num { font-size: 20px; }
-  #summary-sentence { font-size: 13px; padding: 11px 13px; }
-  .flow-node { min-width: 64px; padding: 9px 5px; }
-  .flow-node .fn { font-size: 13px; }
-  .flow-node .fd { font-size: 9px; }
-  .context-band { gap: 14px; }
-  .cb-item { min-width: calc(50% - 14px); }
-  .cb-num { font-size: 19px; }
-  .option-tabs { flex-direction: column; gap: 4px; }
-  .option-tab { flex-direction: row; justify-content: flex-start; gap: 9px; padding: 9px 11px; }
-  .opt-num { font-size: 13px; }
-  .opt-label { font-size: 11.5px; text-align: left; }
-  .elig-tabs { flex-direction: column; }
-  .elig-tab { border-right: none !important; border-bottom: 1px solid var(--border); }
-  .elig-tab:last-child { border-bottom: none; }
-  .scholarship-tbl { font-size: 11px; min-width: 380px; }
-  .scholarship-tbl thead th { padding: 7px 8px; font-size: 9px; }
-  .scholarship-tbl tbody td { padding: 7px 8px; }
-  .card { padding: 16px 14px; }
-  .card h2 { font-size: 15px; }
-  .bar-lbl { width: 100px; font-size: 10.5px; }
-  .bar-fill span { font-size: 9px; }
-  .fixed-chip { flex-direction: column; gap: 5px; }
-  .data-tbl td:first-child { width: 110px; font-size: 11px; }
-  .data-tbl td { font-size: 11px; }
-  .modal-box { max-height: 95vh; }
-  .modal-header { padding: 16px 18px 14px; }
-  .modal-header h3 { font-size: 17px; }
-  .modal-body { padding: 18px; }
-  .expense-text { font-size: 11.5px; }
-}
-
-@media (max-width: 400px) {
-  #result-grid-4 { grid-template-columns: 1fr !important; }
-  .result-grid { grid-template-columns: 1fr; }
-  .body-wrap { padding: 12px 10px; }
-  .header { padding: 18px 14px; }
-}
 </style>
 </head>
-
 <body>
 
-<!-- ═══════════════════════════════════════════
-     HEADER
-════════════════════════════════════════════ -->
 <div class="header">
-  <div class="header-brand">Bipartisan Policy Center</div>
-  <h2>Federal Scholarship Tax Credit Calculator</h2>
-  <p class="header-desc">Select any state to estimate how many taxpayer donors would be needed to fund scholarships at scale under the FSTC program. Adjust scholarship cost, target student population, and participation method to explore different scenarios.</p>
-  <button class="info-btn" onclick="document.getElementById('expensesModal').classList.add('open')">
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6.25" stroke="currentColor" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <div class="header-eyebrow">Bipartisan Policy Center &middot; Federal Tax Credit Scholarship &middot; State-Level Calculator</div>
+  <h1>The Federal Scholarship Tax Credit Program: How Many Taxpayers Need to Contribute for Large Scale Programs Serving Public School Students?</h1>
+  <p class="header-desc">The Federal Scholarship Tax Credit (FSTC) program, enacted as part of the One Big Beautiful Bill Act, allows taxpayers to redirect up to $1,700 of their federal tax liability as donations to scholarship-granting organizations serving K&ndash;12 public school students. This calculator estimates how many taxpayer donors would be needed to fund scholarships at scale in any state &mdash; and what share of eligible taxpayers that represents. Adjust the scholarship cost, target student population, and participation method to explore different program scenarios.</p>
+  <button class="expenses-btn" onclick="document.getElementById('expensesModal').classList.add('open')">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="7" cy="7" r="6.25" stroke="currentColor" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     What are qualified educational expenses?
   </button>
   <p class="header-meta">Based on NCES Fall 2023 enrollment, NCES FRPL rates, Census ACS income data, and IRS SOI TY2022 returns.</p>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MAIN CONTENT
-════════════════════════════════════════════ -->
 <div class="body-wrap">
-<div class="grid-two no-state" id="main-grid">
+<div class="grid-two">
 
-  <!-- ── LEFT: Controls ── -->
+  <!-- LEFT: Controls -->
   <div>
     <div class="card">
       <div class="card-eyebrow">Configuration</div>
       <h2>Select State &amp; Set Parameters</h2>
 
-      <!-- State selector -->
       <div class="state-select-wrap">
         <select id="stateSelect" onchange="update()">
           <option value="">— Choose a state —</option>
         </select>
       </div>
 
-      <!-- Fixed $1,700 assumption -->
       <div class="fixed-chip">
         <div>
           <div class="fc-label">Max donor contribution / year</div>
           <div class="fc-note">Fixed per federal program parameters</div>
-          <div class="fc-note" style="margin-top:5px; font-style:italic;">Calculator assumes a limit of $1,700 per return, which means that married-filing-jointly couples would receive $1,700, not $3,400. Final Treasury rules could impact this. <a href="#" onclick="document.getElementById('donorNoteModal').classList.add('open'); return false;" style="color:var(--bpc-blue); text-decoration:underline; font-style:normal;">More info</a></div>
+          <div class="fc-note" style="margin-top:6px; font-style:italic;">Calculator assumes a limit of $1,700 per return, which means that married-filing-jointly couples would receive $1,700, not $3,400. Final Treasury rules could impact this. <a href="#" onclick="document.getElementById('donorNoteModal').classList.add('open'); return false;" style="color:var(--accent); text-decoration:underline; font-style:normal;">More info</a></div>
         </div>
         <div class="fc-val">$1,700</div>
       </div>
 
-      <!-- STEP 1 -->
       <div class="step-header">
         <span class="step-num">1</span>
         <span class="step-title">Set average scholarship cost per student</span>
@@ -1045,13 +326,12 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
         </div>
         <input type="range" id="r-cost" min="500" max="15000" step="50" value="1750" oninput="update()">
         <div class="range-labels"><span>$500</span><span>$15,000</span></div>
-        <div class="param-note">Research range for in-person high-impact tutoring: $1,200–$2,500 (Kraft, Matthew A., Brown University). Slide up for more intensive or higher-cost models.</div>
+        <div class="param-note">Research range for in-person high-impact tutoring: $1,200&ndash;$2,500 (Kraft, Matthew A., Brown University). Slide up for more intensive or higher-cost models.</div>
       </div>
 
-      <!-- STEP 2 -->
       <div class="step-header">
         <span class="step-num">2</span>
-        <span class="step-title">Set student population — choose one method</span>
+        <span class="step-title">Set student population &mdash; choose one method</span>
       </div>
 
       <div class="option-tabs">
@@ -1061,7 +341,7 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
         </button>
         <button class="option-tab" id="opt-tab-b" onclick="setOption('B')">
           <span class="opt-num">B</span>
-          <span class="opt-label">% of K–12 enrollment</span>
+          <span class="opt-label">% of K&ndash;12 enrollment</span>
         </button>
         <button class="option-tab" id="opt-tab-c" onclick="setOption('C')">
           <span class="opt-num">C</span>
@@ -1069,27 +349,26 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
         </button>
       </div>
 
-      <!-- OPTION A -->
       <div class="option-panel" id="opt-panel-a">
         <div class="opt-desc">Define eligible students by income threshold, then set what share of eligible students to serve.</div>
-        <p style="font-size:11.5px; color:var(--red); font-weight:600; margin-bottom:9px;">Note: both options undercount eligible students.</p>
-        <div class="elig-tabs">
+        <p style="font-size:11.5px; color:var(--accent2); font-weight:600; margin-bottom:10px;">Note: both options undercount eligible students.</p>
+        <div class="elig-tabs" style="margin-bottom:10px;">
           <button class="elig-tab active-ami" id="tab-ami" onclick="setEligMethod('ami')">
             300% Area Median Income<br>
             <span style="font-size:10px;font-weight:400;">(Census ACS proxy)</span>
           </button>
           <button class="elig-tab" id="tab-frpl" onclick="setEligMethod('frpl')">
             FRPL / Econ. Disadvantaged<br>
-            <span style="font-size:10px;font-weight:400;">(NCES CCD, ≤185% poverty)</span>
+            <span style="font-size:10px;font-weight:400;">(NCES CCD, &le;185% poverty)</span>
           </button>
         </div>
-        <div class="elig-panel panel-ami" id="panel-ami">
+        <div class="elig-panel panel-ami" id="panel-ami" style="margin-bottom:10px;">
           <div class="method-badge">300% AMI (proxy)</div><br>
-          The FSTC program uses <strong>300% of HUD Area Median Income</strong>, which varies by metropolitan area and county — there is no single statewide number. No pre-built state-level dataset exists for this threshold. This calculator uses the <strong>Census ACS share of K–12 public school children in households below 300% of the federal poverty line</strong> as a conservative proxy (ACS Table B17024 / NCES ACS-ED). Because the poverty line is lower than AMI in most areas, this proxy still understates the true AMI-eligible population.
+          The FSTC program uses <strong>300% of HUD Area Median Income</strong>, which varies by metropolitan area and county &mdash; there is no single statewide number. No pre-built state-level dataset exists for this threshold. This calculator uses the <strong>Census ACS share of K&ndash;12 public school children in households below 300% of the federal poverty line</strong> as a conservative proxy (ACS Table B17024 / NCES ACS-ED). Because the poverty line is lower than AMI in most areas, this proxy still understates the true AMI-eligible population.
         </div>
-        <div class="elig-panel panel-frpl" id="panel-frpl" style="display:none;">
+        <div class="elig-panel panel-frpl" id="panel-frpl" style="display:none; margin-bottom:10px;">
           <div class="method-badge">FRPL / Economically Disadvantaged</div><br>
-          FRPL covers households at or below <strong>185% of the federal poverty level</strong> (NCES CCD 2022-23). Because the FSTC program's eligibility threshold is <strong>300% of HUD Area Median Income</strong> — which is higher than the poverty line in most areas — FRPL is a <em>lower-bound proxy</em> that understates the true eligible population. True eligible populations will be larger than this estimate.
+          FRPL covers households at or below <strong>185% of the federal poverty level</strong> (NCES CCD 2022-23). Because the FSTC program's eligibility threshold is <strong>300% of HUD Area Median Income</strong> &mdash; which is higher than the poverty line in most areas &mdash; FRPL is a <em>lower-bound proxy</em> that understates the true eligible population.
         </div>
         <div class="param-block" style="margin-bottom:0;">
           <div class="param-header">
@@ -1104,12 +383,11 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
         </div>
       </div>
 
-      <!-- OPTION B -->
       <div class="option-panel" id="opt-panel-b" style="display:none;">
-        <div class="opt-desc">Set a target share of total K–12 public school enrollment to serve, regardless of income eligibility.</div>
+        <div class="opt-desc">Set a target share of total K&ndash;12 public school enrollment to serve, regardless of income eligibility.</div>
         <div class="param-block" style="margin-bottom:0;">
           <div class="param-header">
-            <span class="param-name">% of total K–12 enrollment</span>
+            <span class="param-name">% of total K&ndash;12 enrollment</span>
             <span class="param-val" id="v-pct-b">25.0%</span>
           </div>
           <input type="range" id="r-pct-b" min="1" max="100" step="0.5" value="25" oninput="update()">
@@ -1118,7 +396,6 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
         </div>
       </div>
 
-      <!-- OPTION C -->
       <div class="option-panel" id="opt-panel-c" style="display:none;">
         <div class="opt-desc">Start from the donor side: set what share of eligible taxpayers contribute, then see how many students can be served at the current scholarship cost.</div>
         <div class="param-block" style="margin-bottom:0;">
@@ -1128,34 +405,32 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
           </div>
           <input type="range" id="r-filer-pct" min="0.1" max="50" step="0.1" value="5" oninput="update()">
           <div class="range-labels"><span>0.1%</span><span>50%</span></div>
-          <div class="param-note">Applies to estimated returns with sufficient federal tax liability for the $1,700 credit (AGI ≥$50k at 100%; $25–50k at 50%; $10–25k at 10%). IRS SOI TY2022.</div>
+          <div class="param-note">Applies to estimated returns with sufficient federal tax liability for the $1,700 credit (AGI &ge;$50k at 100%; $25&ndash;50k at 50%; $10&ndash;25k at 10%). IRS SOI TY2022.</div>
         </div>
       </div>
 
-      <!-- State info box -->
       <div id="state-info-box" style="display:none;">
-        <div id="state-info-text"></div>
+        <div style="font-size:11px; line-height:1.8;" id="state-info-text"></div>
       </div>
     </div>
   </div>
 
-  <!-- ── RIGHT: Results ── -->
+  <!-- RIGHT: Results -->
   <div class="results-panel">
     <div class="card">
       <div class="card-eyebrow">Results</div>
       <h2 id="results-title">Select a state to see results</h2>
 
-      <div id="no-state-msg" style="color:var(--muted); font-size:14px; padding:16px 0;">
+      <div id="no-state-msg" style="color:var(--muted); font-size:14px; padding:20px 0;">
         Choose a state from the dropdown to begin the analysis.
       </div>
 
       <div id="results-body" style="display:none;">
 
-        <!-- Summary cards -->
-        <div class="result-grid" id="result-grid-4" style="grid-template-columns:repeat(2,1fr);">
+        <div class="result-grid" id="result-grid-4">
           <div class="r-card blue">
             <div class="r-num" id="r-enroll">—</div>
-            <div class="r-label">Total K–12 public enrollment (NCES, Fall 2023)</div>
+            <div class="r-label">Total K&ndash;12 public enrollment (NCES, Fall 2023)</div>
           </div>
           <div class="r-card green">
             <div class="r-num" id="r-pct-filers-needed">—</div>
@@ -1171,45 +446,29 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
           </div>
         </div>
 
-        <!-- Summary sentence -->
         <div id="summary-sentence"></div>
 
-        <!-- Population bars -->
-        <div class="prop-section" style="margin-top:18px;">
+        <div class="prop-section">
           <div class="prop-title">Student population breakdown</div>
           <div class="bar-row">
             <div class="bar-lbl">Total enrolled</div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-total" style="width:100%; background:#3d5061;">
-                <span id="bl-total">—</span>
-              </div>
-            </div>
+            <div class="bar-track"><div class="bar-fill" id="bar-total" style="width:100%; background:#3d5061;"><span id="bl-total">—</span></div></div>
           </div>
           <div class="bar-row">
             <div class="bar-lbl" id="bar-elig-lbl">FRPL-eligible</div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-elig" style="width:50%; background:var(--red);">
-                <span id="bl-elig">—</span>
-              </div>
-            </div>
+            <div class="bar-track"><div class="bar-fill" id="bar-elig" style="width:50%; background:var(--accent2);"><span id="bl-elig">—</span></div></div>
           </div>
           <div class="bar-row">
             <div class="bar-lbl">Students served</div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-served" style="width:25%; background:var(--gold);">
-                <span id="bl-served">—</span>
-              </div>
-            </div>
+            <div class="bar-track"><div class="bar-fill" id="bar-served" style="width:25%; background:var(--gold);"><span id="bl-served">—</span></div></div>
           </div>
         </div>
 
         <div class="spacer"></div>
 
-        <!-- Method note -->
-        <div id="elig-method-note"></div>
+        <div id="elig-method-note" style="font-size:11px; padding:8px 12px; border-radius:4px; margin-bottom:10px; line-height:1.5; background:var(--accent-light); border-left:3px solid var(--accent);"></div>
 
-        <!-- Funding flow -->
-        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:7px;">Funding calculation (all donors at $1,700 max)</div>
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin-bottom:8px;">Funding calculation (all donors at $1,700 max)</div>
         <div class="flow">
           <div class="flow-node fn1"><div class="fn" id="fl-served">—</div><div class="fd">Students served</div></div>
           <div class="flow-node fn2"><div class="fn" id="fl-cost">—</div><div class="fd">Cost / student</div></div>
@@ -1218,31 +477,17 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
           <div class="flow-node fn4"><div class="fn" id="fl-donors">—</div><div class="fd">Donors needed</div></div>
         </div>
 
-        <!-- Context band -->
         <div class="context-band">
-          <div class="cb-item">
-            <div class="cb-num" id="ctx-donors">—</div>
-            <div class="cb-lbl">Donors needed at $1,700</div>
-          </div>
-          <div class="cb-item">
-            <div class="cb-num" id="ctx-filers">—</div>
-            <div class="cb-lbl">Est. eligible taxpayers (of <span id="ctx-filers-total">—</span> total)</div>
-          </div>
-          <div class="cb-item">
-            <div class="cb-num" id="ctx-pct">—</div>
-            <div class="cb-lbl">Donors as % of eligible taxpayers</div>
-          </div>
-          <div class="cb-item">
-            <div class="cb-num" id="ctx-per-donor">—</div>
-            <div class="cb-lbl">Students per donor (avg)</div>
-          </div>
+          <div class="cb-item"><div class="cb-num" id="ctx-donors">—</div><div class="cb-lbl">Donors needed at $1,700</div></div>
+          <div class="cb-item"><div class="cb-num" id="ctx-filers">—</div><div class="cb-lbl">Est. eligible taxpayers (of <span id="ctx-filers-total">—</span> total)</div></div>
+          <div class="cb-item"><div class="cb-num" id="ctx-pct">—</div><div class="cb-lbl">Donors as % of eligible taxpayers</div></div>
+          <div class="cb-item"><div class="cb-num" id="ctx-per-donor">—</div><div class="cb-lbl">Students per donor (avg)</div></div>
         </div>
 
-        <!-- Scholarship cost comparison table -->
         <div class="rev-section">
-          <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:7px; margin-bottom:3px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
             <div class="rev-title">Donors needed at different scholarship amounts</div>
-            <button id="expand-tbl-btn" class="toggle-btn" onclick="toggleAmounts()">Show full range ($500–$15,000)</button>
+            <button class="toggle-btn" id="expand-tbl-btn" onclick="toggleAmounts()">Show full range ($500&ndash;$15,000)</button>
           </div>
           <div class="rev-subtitle">Using the student population from Step 2 above, this table shows how donor requirements change across a range of scholarship costs. The highlighted row matches the current scholarship cost set in Step 1.</div>
           <div class="scholarship-tbl-wrap">
@@ -1257,83 +502,48 @@ details[open] .methodology-toggle .toggle-arrow { transform: rotate(90deg); }
                 </tr>
               </thead>
               <tbody id="rev-table-body">
-                <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px;">Select a state to populate this table.</td></tr>
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px;">Select a state to populate this table.</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
-      </div><!-- /results-body -->
+      </div>
     </div>
   </div>
 
-  <!-- ── FULL WIDTH: Methodology ── -->
+  <!-- FULL: Methodology -->
   <div class="full">
     <div class="card">
       <details>
         <summary class="methodology-toggle">
           <div>
-            <div class="card-eyebrow" style="margin-bottom:2px;">Methodology &amp; Data Sources</div>
-            <span style="font-family:var(--font-serif); font-size:17px; font-weight:normal;">How This Is Calculated</span>
+            <div class="card-eyebrow">Methodology &amp; Data Sources</div>
+            <div style="font-family:var(--font-serif); font-size:18px; font-weight:normal; margin-top:2px;">How This Is Calculated</div>
           </div>
-          <span class="toggle-arrow">▶</span>
+          <span class="toggle-arrow">&#9654;</span>
         </summary>
         <div class="methodology-body">
           <table class="data-tbl">
-            <tr>
-              <td>Enrollment</td>
-              <td>NCES Common Core of Data, Table 203.20 — public K–12 enrollment by state, Fall 2023.</td>
-            </tr>
-            <tr>
-              <td>Scholarship cost</td>
-              <td>Research range of $1,200–$2,500 per student per year for in-person high-impact tutoring. Source: Kraft, Matthew A., Brown University.</td>
-            </tr>
-            <tr>
-              <td>Method A: FRPL eligibility</td>
-              <td>NCES CCD 2022-23 state FRPL rates. Covers households at or below 185% of the federal poverty level. Because FRPL's threshold (185% poverty) is below the program's 300% AMI standard, this is a lower-bound proxy — true eligible populations will be larger. FRPL rates may further undercount disadvantage in states with Community Eligibility Provision (CEP) programs.</td>
-            </tr>
-            <tr>
-              <td>Method B: 300% AMI proxy</td>
-              <td>The FSTC program uses 300% of HUD Area Median Income, which varies by county and family size — no single statewide figure exists. This calculator uses Census ACS 5-year estimates of school-age children (ages 5–17) in households below 300% of the federal poverty line as a conservative proxy (ACS Table B17024 / NCES ACS-ED). Because the poverty line is lower than AMI in most areas, this also understates true eligibility.</td>
-            </tr>
-            <tr>
-              <td>Method C: Percent of eligible taxpayers</td>
-              <td>Sets the student population from the donor side: a given percentage of eligible taxpayers each contribute $1,700, generating a total fund (<span class="mono">contributors × $1,700</span>), from which the number of students served is derived (<span class="mono">⌊ total funds ÷ scholarship cost ⌋</span>). Eligible taxpayer pool defined by IRS SOI TY2022 AGI brackets — see row below.</td>
-            </tr>
-            <tr>
-              <td>Donor contribution</td>
-              <td>Fixed at <span class="mono">$1,700</span> per contributor per year, per federal FSTC program parameters (§25F of the tax code, enacted via OBBBA Section 70411). Program launches January 1, 2027.</td>
-            </tr>
-            <tr>
-              <td>Donors needed</td>
-              <td><span class="mono">⌈ (students served × cost per student) ÷ $1,700 ⌉</span> — ceiling function ensures full coverage.</td>
-            </tr>
-            <tr>
-              <td>Eligible taxpayer counts</td>
-              <td>IRS SOI TY2022 — 22in55cmcsv.csv. <strong>Total filers</strong> = N1 at AGI_STUB=0 (all income levels). <strong>Estimated eligible donors</strong> = returns with likely sufficient federal tax liability to fully utilize a $1,700 non-refundable credit: AGI≥$50k (100% of returns counted) + AGI $25–50k (50%) + AGI $10–25k (10%). Returns below $10k AGI excluded entirely. Unused credit may be carried forward up to 5 years.</td>
-            </tr>
+            <tr><td>Enrollment</td><td>NCES Common Core of Data, Table 203.20 &mdash; public K&ndash;12 enrollment by state, Fall 2023.</td></tr>
+            <tr><td>Scholarship cost</td><td>Research range of $1,200&ndash;$2,500 per student per year for in-person high-impact tutoring. Source: Kraft, Matthew A., Brown University.</td></tr>
+            <tr><td>Method A: FRPL eligibility</td><td>NCES CCD 2022-23 state FRPL rates. Covers households at or below 185% of the federal poverty level. Because FRPL's threshold (185% poverty) is below the program's 300% AMI standard, this is a lower-bound proxy &mdash; true eligible populations will be larger.</td></tr>
+            <tr><td>Method B: 300% AMI proxy</td><td>The FSTC program uses 300% of HUD Area Median Income, which varies by county and family size &mdash; no single statewide figure exists. This calculator uses Census ACS 5-year estimates of school-age children (ages 5&ndash;17) in households below 300% of the federal poverty line as a conservative proxy (ACS Table B17024 / NCES ACS-ED).</td></tr>
+            <tr><td>Method C: Percent of eligible taxpayers</td><td>Sets the student population from the donor side: a given percentage of eligible taxpayers each contribute $1,700, generating a total fund (<span class="mono">contributors × $1,700</span>), from which the number of students served is derived (<span class="mono">⌊ total funds ÷ scholarship cost ⌋</span>).</td></tr>
+            <tr><td>Donor contribution</td><td>Fixed at <span class="mono">$1,700</span> per contributor per year, per federal FSTC program parameters (&sect;25F of the tax code, enacted via OBBBA Section 70411). Program launches January 1, 2027.</td></tr>
+            <tr><td>Donors needed</td><td><span class="mono">⌈ (students served × cost per student) ÷ $1,700 ⌉</span> &mdash; ceiling function ensures full coverage.</td></tr>
+            <tr><td>Eligible taxpayer counts</td><td>IRS SOI TY2022 &mdash; 22in55cmcsv.csv. <strong>Total filers</strong> = N1 at AGI_STUB=0. <strong>Estimated eligible donors</strong> = returns with likely sufficient federal tax liability: AGI&ge;$50k (100%) + AGI $25&ndash;50k (50%) + AGI $10&ndash;25k (10%). Returns below $10k AGI excluded.</td></tr>
           </table>
-          <p class="note-sm" style="margin-top:10px;">Program opt-in by state governors required; as of May 2026, program launches January 2027.</p>
+          <p class="note-sm" style="margin-top:12px;">Program opt-in by state governors required; as of May 2026, program launches January 2027.</p>
         </div>
       </details>
     </div>
   </div>
 
-</div><!-- /grid-two -->
-</div><!-- /body-wrap -->
+</div>
+</div>
 
-<!-- ═══════════════════════════════════════════
-     SCRIPT
-════════════════════════════════════════════ -->
 <script>
-// ─── STATE DATA ───
-// e = NCES Fall 2023 K-12 enrollment
-// frpl = NCES CCD 2022-23 FRPL rate
-// ami300 = ACS 5-yr est., share of K-12 public school children in households
-//          below 300% federal poverty line (proxy for 300% AMI eligibility)
-// fElig = est. returns with ≥$1,700 tax liability (IRS SOI TY2022):
-//         (AGI≥$50k × 100%) + ($25-50k × 50%) + ($10-25k × 10%)
-// fTotal = all returns filed (N1, AGI_STUB=0)
 const STATE_DATA = {
   "Alabama":              { e: 748650,   frpl: 0.565, ami300: 0.710, fElig: 1234444,  fTotal: 2149560  },
   "Alaska":               { e: 131243,   frpl: 0.392, ami300: 0.560, fElig: 228925,   fTotal: 348250   },
@@ -1390,12 +600,11 @@ const STATE_DATA = {
 
 const SCHOLARSHIP_AMOUNTS_CORE = [1000, 1250, 1500, 1750, 2000, 2500, 3000, 4000, 5000];
 const SCHOLARSHIP_AMOUNTS_ALL  = [500, 750, 1000, 1250, 1500, 1750, 2000, 2500, 3000, 4000, 5000, 7500, 10000, 15000];
-let showAllAmounts   = false;
-let currentOption    = 'A';
+let showAllAmounts = false;
+const MAX_DONATION = 1700;
+let currentOption = 'A';
 let currentEligMethod = 'ami';
-const MAX_DONATION   = 1700;
 
-// Populate state dropdown
 const sel = document.getElementById('stateSelect');
 Object.keys(STATE_DATA).sort().forEach(s => {
   const opt = document.createElement('option');
@@ -1419,7 +628,7 @@ function setEligMethod(m) {
   document.getElementById('panel-frpl').style.display = m==='frpl' ? 'block' : 'none';
   document.getElementById('panel-ami').style.display  = m==='ami'  ? 'block' : 'none';
   const s = document.getElementById('stateSelect').value;
-  if (s) document.getElementById('r-pct-a').value = 100;
+  if (s) { document.getElementById('r-pct-a').value = 100; }
   update();
 }
 
@@ -1432,7 +641,6 @@ function getEligPct(d) {
   return currentEligMethod === 'ami' ? d.ami300 : d.frpl;
 }
 
-// Legacy stubs
 function setMethod(m) { setEligMethod(m); }
 function setEconDisadv() { setEligMethod('frpl'); }
 function setAMIPct() { setEligMethod('ami'); }
@@ -1468,10 +676,7 @@ function update() {
   document.getElementById('v-pct-b').textContent = (pctB*100).toFixed(1) + '%';
   if (currentOption === 'C') document.getElementById('v-filer-pct').textContent = (filerPct*100).toFixed(1) + '%';
 
-  const mainGrid = document.getElementById('main-grid');
-
   if (!stateName) {
-    mainGrid.classList.add('no-state');
     document.getElementById('results-title').textContent = 'Select a state to see results';
     document.getElementById('no-state-msg').style.display = 'block';
     document.getElementById('results-body').style.display = 'none';
@@ -1482,7 +687,6 @@ function update() {
     return;
   }
 
-  mainGrid.classList.remove('no-state');
   document.getElementById('btn-snap-a').disabled = false;
 
   const d          = STATE_DATA[stateName];
@@ -1506,41 +710,39 @@ function update() {
     optionNote = `Option C: ${(filerPct*100).toFixed(1)}% of ${fmtN(filersN)} eligible taxpayers contributing $1,700`;
   }
 
-  const totalCost  = servedN * cost;
-  const donors     = Math.ceil(totalCost / MAX_DONATION);
-  const pctFilers  = (donors / filersN * 100).toFixed(1);
-  const perDonor   = donors > 0 ? (servedN / donors).toFixed(2) : '0';
+  const totalCost = servedN * cost;
+  const donors    = Math.ceil(totalCost / MAX_DONATION);
+  const pctFilers = (donors / filersN * 100).toFixed(1);
+  const perDonor  = donors > 0 ? (servedN / donors).toFixed(2) : '0';
 
   document.getElementById('results-title').textContent = stateName;
   document.getElementById('no-state-msg').style.display = 'none';
   document.getElementById('results-body').style.display = 'block';
 
-  // State info box
   document.getElementById('state-info-box').style.display = 'block';
   document.getElementById('state-info-text').innerHTML =
-    `<strong>${stateName}</strong> · ${fmtN(enroll)} total K–12 public students · ${fmtN(eligN)} ${currentEligMethod==="frpl"?"FRPL-eligible":"est. AMI-eligible"} · ${fmtN(filersN)} tax-liable returns (of ${fmtN(filersTotal)} total) · IRS SOI TY2022`;
+    `<strong>${stateName}</strong> &middot; ${fmtN(enroll)} total K–12 public students &middot; ${fmtN(eligN)} ${currentEligMethod==="frpl"?"FRPL-eligible":"est. AMI-eligible"} &middot; ${fmtN(filersN)} tax-liable returns (of ${fmtN(filersTotal)} total) &middot; IRS SOI TY2022`;
 
   const eligLblBar = currentEligMethod === 'frpl' ? 'FRPL-eligible' : '≤300% poverty (proxy)';
   document.getElementById('bar-elig-lbl').textContent = eligLblBar;
 
   const noteEl = document.getElementById('elig-method-note');
-  noteEl.innerHTML = `<strong style="color:var(--bpc-blue)">Method in use:</strong> ${optionNote}`;
+  noteEl.style.background = 'var(--accent-light)';
+  noteEl.style.borderLeft = '3px solid var(--accent)';
+  noteEl.innerHTML = `<strong style="color:var(--accent)">Method in use:</strong> ${optionNote}`;
 
-  // Summary cards
   document.getElementById('r-enroll').textContent            = fmtN(enroll);
   document.getElementById('r-pct-filers-needed').textContent = pctFilers + '%';
   document.getElementById('r-served-n').textContent          = fmtN(servedN);
   document.getElementById('r-total-donations').textContent   = fmtD(totalCost);
 
-  // Summary sentence
   const methodLabel = currentOption === 'A'
     ? (currentEligMethod === 'ami' ? '300% AMI-eligible' : 'FRPL-eligible')
     : currentOption === 'B' ? 'public school' : 'fundable';
   const summaryEl = document.getElementById('summary-sentence');
   summaryEl.style.display = 'block';
-  summaryEl.innerHTML = `To serve <strong>${fmtN(servedN)} ${methodLabel} students</strong> in ${stateName} at a scholarship cost of <strong>$${cost.toLocaleString()}</strong>, <strong>${fmtN(donors)} taxpayers</strong> — <strong>${pctFilers}%</strong> of eligible taxpayers — would each need to contribute the maximum <strong>$1,700</strong>, generating <strong>${fmtD(totalCost)}</strong> in total scholarships.`;
+  summaryEl.innerHTML = `To serve <strong>${fmtN(servedN)} ${methodLabel} students</strong> in ${stateName} at a scholarship cost of <strong>$${cost.toLocaleString()}</strong>, <strong>${fmtN(donors)} taxpayers</strong> &mdash; <strong>${pctFilers}%</strong> of eligible taxpayers &mdash; would each need to contribute the maximum <strong>$1,700</strong>, generating <strong>${fmtD(totalCost)}</strong> in total scholarships.`;
 
-  // Bars
   const eligBarPct   = Math.round(eligPct * 100);
   const servedBarPct = Math.min(100, (servedN / enroll * 100)).toFixed(1);
   document.getElementById('bar-elig').style.width   = eligBarPct + '%';
@@ -1549,20 +751,17 @@ function update() {
   document.getElementById('bl-elig').textContent    = fmtN(eligN) + ' (' + eligBarPct + '%)';
   document.getElementById('bl-served').textContent  = fmtN(servedN) + ' (' + servedBarPct + '%)';
 
-  // Flow diagram
   document.getElementById('fl-served').textContent     = fmtN(servedN);
   document.getElementById('fl-cost').textContent       = '$' + cost.toLocaleString();
   document.getElementById('fl-total-cost').textContent = fmtD(totalCost);
   document.getElementById('fl-donors').textContent     = fmtN(donors);
 
-  // Context band
-  document.getElementById('ctx-donors').textContent       = fmtN(donors);
-  document.getElementById('ctx-filers').textContent       = fmtN(filersN);
-  document.getElementById('ctx-filers-total').textContent = fmtN(filersTotal);
-  document.getElementById('ctx-pct').textContent          = pctFilers + '%';
-  document.getElementById('ctx-per-donor').textContent    = perDonor;
+  document.getElementById('ctx-donors').textContent        = fmtN(donors);
+  document.getElementById('ctx-filers').textContent        = fmtN(filersN);
+  document.getElementById('ctx-filers-total').textContent  = fmtN(filersTotal);
+  document.getElementById('ctx-pct').textContent           = pctFilers + '%';
+  document.getElementById('ctx-per-donor').textContent     = perDonor;
 
-  // Scholarship cost comparison table
   const tbody = document.getElementById('rev-table-body');
   tbody.innerHTML = '';
   const amtsToShow = showAllAmounts ? SCHOLARSHIP_AMOUNTS_ALL : SCHOLARSHIP_AMOUNTS_CORE;
@@ -1574,13 +773,7 @@ function update() {
     const tr = document.createElement('tr');
     if (isCurrent) tr.classList.add('cur-row');
     const tag = isCurrent ? '<span class="cur-tag">current</span>' : '';
-    tr.innerHTML = `
-      <td>$${amt.toLocaleString()}${tag}</td>
-      <td class="td-students">${fmtNS(servedN)}</td>
-      <td class="td-total">${fmtD(tblCost)}</td>
-      <td class="td-students">${fmtNS(tblDonors)}</td>
-      <td class="td-pct">${tblPctFilers}%</td>
-    `;
+    tr.innerHTML = `<td>$${amt.toLocaleString()}${tag}</td><td class="td-students">${fmtNS(servedN)}</td><td class="td-total">${fmtD(tblCost)}</td><td class="td-students">${fmtNS(tblDonors)}</td><td class="td-pct">${tblPctFilers}%</td>`;
     tbody.appendChild(tr);
   });
 
@@ -1589,25 +782,15 @@ function update() {
 
 function toggleAmounts() {
   showAllAmounts = !showAllAmounts;
-  document.getElementById('expand-tbl-btn').textContent = showAllAmounts
-    ? 'Show core range ($1,000–$5,000)'
-    : 'Show full range ($500–$15,000)';
+  document.getElementById('expand-tbl-btn').textContent =
+    showAllAmounts ? 'Show core range ($1,000–$5,000)' : 'Show full range ($500–$15,000)';
   update();
 }
 
-// ─── IFRAME HEIGHT NOTIFIER ───
-// Posts document height to parent so WordPress can dynamically resize the iframe.
-// WordPress shortcode: [bpc_iframe src="[URL]"]
-// Or manually with a small JS snippet on the WP side:
-//   window.addEventListener('message', e => {
-//     if (e.data && e.data.type === 'bpcIframeHeight')
-//       document.querySelector('iframe.fstc-calc').style.height = e.data.height + 'px';
-//   });
 function notifyHeight() {
   const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
   try { window.parent.postMessage({ type: 'bpcIframeHeight', height: h }, '*'); } catch(e) {}
 }
-
 const _ro = new ResizeObserver(notifyHeight);
 _ro.observe(document.body);
 window.addEventListener('load', notifyHeight);
@@ -1615,137 +798,61 @@ window.addEventListener('load', notifyHeight);
 update();
 </script>
 
-<!-- ═══════════════════════════════════════════
-     QUALIFIED EXPENSES MODAL
-════════════════════════════════════════════ -->
+<!-- EXPENSES MODAL -->
 <div class="modal-overlay" id="expensesModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box">
     <div class="modal-header">
       <button class="modal-close" onclick="document.getElementById('expensesModal').classList.remove('open')" aria-label="Close">&times;</button>
-      <div class="modal-eyebrow">Federal FSTC · §25F</div>
+      <div class="modal-eyebrow">Federal FSTC &middot; &sect;25F</div>
       <h3>Qualified Educational Expenses</h3>
       <p>Scholarships may be used for the following categories of expenses under the federal Education Freedom Tax Credit program.</p>
     </div>
     <div class="modal-body">
-
       <div class="expense-group">
-        <div class="expense-group-title">Category 1 — Instruction &amp; Academic Support</div>
+        <div class="expense-group-title">Category 1 &mdash; Instruction &amp; Academic Support</div>
         <div class="expense-items">
-          <div class="expense-item grp1">
-            <div class="expense-icon">🏫</div>
-            <div class="expense-text">
-              <strong>Tuition &amp; Fees</strong>
-              <span>School tuition and enrollment fees.</span>
-            </div>
-          </div>
-          <div class="expense-item grp1">
-            <div class="expense-icon">📚</div>
-            <div class="expense-text">
-              <strong>Academic Tutoring</strong>
-              <span>Tutoring services directly supporting academic achievement.</span>
-            </div>
-          </div>
-          <div class="expense-item grp1">
-            <div class="expense-icon">🧩</div>
-            <div class="expense-text">
-              <strong>Special Needs Services</strong>
-              <span>Services required for special needs students in connection with school enrollment or attendance.</span>
-            </div>
-          </div>
-          <div class="expense-item grp1">
-            <div class="expense-icon">📖</div>
-            <div class="expense-text">
-              <strong>Books, Supplies &amp; Equipment</strong>
-              <span>Books, supplies, and other equipment expenses incurred in connection with school enrollment or attendance.</span>
-            </div>
-          </div>
+          <div class="expense-item grp1"><div class="expense-icon">🏫</div><div class="expense-text"><strong>Tuition &amp; Fees</strong><span>School tuition and enrollment fees.</span></div></div>
+          <div class="expense-item grp1"><div class="expense-icon">📚</div><div class="expense-text"><strong>Academic Tutoring</strong><span>Tutoring services directly supporting academic achievement.</span></div></div>
+          <div class="expense-item grp1"><div class="expense-icon">🧩</div><div class="expense-text"><strong>Special Needs Services</strong><span>Services required for special needs students in connection with school enrollment or attendance.</span></div></div>
+          <div class="expense-item grp1"><div class="expense-icon">📖</div><div class="expense-text"><strong>Books, Supplies &amp; Equipment</strong><span>Books, supplies, and other equipment expenses incurred in connection with school enrollment or attendance.</span></div></div>
         </div>
       </div>
-
       <div class="expense-group">
-        <div class="expense-group-title">Category 2 — School-Required Supplementary Items</div>
+        <div class="expense-group-title">Category 2 &mdash; School-Required Supplementary Items</div>
         <div class="expense-items">
-          <div class="expense-item grp2">
-            <div class="expense-icon">🏠</div>
-            <div class="expense-text">
-              <strong>Room &amp; Board</strong>
-              <span>Required or provided by a school in connection with enrollment or attendance.</span>
-            </div>
-          </div>
-          <div class="expense-item grp2">
-            <div class="expense-icon">👕</div>
-            <div class="expense-text">
-              <strong>Uniforms</strong>
-              <span>Required or provided by a school in connection with enrollment or attendance.</span>
-            </div>
-          </div>
-          <div class="expense-item grp2">
-            <div class="expense-icon">🚌</div>
-            <div class="expense-text">
-              <strong>Transportation</strong>
-              <span>Required or provided by a school in connection with enrollment or attendance.</span>
-            </div>
-          </div>
-          <div class="expense-item grp2">
-            <div class="expense-icon">🕔</div>
-            <div class="expense-text">
-              <strong>Extended Day Programs &amp; Supplementary Services</strong>
-              <span>Including extended day programs which are required or provided by a school in connection with enrollment or attendance.</span>
-            </div>
-          </div>
+          <div class="expense-item grp2"><div class="expense-icon">🏠</div><div class="expense-text"><strong>Room &amp; Board</strong><span>Required or provided by a school in connection with enrollment or attendance.</span></div></div>
+          <div class="expense-item grp2"><div class="expense-icon">👕</div><div class="expense-text"><strong>Uniforms</strong><span>Required or provided by a school in connection with enrollment or attendance.</span></div></div>
+          <div class="expense-item grp2"><div class="expense-icon">🚌</div><div class="expense-text"><strong>Transportation</strong><span>Required or provided by a school in connection with enrollment or attendance.</span></div></div>
+          <div class="expense-item grp2"><div class="expense-icon">🕔</div><div class="expense-text"><strong>Extended Day Programs &amp; Supplementary Services</strong><span>Including extended day programs which are required or provided by a school.</span></div></div>
         </div>
       </div>
-
       <div class="expense-group">
-        <div class="expense-group-title">Category 3 — Technology &amp; Internet Access</div>
+        <div class="expense-group-title">Category 3 &mdash; Technology &amp; Internet Access</div>
         <div class="expense-items">
-          <div class="expense-item grp3">
-            <div class="expense-icon">💻</div>
-            <div class="expense-text">
-              <strong>Computer Technology or Equipment</strong>
-              <span>If used by the student and the student's family during any of the years the student is in school.</span>
-            </div>
-          </div>
-          <div class="expense-item grp3">
-            <div class="expense-icon">🌐</div>
-            <div class="expense-text">
-              <strong>Internet Access &amp; Related Services</strong>
-              <span>If used by the student and the student's family during any of the years the student is in school.</span>
-            </div>
-          </div>
+          <div class="expense-item grp3"><div class="expense-icon">💻</div><div class="expense-text"><strong>Computer Technology or Equipment</strong><span>If used by the student and the student's family during any of the years the student is in school.</span></div></div>
+          <div class="expense-item grp3"><div class="expense-icon">🌐</div><div class="expense-text"><strong>Internet Access &amp; Related Services</strong><span>If used by the student and the student's family during any of the years the student is in school.</span></div></div>
         </div>
       </div>
-
-      <div class="modal-caveat">
-        <strong>Not included:</strong> Computer software designed for sports, games, or hobbies that are not predominantly educational in nature does not qualify as an eligible expense.
-      </div>
-
+      <div class="modal-caveat"><strong>Not included:</strong> Computer software designed for sports, games, or hobbies that are not predominantly educational in nature does not qualify.</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     DONOR NOTE MODAL
-════════════════════════════════════════════ -->
+<!-- DONOR NOTE MODAL -->
 <div class="modal-overlay" id="donorNoteModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box">
     <div class="modal-header">
       <button class="modal-close" onclick="document.getElementById('donorNoteModal').classList.remove('open')" aria-label="Close">&times;</button>
-      <div class="modal-eyebrow">Federal FSTC · §25F · Guidance Note</div>
+      <div class="modal-eyebrow">Federal FSTC &middot; &sect;25F &middot; Guidance Note</div>
       <h3>$1,700 Credit Limit: Per Return, Not Per Person</h3>
       <p>An important interpretation note on the maximum donor contribution.</p>
     </div>
     <div class="modal-body">
-      <div class="expense-item grp1" style="margin-bottom:14px; align-items:flex-start;">
+      <div class="expense-item grp1" style="margin-bottom:16px; align-items:flex-start;">
         <div class="expense-icon">⚠️</div>
-        <div class="expense-text">
-          <strong>Anticipated guidance on married filing jointly</strong>
-          <span>Calculator assumes a limit of $1,700 per return, which means that married-filing-jointly couples would receive $1,700, not $3,400. Final Treasury rules could impact this.</span>
-        </div>
+        <div class="expense-text"><strong>Anticipated guidance on married filing jointly</strong><span>Calculator assumes a limit of $1,700 per return, which means that married-filing-jointly couples would receive $1,700, not $3,400. Final Treasury rules could impact this.</span></div>
       </div>
-      <div class="modal-caveat">
-        <strong>Implication for this calculator:</strong> All donor and program-size estimates in this tool assume $1,700 per contributor, consistent with the anticipated per-return interpretation. If guidance ultimately permits $3,400 for joint filers, the number of donors required to fund a given program size would be lower than shown here — meaning these estimates are <em>conservative</em> under that alternative interpretation.
-      </div>
+      <div class="modal-caveat"><strong>Implication for this calculator:</strong> All donor and program-size estimates in this tool assume $1,700 per contributor, consistent with the anticipated per-return interpretation. If guidance ultimately permits $3,400 for joint filers, the number of donors required would be lower than shown here &mdash; meaning these estimates are <em>conservative</em> under that alternative interpretation.</div>
     </div>
   </div>
 </div>
