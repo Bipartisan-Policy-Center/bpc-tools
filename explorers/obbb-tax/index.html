@@ -42,9 +42,9 @@
   .legend-swatch { width: 15px; height: 15px; border-radius: 2px; flex-shrink: 0; }
   .legend-note { font-size: 0.78rem; color: var(--muted); font-family: 'Faustina', serif; margin-left: auto; }
 
-  /* LAYOUT */
-  .main-wrap { display: grid; grid-template-columns: 1fr 370px; gap: 0; align-items: start; padding: 24px 24px 0; max-width: 1440px; margin: 0 auto; }
-  @media (max-width: 960px) { .main-wrap { grid-template-columns: 1fr; padding: 16px 12px 0; } }
+  /* LAYOUT — single column; detail card is always a modal */
+  .main-wrap { display: grid; grid-template-columns: 1fr; gap: 0; align-items: start; padding: 24px 24px 0; max-width: 1440px; margin: 0 auto; }
+  @media (max-width: 960px) { .main-wrap { padding: 16px 12px 0; } }
 
   /* CHART PANEL */
   .chart-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 20px 20px 20px 8px; }
@@ -56,63 +56,58 @@
   .chart-row-hit.hit-selected { background: rgba(252,187,19,.12); }
   #mainChart { display: block; }
 
-  /* DETAIL CARD */
-  .detail-panel { position: sticky; top: 20px; padding-left: 20px; }
+  /* DETAIL CARD — always a modal overlay */
+  .detail-panel { display: none; padding-left: 0; }
   .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  /* Close button — hidden on desktop */
-  .card-close-btn { display: none; }
-  /* Mobile backdrop */
   #mobileBackdrop { display: none; }
-  @media (max-width: 960px) {
-    .detail-panel { display: none; padding-left: 0; }
-    body.card-open .detail-panel {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: fixed;
-      inset: 0;
-      z-index: 1001;
-      padding: 16px;
-      pointer-events: none;
-    }
-    body.card-open .card {
-      pointer-events: all;
-      max-height: 88vh;
-      overflow-y: auto;
-      width: 100%;
-      max-width: 480px;
-      border-radius: 8px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
-    body.card-open #mobileBackdrop {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(0,0,0,0.5);
-      cursor: pointer;
-    }
-    .card-close-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      width: 28px;
-      height: 28px;
-      border: none;
-      background: var(--bg);
-      border-radius: 50%;
-      font-size: 0.9rem;
-      color: var(--muted);
-      cursor: pointer;
-      line-height: 1;
-      padding: 0;
-    }
-    .card-close-btn:hover { background: var(--border); color: var(--text); }
-    .card-header { position: relative; padding-right: 44px; }
+  body.card-open { overflow: hidden; }
+  body.card-open .detail-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    padding: 16px;
+    pointer-events: none;
   }
+  body.card-open .card {
+    pointer-events: all;
+    max-height: 88vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  body.card-open #mobileBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+  .card-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--bg);
+    border-radius: 50%;
+    font-size: 0.9rem;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+  }
+  .card-close-btn:hover { background: var(--border); color: var(--text); }
+  .card-header { position: relative; padding-right: 44px; }
   .card-placeholder { padding: 40px 24px; text-align: center; color: var(--muted); font-family: 'Faustina', serif; font-size: 0.9rem; }
   .card-placeholder svg { display: block; margin: 0 auto 14px; opacity: .25; }
   .card-header { padding: 16px 18px 14px; border-bottom: 1px solid var(--border); }
@@ -1287,11 +1282,8 @@ function selectProvision(key) {
     tr.classList.toggle("selected", tr.dataset.key === key);
   });
 
-  // On mobile, open as modal
-  if (window.innerWidth <= 960) {
-    document.body.classList.add("card-open");
-    document.getElementById("detailPanel").scrollTop = 0;
-  }
+  document.body.classList.add("card-open");
+  document.querySelector("#detailPanel .card").scrollTop = 0;
 }
 
 function closeCard() {
