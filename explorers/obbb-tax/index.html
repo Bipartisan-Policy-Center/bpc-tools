@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPC | One Big Beautiful Bill Act: Tax Provisions Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faustina:wght@400;500;600&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cut: #1b83c6;
+    --cut-light: #daeef9;
+    --cut-hover: #1461a0;
+    --raise: #fcbb13;
+    --raise-light: #fff4d6;
+    --raise-hover: #8a5500;
+    --selected: #b91f24;
+    --selected-dark: #8f1518;
+    --bg: #f2f3f3;
+    --card-bg: #ffffff;
+    --border: #d3d8d6;
+    --text: #333638;
+    --muted: #5a6678;
+    --accent: #3c608a;
+    --header-bg: #1f476c;
+  }
+  body { font-family: 'Faustina', Georgia, serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.55; }
+  a { color: var(--accent); }
+
+  /* HEADER */
+  .site-header { background: var(--header-bg); color: #fff; padding: 24px 32px 20px; border-bottom: 4px solid #fcbb13; }
+  .site-header h1 { font-family: 'Roboto Slab', serif; font-weight: 700; font-size: 1.7rem; letter-spacing: -.01em; margin-bottom: 7px; line-height: 1.2; }
+  .site-header p { font-family: 'Faustina', serif; font-size: 0.95rem; opacity: .88; max-width: 700px; }
+  .bpc-tag { display: inline-block; background: #fcbb13; color: #1f476c; font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border-radius: 2px; padding: 2px 8px; margin-right: 10px; vertical-align: middle; }
+
+  /* LEGEND */
+  .legend-bar { display: flex; gap: 20px; align-items: center; background: #fff; border-bottom: 1px solid var(--border); padding: 10px 32px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.82rem; font-family: 'Faustina', serif; color: var(--muted); }
+  .legend-swatch { width: 15px; height: 15px; border-radius: 2px; flex-shrink: 0; }
+  .legend-note { font-size: 0.78rem; color: var(--muted); font-family: 'Faustina', serif; margin-left: auto; }
+
+  /* LAYOUT */
+  .main-wrap { display: grid; grid-template-columns: 1fr 370px; gap: 0; align-items: start; padding: 24px 24px 0; max-width: 1440px; margin: 0 auto; }
+  @media (max-width: 960px) { .main-wrap { grid-template-columns: 1fr; padding: 16px 12px 0; } }
+
+  /* CHART PANEL */
+  .chart-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 20px 20px 20px 8px; }
+  .chart-panel h2 { font-family: 'Roboto Slab', serif; font-weight: 500; font-size: 0.88rem; color: var(--muted); letter-spacing: .03em; text-transform: uppercase; padding-left: 12px; margin-bottom: 14px; }
+  .chart-wrap { position: relative; overflow-x: hidden; }
+  .chart-overlay { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; }
+  .chart-row-hit { position: absolute; left: 0; width: 100%; cursor: pointer; pointer-events: all; background: transparent; transition: background .1s; }
+  .chart-row-hit:hover { background: rgba(60,96,138,.06); }
+  .chart-row-hit.hit-selected { background: rgba(252,187,19,.12); }
+  #mainChart { display: block; }
+
+  /* DETAIL CARD */
+  .detail-panel { position: sticky; top: 20px; padding-left: 20px; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  /* Close button — hidden on desktop */
+  .card-close-btn { display: none; }
+  /* Mobile backdrop */
+  #mobileBackdrop { display: none; }
+  @media (max-width: 960px) {
+    .detail-panel { display: none; padding-left: 0; }
+    body.card-open .detail-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      z-index: 1001;
+      padding: 16px;
+      pointer-events: none;
+    }
+    body.card-open .card {
+      pointer-events: all;
+      max-height: 88vh;
+      overflow-y: auto;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    body.card-open #mobileBackdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+    .card-close-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--bg);
+      border-radius: 50%;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+    .card-close-btn:hover { background: var(--border); color: var(--text); }
+    .card-header { position: relative; padding-right: 44px; }
+  }
+  .card-placeholder { padding: 40px 24px; text-align: center; color: var(--muted); font-family: 'Faustina', serif; font-size: 0.9rem; }
+  .card-placeholder svg { display: block; margin: 0 auto 14px; opacity: .25; }
+  .card-header { padding: 16px 18px 14px; border-bottom: 1px solid var(--border); }
+  .card-chapter { font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; margin-bottom: 5px; }
+  .card-name { font-family: 'Roboto Slab', serif; font-size: 1.08rem; font-weight: 700; line-height: 1.25; margin-bottom: 4px; color: var(--text); }
+  .card-section { font-size: 0.8rem; font-family: 'Faustina', serif; color: var(--muted); }
+  .card-cost { display: inline-block; margin-top: 10px; padding: 4px 13px; border-radius: 3px; font-size: 0.85rem; font-family: 'Roboto Slab', serif; font-weight: 500; }
+  .card-cost.cut { background: var(--cut-light); color: var(--cut-hover); }
+  .card-cost.raise { background: var(--raise-light); color: var(--raise-hover); }
+  .card-body { padding: 16px 18px; }
+  .card-body h4 { font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .card-bullets { list-style: none; }
+  .card-bullets li { position: relative; padding-left: 16px; margin-bottom: 9px; font-size: 0.9rem; line-height: 1.5; font-family: 'Faustina', serif; }
+  .card-bullets li::before { content: "•"; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+  .card-chart { padding: 0 18px 18px; }
+  .card-chart h4 { font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  #detailChart { max-height: 160px; }
+  .temp-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 3px; background: #fff4d6; color: #8a5500; font-family: 'Roboto Slab', serif; font-size: 0.65rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; vertical-align: middle; }
+  .temp-badge-table { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; background: #fff4d6; color: #8a5500; font-family: 'Roboto Slab', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+  .scoring-note { margin: 0 18px 14px; padding: 9px 12px; background: #f7f4e8; border-left: 3px solid #fcbb13; border-radius: 0 3px 3px 0; font-family: 'Faustina', serif; font-size: 0.83rem; line-height: 1.45; color: #5a4a00; }
+  .scoring-note strong { font-family: 'Roboto Slab', serif; font-size: 0.7rem; letter-spacing: .06em; text-transform: uppercase; display: block; margin-bottom: 3px; color: #8a5500; }
+  .card-extension { padding: 0 18px 18px; border-top: 1px solid var(--border); margin-top: 2px; }
+  .card-extension h4 { font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding-top: 14px; }
+  .extension-callout { background: var(--cut-light); border-left: 3px solid var(--cut); border-radius: 0 3px 3px 0; padding: 8px 12px; margin-bottom: 12px; font-family: 'Faustina', serif; font-size: 0.83rem; line-height: 1.45; color: var(--cut-hover); }
+  .extension-callout strong { font-family: 'Roboto Slab', serif; font-size: 0.7rem; letter-spacing: .06em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  #extensionChart { max-height: 120px; }
+
+  /* TABLE SECTION */
+  .table-wrap { max-width: 1440px; margin: 24px auto; padding: 0 24px 48px; }
+  @media (max-width: 960px) { .table-wrap { padding: 0 12px 32px; } .table-container { overflow-x: auto; } }
+  .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+  .table-header h2 { font-family: 'Roboto Slab', serif; font-weight: 500; font-size: 1.1rem; color: var(--text); }
+  .search-wrap { position: relative; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .4; }
+  #tableSearch { border: 1px solid var(--border); border-radius: 4px; padding: 7px 12px 7px 34px; font-size: 0.88rem; font-family: 'Faustina', serif; width: 240px; background: #fff; outline: none; color: var(--text); }
+  #tableSearch:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(60,96,138,.15); }
+  .table-container { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-family: 'Faustina', serif; font-size: 0.88rem; }
+  thead th { background: #eaedf0; padding: 10px 14px; text-align: left; font-family: 'Roboto Slab', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap; }
+  thead th:hover { background: #dde2e8; }
+  thead th .sort-icon { display: inline-block; margin-left: 5px; opacity: .4; font-size: 0.7rem; }
+  thead th.sorted .sort-icon { opacity: 1; }
+  tbody tr { border-bottom: 1px solid #edf0f0; cursor: pointer; transition: background .1s; }
+  tbody tr:hover { background: #f0f4f8; }
+  tbody tr.selected { background: #fffaeb; border-left: 3px solid #fcbb13; }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 9px 14px; vertical-align: middle; }
+  td.provision-name { font-size: 0.88rem; font-weight: 500; max-width: 300px; }
+  td.provision-section { color: var(--muted); font-size: 0.8rem; font-family: 'Faustina', serif; }
+  td.provision-chapter { font-size: 0.8rem; }
+  .chapter-pill { display: inline-block; padding: 2px 9px; border-radius: 3px; font-family: 'Roboto Slab', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+  .ch-tcja    { background: #daeef9; color: #1461a0; }
+  .ch-trump   { background: #fff4d6; color: #8a5500; }
+  .ch-business{ background: #fdecd9; color: #8a3600; }
+  .ch-individual{ background: #f0daf0; color: #6f173a; }
+  .ch-energy  { background: #d6eedd; color: #0a4f2a; }
+  .ch-payfors { background: #fce8e8; color: #8f1518; }
+  td.cost-cell { font-family: 'Roboto Slab', serif; font-weight: 500; white-space: nowrap; font-size: 0.87rem; }
+  td.cost-cell.cut { color: var(--cut-hover); }
+  td.cost-cell.raise { color: var(--raise-hover); }
+  .no-results { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; font-family: 'Faustina', serif; }
+  .row-count { font-size: 0.8rem; color: var(--muted); margin-top: 6px; font-family: 'Faustina', serif; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1><span class="bpc-tag">BPC</span>One Big Beautiful Bill Act: Tax Provisions Explorer</h1>
+  <p>Every tax provision in the legislation, scored by the Joint Committee on Taxation over the FY2025–2034 budget window. Click any bar or row to see full details.</p>
+</header>
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--cut)"></div> Tax cut (reduces revenue)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--raise)"></div> Tax increase (raises revenue)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--selected)"></div> Selected provision</div>
+  <span class="legend-note">Amounts in billions of dollars &nbsp;|&nbsp; Negative = tax cut &nbsp;|&nbsp; Positive = tax increase &nbsp;|&nbsp; * = Temporary provision; score is for 10 years but reflects the cost of only a few years of the policy</span>
+</div>
+
+<div class="main-wrap">
+  <div class="chart-panel">
+    <h2>10-Year Budget Impact, FY2025–2034 — Click any row to explore</h2>
+    <div class="chart-wrap" id="chartWrap">
+      <canvas id="mainChart"></canvas>
+      <div class="chart-overlay" id="chartOverlay"></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detailPanel">
+    <div class="card" id="detailCard">
+      <div class="card-placeholder" id="cardPlaceholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
+        Click any bar in the chart or row in the table to see provision details here.
+      </div>
+      <div id="cardContent" style="display:none">
+        <div class="card-header">
+          <button class="card-close-btn" id="cardCloseBtn" aria-label="Close">&#x2715;</button>
+          <div class="card-chapter" id="cardChapter"></div>
+          <div class="card-name" id="cardName"><span id="cardTempBadge" class="temp-badge" style="display:none">Temporary</span></div>
+          <div class="card-section" id="cardSection"></div>
+          <span class="card-cost" id="cardCost"></span>
+        </div>
+        <div id="cardNote" class="scoring-note" style="display:none"><strong>Scoring Note</strong><span id="cardNoteText"></span></div>
+        <div class="card-body">
+          <h4>Key Provisions</h4>
+          <ul class="card-bullets" id="cardBullets"></ul>
+        </div>
+        <div class="card-chart">
+          <h4>Year-by-Year Budget Impact ($B)</h4>
+          <canvas id="detailChart"></canvas>
+        </div>
+        <div class="card-extension" id="cardExtension" style="display:none">
+          <h4>FY2025–2036: Actual Cost (bars) and Extension Scenario (dashed)</h4>
+          <div class="extension-callout" id="extensionCallout"></div>
+          <canvas id="extensionChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="mobileBackdrop"></div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <h2>All Tax Provisions</h2>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="tableSearch" placeholder="Search provisions…" autocomplete="off">
+    </div>
+  </div>
+  <div class="table-container">
+    <table id="provisionsTable">
+      <thead>
+        <tr>
+          <th data-col="name">Provision <span class="sort-icon">↕</span></th>
+          <th data-col="section">Section <span class="sort-icon">↕</span></th>
+          <th data-col="chapter">Chapter <span class="sort-icon">↕</span></th>
+          <th data-col="tenYear" class="sorted">10-Year Cost ($B) <span class="sort-icon">↓</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="row-count" id="rowCount" style="padding:8px 14px;"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const YEARS = [2025,2026,2027,2028,2029,2030,2031,2032,2033,2034];
+
+const provisions = [
+  // ===== CHAPTER 1: TCJA EXTENSIONS =====
+  {
+    key:"reduced_rates", name:"Lower Individual Tax Rates", section:"Sec. 70101", chapter:"TCJA Extensions",
+    yearlyValues:[0,147.7,222.2,232.7,241,249.8,259.4,269.7,279.9,291],
+    bullets:[
+      "Permanently extends the lower individual income tax rates and thresholds from TCJA, which were scheduled to expire after 2025.",
+      "Provides an extra inflation adjustment to the bottom two brackets in 2026, which would result in lower tax bills for a subset of low- and middle-income taxpayers.",
+      "Costs $2.2 trillion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-the-big-picture-for-individual-taxes-in-tcja/"
+  },
+  {
+    key:"standard_deduction", name:"Standard Deduction", section:"Sec. 70102", chapter:"TCJA Extensions",
+    yearlyValues:[7.5,92.1,144.7,149.9,155.5,161.5,168.3,174.8,181.9,188.4],
+    bullets:[
+      "Permanently extends the doubled standard deduction from TCJA, which was scheduled to revert to approximately half its current amount after 2025.",
+      "Adds $750 to the standard deduction for single taxpayers and $1,500 for married couples in 2025, so that the standard deduction is $15,750 for single filers and $31,500 for married couples.",
+      "Continues to adjust the standard deduction for inflation after 2025.",
+      "Costs $1.4 trillion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-individual-tax-deductions-and-exemptions-in-tcja/"
+  },
+  {
+    key:"personal_exemptions", name:"Permanent Repeal of Personal Exemptions", section:"Sec. 70103", chapter:"TCJA Extensions",
+    yearlyValues:[0,-133.7,-196.5,-202.9,-210.5,-217.6,-224,-230.6,-238.4,-245.6],
+    bullets:[
+      "Permanently repeals personal exemptions, which were scheduled to return in 2026.",
+      "Personal exemptions acted like an additional deduction based on family size. If TCJA had expired, they would be valued at $5,300 in 2026.",
+      "Raises $1.9 trillion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-individual-tax-deductions-and-exemptions-in-tcja/"
+  },
+  {
+    key:"seniors", name:"Additional Senior Deduction", section:"Sec. 70103", chapter:"TCJA Extensions",
+    yearlyValues:[9.3,23,23,23.3,14.1,0,0,0,0,0],
+    bullets:[
+      "Creates an additional standard deduction for taxpayers over 65 from 2025 through 2028.",
+      "The deduction is equal to $6,000 per individual and phases out at a 6% rate for single taxpayers making above $75,000 and married taxpayers making above $150,000.",
+      "The senior deduction is available whether a taxpayer takes the standard deduction or itemizes their deductions.",
+      "Costs $92 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-bill-additional-6000-deduction-for-seniors-simplified/"
+  },
+  {
+    key:"ctc", name:"Child Tax Credit", section:"Sec. 70104", chapter:"TCJA Extensions",
+    yearlyValues:[0,48.8,87.6,90.2,92.7,95.3,97.6,99.3,101.9,103.5],
+    bullets:[
+      "Permanently extends the $2,000 per child credit amount from TCJA, which was previously scheduled to revert to $1,000 per child after 2025.",
+      "Adds $200 to the CTC in 2025, so that the maximum credit is $2,200 per child, and adjusts it for inflation after 2025.",
+      "Permanently extends the refundable amount of the CTC (currently $1,700 per child), which is adjusted for inflation each year.",
+      "Permanently extends the CTC phase-out, which starts at $200,000 for single taxpayers and $400,000 for married taxpayers.",
+      "Requires Social Security numbers (SSNs) for the claimant parent (if married and filing jointly, at least one parent), and qualifying child(ren). Current law requires an SSN only for the child.",
+      "Costs $817 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/article/how-much-is-my-child-tax-credit-or-earned-income-tax-credit-2026-filing-season/"
+  },
+  {
+    key:"pass_through", name:"Pass-Through Deduction (Sec. 199A)", section:"Sec. 70105", chapter:"TCJA Extensions",
+    yearlyValues:[7,44.3,74.6,80.9,82.3,84.2,86.5,89.1,92,95.6],
+    bullets:[
+      "Permanently extends the 20% deduction for pass-through business income from TCJA, which was previously scheduled to expire after 2025. This deduction is also referred to as 199A or the qualified business income (QBI) deduction.",
+      "Starting in 2026, provides a minimum $400 deduction for taxpayers with at least $1,000 in qualified business income from actively running a trade or business, with both of those figures adjusted for inflation after 2026.",
+      "Costs $737 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-the-corporate-tax-rate-and-pass-through-deduction/"
+  },
+  {
+    key:"estate", name:"Estate Taxes", section:"Sec. 70106", chapter:"TCJA Extensions",
+    yearlyValues:[0,3.7,20.3,22.4,23.3,24.7,26.3,28.1,30.3,32.6],
+    bullets:[
+      "Permanently extends a higher estate tax exemption from TCJA, which was previously scheduled to expire after 2025.",
+      "Sets the exemption at $15 million in 2026 ($30 million for married couples), adjusted for inflation thereafter.",
+      "Costs $212 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-individual-estate-and-gift-taxes-in-tcja/"
+  },
+  {
+    key:"amt", name:"Alternative Minimum Tax", section:"Sec. 70107", chapter:"TCJA Extensions",
+    yearlyValues:[0,76.8,137.5,139.7,147.3,155.4,163.5,172,180.7,189.8],
+    bullets:[
+      "Generally extends the higher AMT exemption amounts and thresholds from TCJA—which were previously scheduled to revert to much lower amounts after 2025 and subject more income to the AMT—but resets the phaseout thresholds to $500,000 ($1 million for married couples), adjusted for inflation after 2026. This reset reduces AMT relief compared to a simple extension of TCJA.",
+      "Costs $1.4 trillion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-the-alternative-minimum-tax-in-tcja/"
+  },
+  {
+    key:"mid", name:"Mortgage Interest Deduction", section:"Sec. 70108", chapter:"TCJA Extensions",
+    yearlyValues:[0,-1.6,-3.1,-3.5,-4.1,-4.6,-5,-5.5,-5.8,-6.4],
+    bullets:[
+      "Permanently extends the $750,000 limit for the mortgage interest deduction, which was previously scheduled to increase to a higher $1,000,000 limit (i.e., allowing higher mortgage interest deductions) after 2025.",
+      "For a home purchase with a 20% down payment, this effectively limits the mortgage interest deduction for purchases above $937,500 ($750,000 x (1-0.20)).",
+      "Restores mortgage insurance premiums as interest eligible for the deduction.",
+      "Raises $40 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-individual-tax-deductions-and-exemptions-in-tcja/"
+  },
+  {
+    key:"itemized_deductions", name:"Miscellaneous & Casualty Itemized Deductions", section:"Secs. 70109–70110", chapter:"TCJA Extensions",
+    yearlyValues:[0,-13.5,-23.8,-25,-26,-26.9,-27.9,-28.9,-29.9,-31],
+    bullets:[
+      "Sec. 70109 permanently extends the limit on personal casualty losses from TCJA to only losses in a presidentially-declared or state disaster area, and only to the extent net disaster losses exceed 10% of income.",
+      "Sec. 70110 permanently extends the repeal of miscellaneous itemized deductions from TCJA.",
+      "Sec. 70110 restores 'educator expenses' as an eligible itemized deduction, which includes unreimbursed books, supplies, and computer purchases made by teachers, principals, and other instructors.",
+      "Raises $233 billion combined from FY2025-2034."
+    ]
+  },
+  {
+    key:"itemized_limit", name:"Limit on Itemized Deductions", section:"Sec. 70111", chapter:"TCJA Extensions",
+    yearlyValues:[0,16,26.4,27.6,28.4,29.3,30.2,31.3,32.4,33.8],
+    bullets:[
+      "Permanently extends the repeal of the pre-TCJA overall limitation on itemized deductions, called the 'Pease' limitation.",
+      "Adds a new limitation on itemized deductions that effectively reduces the value of all itemized deductions for taxpayers in the top income bracket by two percentage points. In other words, a $100 itemized deduction for a taxpayer in the top bracket would equal a $35 reduction in tax liability instead of $37.",
+      "Costs $256 billion from FY2025-2034."
+    ],
+    scoringNote: "Presents as a tax cut due to scoring quirks, but is actually a tax increase.",
+    readMore:"https://bipartisanpolicy.org/explainer/how-congress-could-expand-the-cap-on-itemized-deductions-in-the-2025-tax-bill/"
+  },
+  {
+    key:"salt", name:"State and Local Tax (SALT) Deduction", section:"Sec. 70120", chapter:"TCJA Extensions",
+    yearlyValues:[5.1,-31.6,-79.2,-80,-84.9,-106.8,-135.2,-137.5,-144.4,-151.6],
+    bullets:[
+      "Provides a $40,000 SALT deduction cap for taxpayers making under $500,000 in 2025. The deduction cap phases down at a 30% rate, from $40,000 to $10,000, for taxpayers making over $500,000.",
+      "The $40,000 cap and $500,000 threshold are adjusted for inflation from 2026-2029.",
+      "After 2029, the SALT cap is reset to $10,000.",
+      "Raises $946 billion from FY2025-2034."
+    ],
+    temporary: true,
+    scoringNote: "Raises less money than continuing the $10,000 SALT cap that was in place from 2018–2024.",
+    readMore:"https://bipartisanpolicy.org/article/how-would-the-2025-house-tax-bill-change-the-salt-deduction/"
+  },
+  {
+    key:"tcja_other", name:"Additional TCJA Extensions", section:"Secs. 70112–70119", chapter:"TCJA Extensions",
+    yearlyValues:[0,-0.6,-1.2,-1.3,-1.4,-1.4,-1.5,-1.6,-1.6,-1.7],
+    bullets:[
+      "Extends a number of smaller tax provisions from TCJA, including its repeal of the tax exclusion for bicycle commuting reimbursements, the exclusion and deduction for moving expenses (other than for members of the Armed Forces), and tax provisions concerning Achieving a Better Life Experience (ABLE) accounts for people with disabilities.",
+      "Raises $12 billion from FY2025-2034."
+    ]
+  },
+
+  // ===== CHAPTER 2: TRUMP PRIORITIES =====
+  {
+    key:"tips", name:"No Tax on Tips", section:"Sec. 70201", chapter:"Trump Priority Tax Cuts",
+    yearlyValues:[0,10.1,7.7,8.1,5.3,0.1,0.1,0.1,0.1,0.1],
+    bullets:[
+      "Adds a deduction for qualified tips from 2025 through 2028.",
+      "Includes a $25,000 limit on the amount of the deduction, and the deduction is generally limited to occupations that the Treasury Secretary certifies 'customarily and regularly' received tips before 2025. The deduction phases out at a 10% rate for single taxpayers making more than $150,000 and married couples making more than $300,000.",
+      "The tips deduction is available whether a taxpayer takes the standard deduction or itemizes their deductions.",
+      "Costs $31 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/explainer/new-irs-rules-no-tax-on-tips/"
+  },
+  {
+    key:"overtime", name:"No Tax on Overtime", section:"Sec. 70202", chapter:"Trump Priority Tax Cuts",
+    yearlyValues:[0,32.8,25.7,23,8.1,0,0,0,0,0],
+    bullets:[
+      "Adds a deduction for qualified overtime compensation from 2025 through 2028.",
+      "There is a $12,500 limit on the amount of the deduction ($25,000 for married couples).",
+      "The deduction applies to the extra compensation a taxpayer earns in overtime, not their entire compensation during overtime. For example, if a taxpayer makes $20 per hour regularly and $30 per hour in overtime, her deduction would apply to the $10 per hour in extra compensation (not the full $30 per hour earned in overtime).",
+      "The deduction phases out at a 10% rate for single taxpayers making more than $150,000 and married couples making more than $300,000.",
+      "The overtime deduction is available whether a taxpayer takes the standard deduction or itemizes their deductions.",
+      "Costs $89 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/explainer/no-tax-on-overtime-in-2026/"
+  },
+  {
+    key:"auto_loans", name:"No Tax on Auto Loan Interest", section:"Sec. 70203", chapter:"Trump Priority Tax Cuts",
+    yearlyValues:[1.9,5.4,8.1,9.9,5.3,0,0,0,0,0],
+    bullets:[
+      "Creates a new deduction for certain auto loan interest from 2025 through 2028.",
+      "The deduction is limited to $10,000 overall and phases out at a 20% rate for single taxpayers making above $100,000 and married taxpayers making above $200,000.",
+      "The deduction only applies to vehicles that are completed (i.e., assembled) in the U.S., and only applies to new vehicles (not used).",
+      "The auto loan deduction is available whether a taxpayer takes the standard deduction or itemizes their deductions.",
+      "Costs $31 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/explainer/the-auto-loan-interest-deduction-how-claiming-and-reporting-work/"
+  },
+  {
+    key:"trump_accounts", name:"Trump Accounts", section:"Sec. 70204", chapter:"Trump Priority Tax Cuts",
+    yearlyValues:[0.7,6.4,3.6,3.6,0,0.1,0.1,0.2,0.2,0.3],
+    bullets:[
+      "Creates a new savings account called a Trump account.",
+      "Accounts are available only for children under 18 in a given year, and the contribution limits are generally $5,000 per year adjusted for inflation.",
+      "Amounts from Trump accounts may not be distributed to beneficiaries until after they have reached age 18.",
+      "A pilot program provides a $1,000 credit to Trump accounts for U.S. citizens born from 2025 through 2028.",
+      "Costs $15 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-reconciliation-debate-trump-accounts/"
+  },
+
+  // ===== CHAPTER 3: BUSINESS =====
+  {
+    key:"bonus_depreciation", name:"Bonus Depreciation / Full Expensing", section:"Sec. 70301", chapter:"Business Tax Provisions",
+    yearlyValues:[33.5,65.1,65.2,57.5,40.8,29,21.6,17.8,16.3,15.9],
+    bullets:[
+      "Establishes 100% bonus depreciation permanently for business investments in machinery, equipment, and other short-lived assets from Jan. 19, 2025, onward.",
+      "Costs $363 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-what-is-bonus-depreciation/"
+  },
+  {
+    key:"rd_expensing", name:"R&D Expensing", section:"Sec. 70302", chapter:"Business Tax Provisions",
+    yearlyValues:[53.8,33.6,20.5,13.8,7.5,3.2,2.1,2.2,2.3,2.4],
+    bullets:[
+      "Permanently restores full expensing for businesses' domestic research and development (R&D) investments, retroactive from January 1, 2025 onwards. Since 2022, domestic R&D investments have had to be amortized (i.e., deductions spread out) over five years.",
+      "Allows retroactivity to the beginning of 2022 (not just the beginning of 2025) for small businesses that meet an average annual gross receipts threshold of $31 million or less.",
+      "Allows all businesses (large and small) with domestic R&D investments from 2022 through 2024 to accelerate any remaining deductions over one or two years (rather than spreading out deductions over five years).",
+      "Requires that foreign R&D investments still be amortized over 15 years.",
+      "Costs $141 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/how-new-rd-tax-policy-is-clashing-with-the-corporate-minimum-tax/"
+  },
+  {
+    key:"interest_deductions", name:"Business Interest Deductions", section:"Sec. 70303", chapter:"Business Tax Provisions",
+    yearlyValues:[8.3,6.5,6.2,5.7,5.3,5.3,5.5,5.5,6,6.2],
+    bullets:[
+      "Permanently restores a more generous interest deduction limit that was in place from 2018 through 2021 under TCJA, retroactive from January 1, 2025 onwards.",
+      "The more generous interest deduction limit is based on earnings before interest, taxes, depreciation, and amortization (EBITDA) rather than earnings before interest and taxes (EBIT). The EBIT standard went into effect in 2022.",
+      "Costs $61 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-business-deductions-in-tcja/"
+  },
+  {
+    key:"45s", name:"45S Employer-Provided Paid Family and Medical Leave Credit", section:"Sec. 70304", chapter:"Business Tax Provisions",
+    yearlyValues:[0,0.102,0.26,0.379,0.489,0.61,0.737,0.87,0.972,1.036],
+    bullets:[
+      "Permanently extends the 45S credit from TCJA, which was previously scheduled to expire after 2025.",
+      "Allows employers to use the credit to offset their premiums paid for insurance that provides their employees with paid leave.",
+      "Allows employers to use the credit where leave is required by a state or local government, if the leave provided is over and above what is mandated.",
+      "Lowers the threshold at which an eligible worker can claim paid leave from one year to six months.",
+      "Costs $5 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
+  },
+  {
+    key:"business_meals_spaceports", name:"Business Meals & Spaceports", section:"Secs. 70305, 70309", chapter:"Business Tax Provisions",
+    yearlyValues:[0,0.1,0.1,0.2,0.2,0.2,0.3,0.3,0.3,0.3],
+    bullets:[
+      "Sec. 70305: Under TCJA, businesses face new limits starting in 2026 for deducting business meals, including those provided on-site to employees. This section exempts meals provided on fishing vessels or at fish processing facilities, thereby continuing to allow deductibility of meals provided by those businesses.",
+      "Sec. 70309: Adds spaceports to the eligible types of investments for tax-exempt municipal bonds by treating them the same as airports, which are currently eligible.",
+      "Costs approximately $2 billion combined from FY2025-2034."
+    ]
+  },
+  {
+    key:"sec_179", name:"Sec. 179 Small Business Expensing", section:"Sec. 70306", chapter:"Business Tax Provisions",
+    yearlyValues:[2.3,4.3,3.6,3,2.5,2.1,1.9,1.8,1.7,1.7],
+    bullets:[
+      "Increases the sec. 179 expensing allowance targeted at small businesses, from a maximum of $1.25 million in 2025 to a maximum of $2.5 million in 2025.",
+      "Raises the threshold at which the allowance begins to phase out, from $3.13 million in sec. 179 property in 2025 to $4 million in sec. 179 property in 2025.",
+      "Both amounts above are indexed for inflation after 2025.",
+      "Costs $25 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-section-179-expensing-for-small-businesses/"
+  },
+  {
+    key:"manufacturing_expensing", name:"Partial Expensing for Structures", section:"Sec. 70307", chapter:"Business Tax Provisions",
+    yearlyValues:[2.2,30.3,34.4,34,28.5,18.3,4.2,-1.9,-4,-4.6],
+    bullets:[
+      "Creates temporary, 100% depreciation for non-residential structures (i.e., real estate) that is placed in service in the U.S. before Jan. 1, 2031, for which construction begins between Jan. 19, 2025, and Jan. 1, 2029, and that is used for 'qualified production activity.'",
+      "'Qualified production activity' includes manufacturing, refining, agricultural production, or chemical production. Offices, lodging, and parking are among the types of properties not eligible for the deduction.",
+      "Costs $141 billion from FY2025-2034."
+    ],
+    temporary: true,
+    readMore:"https://bipartisanpolicy.org/article/how-does-the-new-tax-law-affect-manufacturers/"
+  },
+  {
+    key:"advanced_mfg_credit", name:"Advanced Manufacturing Investment Credit", section:"Sec. 70308", chapter:"Business Tax Provisions",
+    yearlyValues:[0,1.728,2.876,3.566,2.14,0.858,1.024,1.057,0.868,0.794],
+    bullets:[
+      "Increases the Sec. 48D advanced manufacturing investment tax credit from 25% of the qualified investment to 35%, effective Jan. 1, 2026.",
+      "The termination date for the credit remains Dec. 31, 2026, so the enhanced credit amount would only be in place for one year.",
+      "Costs $15 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"international", name:"International Tax Reforms (Net)", section:"Secs. 70311–70354", chapter:"Business Tax Provisions",
+    yearlyValues:[0,10.3,19.3,18.9,20.7,20.1,18.2,19.1,20.4,19.8],
+    bullets:[
+      "Secs. 70311–70313: Sec. 70311 addresses deduction allocation rules for foreign tax credit (FTC) limitations on GILTI tax liability. Under current law, certain deductions must be applied to GILTI and U.S.-source income, which effectively reduces FTCs and increases GILTI tax liability. Sec. 70311 allows these deductions to be applied to U.S.-source income only.",
+      "Sec. 70312 lowers the 20% FTC haircut—which effectively changes the GILTI tax rate (from 10.5% to as high as 13.125% under current law)—to 10%. See ‘Secs. 70321–70323’ below for additional changes to GILTI, renamed to NCTI under the One Big Beautiful Bill Act.",
+      "Sec. 70313 treats as foreign-source income up to 50% of taxable income from the sale or exchange of inventory, if the inventory is produced in the U.S. but sold from an office or fixed place of business outside the U.S.",
+      "Costs a combined $61 billion from FY2025–2034.",
+      "Secs. 70321–70323: Lowers the FDDEI deduction, formerly the FDII deduction, from 37.5% in 2025 to 33.34% from 2026 onwards. This makes for an effective 14% tax rate on FDDEI, higher than the 13.125% rate in 2025 but lower than the 16.406% rate that would apply if TCJA provisions expire.",
+      "Lowers the NCTI deduction, formerly the GILTI deduction, from 50% in 2025 to 40% from 2026 onwards. This makes for an effective 12.6% tax rate on GILTI, which rises to as high as 14% when incorporating the 10% foreign tax credit (FTC) haircut for NCTI. This 12.6% rate is higher than the 10.5% in 2025 but lower than the 13.125% rate that would apply if TCJA provisions expire.",
+      "Removes the qualified business asset investment (QBAI) carveout of income—which under current law has the effect of reducing a) the taxable base for GILTI and b) the income base eligible for the FDII deduction. This means that the tax bases for GILTI (now NCTI) and FDII (now FDDEI) would be larger than they are under current law, raising taxes collected under GILTI/NCTI and increasing deductions claimed (and reducing taxes collected) on FDII/FDDEI.",
+      "Costs a combined $101 billion from FY2025–2034.",
+      "Sec. 70331: Increases the BEAT tax rate from 10% in 2025 to 10.5% from 2026 onwards, which is lower than the 12.5% rate scheduled to take effect in 2026 under current law.",
+      "Cancels a scheduled change in the calculation of BEAT, so that U.S. tax credits continue to reduce BEAT liability.",
+      "Costs $31 billion from FY2025–2034.",
+      "Secs. 70341–70342: Includes interest that is capitalized (i.e., spread out over several years rather than deducted immediately) in business interest deduction limits, which has the effect of limiting business interest deductions.",
+      "Excludes subpart F and GILTI/NCTI income from adjusted taxable income for the purposes of business interest deduction limits, which also has the effect of limiting business interest deductions.",
+      "Raises $22 billion from FY2025–2034.",
+      "Secs. 70351–70354: Sec. 70351 makes permanent the look-through rule for controlled foreign corporations (CFCs), which was scheduled to expire after December 31, 2025.",
+      "Sec. 70352 repeals a rule that allows foreign corporations to use a taxable year that starts one month earlier than the taxable year of their majority U.S. shareholder.",
+      "Sec. 70353 addresses ‘downward attribution’ rules for domestic subsidiaries of foreign corporations.",
+      "Sec. 70354 generally tightens pro rata share rules for CFCs of U.S. corporations by requiring them to include pro rata shares of income in its taxable subpart F and GILTI bases if the foreign company is a CFC at any point during the year, not just at the end of the taxable year.",
+      "On net, raises $4 billion from FY2025–2034.",
+      "Costs approximately $166 billion on net from FY2025–2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/issue-brief/international-tax-policy-where-the-u-s-stands-and-whats-ahead-in-2026/"
+  },
+
+  // ===== CHAPTER 4: INDIVIDUAL & FAMILY =====
+  {
+    key:"employer_childcare", name:"45F Employer-Provided Child Care Credit", section:"Sec. 70401", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.045,0.072,0.076,0.08,0.084,0.088,0.093,0.098,0.094],
+    bullets:[
+      "Expands the 45F credit, starting in 2026, in a number of ways: 1) increases the credit rate for a business's child care expenditures from 25% to 40% (and 50% for small businesses with receipts less than $31 million); 2) increases the maximum credit from $150,000 to $500,000 ($600,000 for small businesses); 3) allows businesses to receive the credit for contracting with a third party to provide child care services; and 4) allows businesses to jointly own or operate child care facilities and claim the credit.",
+      "Costs $731 million from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
+  },
+  {
+    key:"adoption_credit", name:"Adoption Credit", section:"Secs. 70402–70403", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.189,0.419,0.301,0.301,0.183,0.184,0.185,0.186,0.187,0.189],
+    bullets:[
+      "Makes up to $5,000 of the adoption credit refundable (i.e., available even if a taxpayer has less than $5,000 in federal income tax liability) in 2025 and adjusts that refundable amount for inflation from 2026 onwards.",
+      "The 2025 credit was up to $17,280 for taxpayers making up to $259,190 but was non-refundable.",
+      "Costs $2 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"dcaps", name:"Dependent Care Assistance Programs", section:"Sec. 70404", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.365,0.565,0.614,0.648,0.684,0.719,0.754,0.793,0.83],
+    bullets:[
+      "Increases the tax exclusion for DCAPs to $7,500 ($3,750 for married filing separately) from $5,000 under current law ($2,500 for married taxpayers filing separately), effective 2026.",
+      "Costs $6 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
+  },
+  {
+    key:"cdctc", name:"Child and Dependent Care Tax Credit", section:"Sec. 70405", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.4,1.2,1.2,1.2,1.1,1.1,1.1,1,1],
+    bullets:[
+      "Increases the maximum credit rate for the CDCTC to 50% from 35% for taxpayers making $0 to $15,000 in adjusted gross income (AGI).",
+      "Phases down the credit rate from 50% to 35% for taxpayers making between $15,000 and $43,000.",
+      "Phases down the credit rate from 35% to 20% for taxpayers making between $75,000 and $105,000 ($150,000 and $210,000 for married taxpayers). These first three changes generally allow low- to middle-income parents with tax liability to claim a larger percentage of the credit.",
+      "All changes are effective from 2026 onwards.",
+      "The maximum expenses eligible for the credit remain $3,000 for one child and $6,000 for two or more children.",
+      "Costs $9 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
+  },
+  {
+    key:"scholarship_credit", name:"Education Tax Provisions: Scholarship Credit, 529 Expansion & Employer Educational Assistance", section:"Secs. 70411–70414", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.728,1.574,3.768,4.331,4.807,5.209,5.599,5.911,6.236],
+    bullets:[
+      "Sec. 70411 permanently creates a non-refundable income tax credit, from 2027 onwards, for charitable contributions made to an organization that grants scholarships to elementary or secondary students making less than 300% of the area's median gross income. The maximum credit is $1,700.",
+      "Sec. 70412 makes the $5,250 tax exclusion for employer-provided educational assistance permanent (it was previously scheduled to expire after 2025) and adjusts it for inflation after 2026.",
+      "Secs. 70413 and 70414 expand eligible expenses for 529 accounts to certain elementary, secondary, home school, and postsecondary career or apprenticeship credentialing expenses.",
+      "Costs a combined $38 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-new-scholarship-tax-credit-potential-impacts-on-the-landscape-of-federal-k-12-funding/"
+  },
+  {
+    key:"endowment_tax", name:"College Endowment Tax", section:"Sec. 70415", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0,-0.08,-0.091,-0.087,-0.092,-0.096,-0.1,-0.105,-0.11],
+    bullets:[
+      "Creates a graduated rate structure for the excise tax on college endowments, currently 1.4%. The provision allows for an excise rate as high as 8% for institutions with per-student endowments above $2 million.",
+      "Raises approximately $1 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"nonprofit_comp", name:"Nonprofit Executive Compensation Excise Tax", section:"Sec. 70416", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,-0.236,-0.334,-0.362,-0.393,-0.426,-0.462,-0.501,-0.543,-0.589],
+    bullets:[
+      "Expands the excise tax on over $1 million in compensation (or 'parachute payments') for highly-paid employees of tax-exempt organizations, applying the rule to all employees, former or current, receiving compensation in excess of $1 million.",
+      "Raises approximately $4 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"ozs", name:"Opportunity Zones", section:"Sec. 70421", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0,7.876,12.017,10.427,5.628,5.86,3.819,-2.949,-1.741],
+    bullets:[
+      "Establishes a new, permanent OZ program, with OZ designations every 10 years starting as early as Jan. 1, 2027.",
+      "Tightens the requirement for OZ designations to be in low-income census tracts, with median family income not exceeding 70% of statewide median income (as opposed to 80% in current law).",
+      "Requires realization of gains in the fifth year of any given 10-year OZ window.",
+      "Provides a bonus 'basis boost' for OZs in rural areas, at 30% of the investment instead of 10%.",
+      "Costs $41 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"lihtc", name:"Low-Income Housing Tax Credit", section:"Sec. 70422", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.039,0.217,0.579,1.06,1.591,2.149,2.735,3.345,3.975],
+    bullets:[
+      "Permanently increases LIHTC allocations to states by 12% from 2026 onwards.",
+      "Permanently lowers the threshold for LIHTC that applies to buildings financed with tax-exempt bonds, from a minimum of 50% bond financing to 25% bond financing, from 2026 onwards.",
+      "Costs $16 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/2025-reconciliation-debate-senate-housing-provisions/"
+  },
+  {
+    key:"nmtc", name:"New Markets Tax Credit", section:"Sec. 70423", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0,0.008,0.047,0.17,0.371,0.625,0.936,1.307,1.72],
+    bullets:[
+      "Permanently extends the New Markets Tax Credit (NMTC) for investment in low-income communities, which was previously scheduled to expire at the end of 2025.",
+      "Costs $5 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"charitable_individual", name:"Individual Charitable Deductions (Net)", section:"Secs. 70424–70425", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.197,0.708,0.937,1.134,1.414,1.479,1.542,1.607,1.624],
+    bullets:[
+      "Sec. 70424 creates a deduction for charitable contributions from 2026 onwards for those who do not itemize deductions, equal to $1,000 for single taxpayers and $2,000 for married couples. Costs $74 billion from FY2025-2034.",
+      "Sec. 70425 permanently extends TCJA's expansion of the maximum charitable deduction for cash contributions, from 50% of AGI to 60% of AGI.",
+      "Sec. 70425 sets a 0.5%-of-income floor on the itemized charitable deduction, so that taxpayers who itemize cannot claim charitable deductions if they do not exceed 0.5% of adjusted gross income. A taxpayer making $100,000 would not be eligible for the itemized charitable deduction unless she contributed more than $500 to charity. Raises $63 billion from FY2025-2034.",
+      "The JCT score reflects the net cost of approximately $11 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/issue-brief/how-the-new-charitable-deduction-floors-work/"
+  },
+  {
+    key:"charitable_corporate", name:"Floor on Corporate Charitable Deductions", section:"Sec. 70426", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,-1.276,-1.872,-2.142,-1.964,-1.832,-1.787,-1.816,-1.953,-1.962],
+    bullets:[
+      "Sets a 1%-of-taxable income floor for corporations seeking to deduct charitable contributions, adding to an existing 10%-of-taxable income ceiling.",
+      "Raises $17 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/issue-brief/how-the-new-charitable-deduction-floors-work/"
+  },
+  {
+    key:"rum_cover", name:"Rum Cover Over", section:"Sec. 70427", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.251,0.208,0.208,0.208,0.208,0.208,0.208,0.208,0.208],
+    bullets:[
+      "Permanently increases the amount of excise taxes on distilled spirits returned to Puerto Rico and the Virgin Islands from the U.S. Treasury, from $10.50 per proof gallon to $13.25.",
+      "Costs $2 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"native_villages", name:"Non-Profit Community Development in Native Villages", section:"Sec. 70428", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003],
+    bullets:[
+      "Allows fishing activities conducted by remote native villages in the Bering Sea and Aleutian Islands of Alaska to be considered tax-exempt, not-for-profit activities.",
+      "Costs $3 million from FY2025-2034."
+    ]
+  },
+  {
+    key:"alaska_whaling", name:"Alaska Native Subsistence Whaling", section:"Sec. 70429", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001],
+    bullets:[
+      "Allows native Alaskan whaling captains to treat up to $50,000 of whaling expenses as charitable contributions (eligible for a deduction), up from $10,000 in current law.",
+      "Costs $5 million from FY2025-2034."
+    ]
+  },
+  {
+    key:"residential_construction", name:"Accounting for Residential Construction", section:"Sec. 70430", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.638,0.557,0.33,0.214,0.109,0.077,0.077,0.079,0.08],
+    bullets:[
+      "Provides an exception to the 'percentage of completion' method for income realization for tax purposes, for certain residential construction contracts.",
+      "Costs $2 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"qsbs", name:"Qualified Small Business Stock", section:"Sec. 70431", chapter:"Individual & Family Provisions",
+    yearlyValues:[-0.027,-0.056,-0.057,-0.038,0.193,1.204,3.47,3.857,4.153,4.487],
+    bullets:[
+      "Provides a more generous tax exclusion for QSBS by allowing a 50% exclusion for stock held at least three years, a 75% exclusion for stock held at least four years, and a 100% exclusion for stock held at least five years. The current exclusion is 100% only for stock held for at least five years.",
+      "Increases the per-issuer cap on QSBS from $10 million to $15 million, indexed to inflation from 2027 onwards.",
+      "Costs $17 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"other_credits", name:"Other Business & Individual Tax Provisions", section:"Secs. 70432–70439", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.208,2.732,4.406,3.596,2.65,2.107,2.468,2.786,3.09,3.377],
+    bullets:[
+      "Sec. 70432 restores the pre-2022 thresholds for IRS information reporting from third-party settlement organizations (e.g., Venmo, StubHub).",
+      "The American Rescue Plan Act (ARPA) of 2021 established a $600 threshold for information reporting, with no transaction threshold. Before ARPA, the threshold was $20,000 and 200 transactions. The Senate Republican tax bill restores the latter thresholds.",
+      "Sec. 70433 increases, from $600 to $2,000, the threshold for IRS information reporting for payments to contractors and other sole proprietors, effective 2026. The $2,000 threshold is indexed for inflation.",
+      "Sec. 70434 extends expensing allowances to sound recording production costs incurred in the U.S., up to $150,000 per year, effective in years following enactment.",
+      "Sec. 70435 excludes from taxation 25% of bank or insurance interest on real estate loans secured by farms and ranches, effective in years following enactment.",
+      "Sec. 70436 eliminates excise taxes on silencers, short-barreled rifles, and short-barreled shotguns, currently $200 per manufacture and/or transfer.",
+      "Sec. 70437 allows capital gains taxes from the sale or exchange of farmland property to farmers to be paid in four installments rather than all at once.",
+      "Sec. 70438 expands the list of types of disasters for which a taxpayer may claim a deduction.",
+      "Sec. 70439 allows real estate investment trusts (REIT) to hold a higher percentage of assets in taxable REIT subsidiaries, from 20% to 25%.",
+      "Costs a combined $27 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"hsas", name:"Health Savings Accounts", section:"Secs. 71036–71308", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.007,0.334,0.748,1.013,1.211,1.296,1.368,1.438,1.515,1.578],
+    bullets:[
+      "Expands eligibility for and contribution limits to health savings accounts (HSAs).",
+      "Costs approximately $10 billion from fiscal years 2025–2034."
+    ]
+  },
+
+  // ===== CHAPTER 5: CLEAN ENERGY (IRA) =====
+  {
+    key:"ev_credits", name:"EV & Clean Vehicle Credits", section:"Secs. 70501–70504", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,-9.5,-13.7,-20.6,-28.5,-33.8,-37.7,-42.3,-5.4,0.5],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"home_energy", name:"Home Energy Credits", section:"Secs. 70505–70509", chapter:"Clean Energy Provisions",
+    yearlyValues:[0.1,0.3,-8.7,-11.5,-13,-14,-14.9,-15.8,-15.7,-11.3],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"nukes_hydrogen", name:"Nuclear & Hydrogen Cost Recovery", section:"Secs. 70510–70511", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,0,0,0,0,-0.1,-0.4,-1.1,-1.8,-2.4],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"tech_neutral_production", name:"Tech-Neutral Clean Electricity Production Credit", section:"Sec. 70512", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,0,0,-0.1,-0.5,-1.3,-2.6,-4.3,-6.7,-9.4],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"tech_neutral_investment", name:"Tech-Neutral Clean Electricity Investment Credit", section:"Sec. 70513", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,-0.3,-8,-12.2,-16.7,-21.8,-24.6,-26,-27.2,-29],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"45x", name:"45X Advanced Manufacturing Production Credit", section:"Secs. 70514–70515", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,-1.8,-6.3,-9.2,-8.8,-7.8,-6.1,-4.9,-3.8,-1.2],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"clean_fuels", name:"Clean Fuel Production Credit", section:"Sec. 70521", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,1.1,2.1,6.2,10.5,5.6,0.4,-0.1,-0.1,-0.1],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ],
+    temporary: true
+  },
+  {
+    key:"carbon_capture", name:"Carbon Oxide Sequestration Credit", section:"Sec. 70522", chapter:"Clean Energy Provisions",
+    yearlyValues:[0.2,0.4,0.6,0.8,1.1,1.4,1.8,2.2,2.7,3.1],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+  {
+    key:"energy_other", name:"Other Energy Tax Provisions", section:"Secs. 70523–70525", chapter:"Clean Energy Provisions",
+    yearlyValues:[0,0.182,0.355,0.373,0.403,0.44,0.458,0.476,0.481,0.496],
+    bullets:[
+      "For BPC's comprehensive analysis of the changes House and Senate Republicans have proposed to energy tax provisions, see <a href='https://bipartisanpolicy.org/blog/reconciliation/' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>here</a>."
+    ]
+  },
+
+  // ===== CHAPTER 6: PAY-FORS =====
+  {
+    key:"pass_through_nols", name:"Net Operating Losses for Pass-Throughs", section:"Sec. 70601", chapter:"Pay-Fors",
+    yearlyValues:[0,-0.1,-0.2,-0.1,-3.4,-5.1,-3.1,-2.5,-2.1,-1.9],
+    bullets:[
+      "Makes permanent TCJA's limits on net operating losses for pass-through businesses. The limit is $313,000 for single taxpayers in 2025 and $626,000 for married couples, adjusted for inflation.",
+      "Applies excess business losses carried over from one year to the next in the limits for subsequent years, meaning that even if the taxpayer carries over a large excess loss from one year to another, that carryover is still subject to the overall limits described above.",
+      "Establishes new rules for the tax treatment of excess business losses from the termination of an estate or trust.",
+      "Raises $18 billion from FY2025-2034."
+    ],
+    readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-business-net-operating-loss-provisions/"
+  },
+  {
+    key:"partnerships", name:"Partnership Payment Rules", section:"Sec. 70602", chapter:"Pay-Fors",
+    yearlyValues:[-0.3,-1.6,-2.3,-1.9,-1.6,-1.1,-0.8,-0.9,-0.9,-0.9],
+    bullets:[
+      "Clarifies Treasury's regulatory authority applying to payments for property or services made in business partnerships.",
+      "Raises $12 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"executive_comp", name:"Deductions for Executive Compensation", section:"Sec. 70603", chapter:"Pay-Fors",
+    yearlyValues:[0,-0.6,-1.5,-1.7,-1.8,-1.9,-1.9,-2,-2.1,-2.2],
+    bullets:[
+      "Makes stricter the limits on deductibility for certain highly compensated employees by accounting for employees who may be compensated by several different affiliates of the same parent company.",
+      "The $1 million limit on deductibility for the CEO, CFO, and three other most highly-compensated employees of publicly held corporations (eight others from 2027 onwards) remains in place.",
+      "Raises $16 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"remittances", name:"Remittance Tax", section:"Sec. 70604", chapter:"Pay-Fors",
+    yearlyValues:[0,-0.4,-0.9,-1.1,-1.1,-1.2,-1.2,-1.3,-1.4,-1.4],
+    bullets:[
+      "Creates a 1% excise tax on remittances (i.e., payments) from people within the U.S. to people outside of the U.S., effective 2026.",
+      "Raises $10 billion from FY2025-2034."
+    ]
+  },
+  {
+    key:"other_payfors", name:"ERTC Clawback & IRS Direct File", section:"Secs. 70605–70607", chapter:"Pay-Fors",
+    yearlyValues:[-0.246,-1.018,-0.442,-0.098,-0.079,-0.079,-0.079,-0.078,-0.078,-0.079],
+    bullets:[
+      "Sec. 70605 prevents any ERTC refunds for claims made after January 31, 2024.",
+      "Sec. 70605 enhances penalties on 'ERTC promoters' who assisted with erroneous or fraudulent claims and applies those penalties retroactively.",
+      "Sec. 70605 provides the IRS six years to pursue erroneous or fraudulent claims of the ERTC, from the date on which the original return is filed or the claim for the ERTC is made (whichever is later). Raises $2 billion from FY2025-2034.",
+      "Sec. 70606 requires Social Security numbers for claimants of the American Opportunity Tax Credit and Lifetime Learning Credit, and for their spouses and child(ren) if applicable, effective 2026. Raises $1 billion from FY2025-2034.",
+      "Sec. 70607 creates a task force on the termination of the IRS Direct File program originally established in the Inflation Reduction Act. Has a negligible revenue effect from FY2025-2034."
+    ]
+  },
+  {
+    key:"ptc_provisions", name:"ACA Premium Tax Credit Provisions", section:"Secs. 71301–71305", chapter:"Pay-Fors",
+    yearlyValues:[0,-4.8,-13.9,-19.8,-22.5,-22.9,-23.7,-24.6,-25.6,-26.7],
+    bullets:[
+      "Modifies ACA premium tax credit (PTC) provisions, reducing the credits available to certain marketplace enrollees.",
+      "Key provisions take effect in 2026, 2027, and 2028.",
+      "Raises $185 billion from fiscal years 2025–2034."
+    ]
+  }
+];
+
+// ============================================================
+// EXTENSION DATA — FY2027–2036 cost of extending each temporary
+// provision (source: CBO/JCT, sign: positive = costs revenue)
+// ============================================================
+const EXTENSION_DATA = {
+  seniors:                 { years:[0,0,9,24,24,24,24,24,24,24],  total:177 },
+  salt:                    { years:[0,0,0,17,39,35,36,37,38,39],  total:241 },
+  tips:                    { years:[0,0,3,9,9,10,10,11,11,12],    total:75  },
+  overtime:                { years:[0,0,15,24,24,24,25,25,25,26], total:188 },
+  auto_loans:              { years:[0,0,6,11,12,12,12,13,13,13],  total:92  },
+  trump_accounts:          { years:[0,0,4,4,4,4,4,4,4,4],         total:32  },
+  manufacturing_expensing: { years:[0,0,5,15,29,36,38,39,40,41], total:243 },
+  clean_fuels:             { years:[0,0,0,5,10,12,13,13,14,14],   total:81  },
+};
+const EXTENSION_YEARS = [2027,2028,2029,2030,2031,2032,2033,2034,2035,2036];
+const COMBINED_YEARS  = [2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036];
+
+// Attach extension data to matching provisions
+provisions.forEach(p => {
+  if (EXTENSION_DATA[p.key]) p.extensionData = EXTENSION_DATA[p.key];
+});
+
+// Compute 10-year totals
+provisions.forEach(p => {
+  p.tenYear = p.yearlyValues.reduce((a,b) => a+b, 0);
+  p.tenYear = Math.round(p.tenYear * 10) / 10;
+});
+
+// Sort by tenYear descending (largest cut first)
+const sorted = [...provisions].sort((a,b) => b.tenYear - a.tenYear);
+
+// ============================================================
+// CHART CONFIG
+// ============================================================
+const CUT_COLOR    = "#1b83c6";
+const RAISE_COLOR  = "#fcbb13";
+const SEL_COLOR    = "#b91f24";
+
+function barColor(val, selected) {
+  if (selected) return SEL_COLOR;
+  return val >= 0 ? CUT_COLOR : RAISE_COLOR;
+}
+
+let selectedKey = null;
+let detailChartInstance = null;
+let extensionChartInstance = null;
+
+const barCount = sorted.length;
+const barH = 26;
+const chartH = Math.max(400, barCount * barH + 40);
+
+const canvas = document.getElementById("mainChart");
+canvas.style.width = "100%";
+canvas.style.height = chartH + "px";
+
+const mainChart = new Chart(canvas, {
+  type: "bar",
+  data: {
+    labels: sorted.map(p => p.name),
+    datasets: [{
+      data: sorted.map(p => -p.tenYear),
+      backgroundColor: sorted.map(p => barColor(p.tenYear, false)),
+      borderColor: sorted.map(p => barColor(p.tenYear, false)),
+      borderWidth: 0,
+      borderRadius: 3,
+      barThickness: 18
+    }]
+  },
+  options: {
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 200 },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label(ctx) {
+            const val = ctx.raw;
+            const abs = Math.abs(val);
+            let str;
+            if (abs >= 1000) str = (abs/1000).toFixed(1).replace(/\.0$/,"") + "T";
+            else if (abs >= 10) str = Math.round(abs) + "B";
+            else if (abs >= 1) str = abs.toFixed(1).replace(/\.0$/,"") + "B";
+            else str = Math.round(abs*1000) + "M";
+            return val <= 0 ? `  Tax cut: $${str}` : `  Tax increase: $${str}`;
+          }
+        },
+        backgroundColor: "#1f476c",
+        titleFont: { family: "'Roboto Slab', serif", size: 12 },
+        bodyFont: { family: "'Faustina', serif", size: 12 },
+        padding: 10,
+        cornerRadius: 4
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: "rgba(0,0,0,0.05)" },
+        ticks: {
+          font: { size: 11, family: "'Faustina', serif" },
+          color: "#5a6678",
+          callback(val) {
+            if (val === 0) return "$0";
+            const sign = val > 0 ? "+" : "-";
+            const abs = Math.abs(val);
+            let s, unit;
+            if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+            else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+            else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+            else { s = String(Math.round(abs*1000)); unit = "M"; }
+            return sign + "$" + s + unit;
+          }
+        },
+        border: { display: false }
+      },
+      y: {
+        grid: { display: false },
+        ticks: {
+          font: { size: 11, family: "'Faustina', serif" },
+          color: "#333638",
+          autoSkip: false,
+          maxRotation: 0,
+          crossAlign: "far",
+          callback(val) {
+            const label = this.getLabelForValue(val);
+            return label.length > 38 ? label.slice(0, 36) + "…" : label;
+          }
+        },
+        border: { display: false }
+      }
+    }
+  }
+});
+
+// ============================================================
+// CLICKABLE ROW OVERLAY — makes every row fully clickable,
+// not just the bar itself (critical for small-value provisions)
+// ============================================================
+function buildOverlay() {
+  const overlay = document.getElementById("chartOverlay");
+  overlay.innerHTML = "";
+  overlay.style.height = chartH + "px";
+
+  const yScale = mainChart.scales.y;
+  sorted.forEach((prov, i) => {
+    const top  = yScale.getPixelForValue(i) - yScale.height / sorted.length / 2;
+    const rowH = yScale.height / sorted.length;
+    const div = document.createElement("div");
+    div.className = "chart-row-hit" + (prov.key === selectedKey ? " hit-selected" : "");
+    div.style.top    = top + "px";
+    div.style.height = rowH + "px";
+    div.dataset.key  = prov.key;
+    div.title = prov.name;
+    div.addEventListener("click", () => selectProvision(prov.key));
+    overlay.appendChild(div);
+  });
+}
+
+mainChart.options.animation.onComplete = buildOverlay;
+// also build once immediately after first render
+setTimeout(buildOverlay, 300);
+
+// ============================================================
+// FORMAT HELPERS
+// ============================================================
+function formatCost(val) {
+  const abs = Math.abs(val);
+  let str;
+  if (abs >= 1000) str = "$" + (abs/1000).toFixed(2).replace(/\.?0+$/,"") + " trillion";
+  else if (abs >= 10) str = "$" + Math.round(abs) + " billion";
+  else if (abs >= 1) str = "$" + abs.toFixed(1).replace(/\.0$/,"") + " billion";
+  else if (abs >= 0.001) str = "$" + Math.round(abs*1000) + " million";
+  else str = "< $1 million";
+  return val >= 0 ? "Costs " + str : "Raises " + str;
+}
+
+const CHAPTER_CLASS = {
+  "TCJA Extensions": "ch-tcja",
+  "Trump Priority Tax Cuts": "ch-trump",
+  "Business Tax Provisions": "ch-business",
+  "Individual & Family Provisions": "ch-individual",
+  "Clean Energy Provisions": "ch-energy",
+  "Pay-Fors": "ch-payfors"
+};
+
+// ============================================================
+// SELECT PROVISION
+// ============================================================
+function selectProvision(key) {
+  selectedKey = key;
+  const prov = provisions.find(p => p.key === key);
+  if (!prov) return;
+
+  // Update bar colors
+  const colors = sorted.map(p => barColor(p.tenYear, p.key === key));
+  mainChart.data.datasets[0].backgroundColor = colors;
+  mainChart.data.datasets[0].borderColor = colors;
+  mainChart.update("none");
+
+  // Update detail card
+  document.getElementById("cardPlaceholder").style.display = "none";
+  document.getElementById("cardContent").style.display = "block";
+
+  document.getElementById("cardChapter").textContent = prov.chapter;
+  document.getElementById("cardChapter").style.color = prov.tenYear >= 0 ? "#1461a0" : "#8f1518";
+  document.getElementById("cardName").childNodes[0].nodeValue = prov.name + " ";
+  const tempBadge = document.getElementById("cardTempBadge");
+  tempBadge.style.display = prov.temporary ? "inline-block" : "none";
+  document.getElementById("cardSection").textContent = prov.section;
+  const noteEl = document.getElementById("cardNote");
+  if (prov.scoringNote) {
+    document.getElementById("cardNoteText").textContent = prov.scoringNote;
+    noteEl.style.display = "block";
+  } else {
+    noteEl.style.display = "none";
+  }
+
+  const costEl = document.getElementById("cardCost");
+  costEl.textContent = formatCost(prov.tenYear) + (prov.temporary ? "*" : "");
+  costEl.className = "card-cost " + (prov.tenYear >= 0 ? "cut" : "raise");
+
+  const bulletsEl = document.getElementById("cardBullets");
+  let bulletsHtml = prov.bullets.map(b => `<li>${b}</li>`).join("");
+  if (prov.readMore) {
+    bulletsHtml += `<li style="margin-top:4px"><a href="${prov.readMore}" target="_blank" rel="noopener" style="color:#3c608a;font-weight:600;">Read more from BPC →</a></li>`;
+  }
+  bulletsEl.innerHTML = bulletsHtml;
+
+  // Mini line chart
+  if (detailChartInstance) { detailChartInstance.destroy(); detailChartInstance = null; }
+  const ctx = document.getElementById("detailChart").getContext("2d");
+  const color = prov.tenYear >= 0 ? CUT_COLOR : RAISE_COLOR;
+  detailChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: YEARS.map(String),
+      datasets: [{
+        data: prov.yearlyValues.map(v => -v),
+        borderColor: color,
+        backgroundColor: color + "22",
+        borderWidth: 2,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 150 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const v = ctx.raw;
+              const abs = Math.abs(v);
+              let s;
+              if (abs >= 10) s = "$" + Math.round(abs) + "B";
+              else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
+              else s = "$" + Math.round(abs*1000) + "M";
+              return v <= 0 ? "  Cut: " + s : "  Raise: " + s;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 10, family: "'Faustina', serif" }, color: "#5a6678" },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: "rgba(0,0,0,0.05)" },
+          ticks: {
+            font: { size: 10, family: "'Faustina', serif" }, color: "#5a6678",
+            callback(v) {
+              if (v === 0) return "$0";
+              const sign = v > 0 ? "+" : "-";
+              const abs = Math.abs(v);
+              let s, unit;
+              if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+              else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+              else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+              else { s = String(Math.round(abs*1000)); unit = "M"; }
+              return sign + "$" + s + unit;
+            }
+          },
+          border: { display: false }
+        }
+      }
+    }
+  });
+
+  // Extension section
+  if (extensionChartInstance) { extensionChartInstance.destroy(); extensionChartInstance = null; }
+  const extSection = document.getElementById("cardExtension");
+  if (prov.extensionData) {
+    extSection.style.display = "block";
+    const ed = prov.extensionData;
+    const extTotal = ed.total;
+    document.getElementById("extensionCallout").innerHTML =
+      `<strong>Extension Cost</strong>` +
+      `Extending this provision after its expiration would cost $${extTotal} billion from FY2027–2036. ` +
+      `Source: CBO/JCT. Does not include net interest costs.`;
+    const extCtx = document.getElementById("extensionChart").getContext("2d");
+    const extBarColors = [
+      ...prov.yearlyValues.map(v => v >= 0 ? CUT_COLOR : RAISE_COLOR),
+      "transparent", "transparent"
+    ];
+    extensionChartInstance = new Chart(extCtx, {
+      type: "bar",
+      data: {
+        labels: COMBINED_YEARS.map(String),
+        datasets: [
+          {
+            label: "Actual Cost",
+            data: [...prov.yearlyValues.map(v => -v), null, null],
+            backgroundColor: extBarColors,
+            borderRadius: 2,
+            borderSkipped: false,
+            order: 2
+          },
+          {
+            label: "Extension",
+            type: "line",
+            data: [null, null, ...ed.years.map(v => -v)],
+            borderColor: "#1f476c",
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: "#1f476c",
+            tension: 0.3,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 150 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label(ctx) {
+                const v = ctx.raw;
+                if (v === null || v === undefined) return null;
+                if (v === 0) return "  $0";
+                const abs = Math.abs(v);
+                let s;
+                if (abs >= 10) s = "$" + Math.round(abs) + "B";
+                else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
+                else s = "$" + Math.round(abs*1000) + "M";
+                const prefix = ctx.dataset.label === "Extension" ? "  Extension: " : "  ";
+                return prefix + (v <= 0 ? "Costs " : "Raises ") + s;
+              }
+            },
+            filter(item) { return item.raw !== null && item.raw !== undefined; },
+            backgroundColor: "#1f476c",
+            bodyFont: { family: "'Faustina', serif", size: 11 },
+            padding: 8,
+            cornerRadius: 3
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 9, family: "'Faustina', serif" }, color: "#5a6678" },
+            border: { display: false }
+          },
+          y: {
+            grid: { color: "rgba(0,0,0,0.05)" },
+            ticks: {
+              font: { size: 9, family: "'Faustina', serif" }, color: "#5a6678",
+              callback(v) {
+                if (v === 0) return "$0";
+                const sign = v > 0 ? "+" : "-";
+                const abs = Math.abs(v);
+                let s, unit;
+                if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+                else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+                else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+                else { s = String(Math.round(abs*1000)); unit = "M"; }
+                return sign + "$" + s + unit;
+              }
+            },
+            border: { display: false }
+          }
+        }
+      }
+    });
+  } else {
+    extSection.style.display = "none";
+  }
+
+  // Refresh overlay row highlights
+  document.querySelectorAll(".chart-row-hit").forEach(div => {
+    div.classList.toggle("hit-selected", div.dataset.key === key);
+  });
+
+  // Highlight table row
+  document.querySelectorAll("#tableBody tr").forEach(tr => {
+    tr.classList.toggle("selected", tr.dataset.key === key);
+  });
+
+  // On mobile, open as modal
+  if (window.innerWidth <= 960) {
+    document.body.classList.add("card-open");
+    document.getElementById("detailPanel").scrollTop = 0;
+  }
+}
+
+function closeCard() {
+  document.body.classList.remove("card-open");
+}
+
+document.getElementById("cardCloseBtn").addEventListener("click", closeCard);
+document.getElementById("mobileBackdrop").addEventListener("click", closeCard);
+
+// ============================================================
+// TABLE
+// ============================================================
+let tableSorted = [...provisions];
+let sortCol = "tenYear", sortDir = -1;
+let filterText = "";
+
+function sortTable(col) {
+  if (sortCol === col) { sortDir *= -1; }
+  else { sortCol = col; sortDir = col === "tenYear" ? -1 : 1; }
+  document.querySelectorAll("thead th").forEach(th => {
+    th.classList.toggle("sorted", th.dataset.col === col);
+    if (th.dataset.col === col) th.querySelector(".sort-icon").textContent = sortDir > 0 ? "↑" : "↓";
+    else th.querySelector(".sort-icon").textContent = "↕";
+  });
+  renderTable();
+}
+
+function renderTable() {
+  const query = filterText.toLowerCase();
+  let rows = provisions.filter(p =>
+    !query ||
+    p.name.toLowerCase().includes(query) ||
+    p.section.toLowerCase().includes(query) ||
+    p.chapter.toLowerCase().includes(query)
+  );
+  rows.sort((a,b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (sortCol === "section") {
+      // Extract first numeric section number for correct ordering (e.g. "Secs. 70109–70110" → 70109)
+      const secNum = s => { const m = s.match(/(\d{5,})/); return m ? parseInt(m[1], 10) : 0; };
+      return (secNum(av) - secNum(bv)) * sortDir;
+    }
+    if (typeof av === "string") av = av.toLowerCase(), bv = bv.toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+
+  const tbody = document.getElementById("tableBody");
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="no-results">No provisions match your search.</td></tr>`;
+    document.getElementById("rowCount").textContent = "";
+    return;
+  }
+
+  tbody.innerHTML = rows.map(p => {
+    const isCut = p.tenYear >= 0;
+    const chClass = CHAPTER_CLASS[p.chapter] || "";
+    const costStr = formatCost(p.tenYear) + (p.temporary ? "*" : "");
+    return `<tr data-key="${p.key}" class="${p.key === selectedKey ? "selected" : ""}">
+      <td class="provision-name">${p.name}${p.temporary ? ' <span class="temp-badge-table">Temporary</span>' : ''}</td>
+      <td class="provision-section">${p.section}</td>
+      <td><span class="chapter-pill ${chClass}">${p.chapter}</span></td>
+      <td class="cost-cell ${isCut ? "cut" : "raise"}">${costStr}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("rowCount").textContent = `Showing ${rows.length} of ${provisions.length} provisions`;
+
+  tbody.querySelectorAll("tr[data-key]").forEach(tr => {
+    tr.addEventListener("click", () => selectProvision(tr.dataset.key));
+  });
+}
+
+document.querySelectorAll("thead th[data-col]").forEach(th => {
+  th.addEventListener("click", () => sortTable(th.dataset.col));
+});
+document.getElementById("tableSearch").addEventListener("input", e => {
+  filterText = e.target.value;
+  renderTable();
+});
+
+renderTable();
+</script>
+</body>
+</html>
