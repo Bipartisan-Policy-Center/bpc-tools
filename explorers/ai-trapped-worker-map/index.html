@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>AI Exposure vs. Escape Exposure</title>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+<style>
+.bpctw-root,.bpctw-root *{box-sizing:border-box}
+.bpctw-root{font-family:'Raleway',sans-serif;background:#fff;color:#003D6B;display:flex;flex-direction:column;align-items:center;padding:12px 12px 8px;margin:0}
+.bpctw-root .title-row{margin-bottom:2px;text-align:center}
+.bpctw-root .title-row h2{font-size:15px;font-weight:600;color:#003D6B;display:inline;margin:0}
+.bpctw-root .subtitle{font-size:11px;color:#888;margin-bottom:6px;text-align:center}
+.bpctw-root .toggle-row{position:absolute;top:4px;right:4px;z-index:10;display:flex;gap:0;border-radius:4px;overflow:hidden;border:1px solid #ccc}
+.bpctw-root .toggle-btn{padding:4px 16px;cursor:pointer;font-size:10px;font-weight:600;
+  background:#f8f8f8;color:#888;border:none;font-family:inherit;transition:all .15s;margin:0}
+.bpctw-root .toggle-btn.active{background:#003D6B;color:#fff}
+.bpctw-root .toggle-btn:hover:not(.active){background:#eee}
+.bpctw-root #bpctw-chart-container{position:relative}
+.bpctw-root .reset-zoom{position:absolute;top:4px;right:4px;font-size:9px;font-family:'Raleway',sans-serif;
+  padding:3px 8px;border:1px solid #ccc;border-radius:3px;background:#f8f8f8;color:#888;
+  cursor:pointer;display:none;z-index:10;margin:0}
+.bpctw-root .reset-zoom:hover{background:#eee;color:#555}
+.bpctw-root .tooltip{position:absolute;display:none;background:#fff;border:1px solid #ddd;
+  border-radius:3px;padding:8px 10px;font-size:10px;color:#333;pointer-events:none;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:320px;z-index:20;line-height:1.5;margin:0}
+.bpctw-root .tooltip b{color:#003D6B;font-size:11px}
+.bpctw-root .tooltip .t-row{display:flex;justify-content:space-between;gap:12px}
+.bpctw-root .tooltip .t-lbl{color:#999}
+.bpctw-root .tooltip .t-dest{margin-top:4px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:3px}
+.bpctw-root .info-btn{display:inline;width:14px;height:14px;border-radius:50%;
+  border:1.2px solid #aaa;background:#fff;color:#999;font-size:9px;font-weight:700;
+  font-family:'Raleway',sans-serif;cursor:pointer;line-height:1;transition:all .15s;
+  vertical-align:middle;margin-left:5px;padding:0}
+.bpctw-root .info-btn:hover{border-color:#003D6B;color:#003D6B}
+.bpctw-root .info-panel{position:absolute;left:50%;transform:translateX(-50%);top:22px;
+  background:rgba(255,255,255,0.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(200,200,200,0.5);border-radius:4px;padding:12px 16px;font-size:10px;color:#555;
+  line-height:1.5;width:600px;max-width:90vw;box-shadow:0 2px 12px rgba(0,0,0,.08);z-index:25;
+  display:none;font-family:'Raleway',sans-serif;margin:0}
+.bpctw-root .info-panel b{color:#003D6B}
+.bpctw-root .info-panel.visible{display:block}
+.bpctw-root .title-wrap{position:relative;display:inline-block}
+.bpctw-root #bpctw-stats{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;justify-content:center}
+.bpctw-root #bpctw-stats .s{text-align:center;padding:3px 10px;border-radius:3px;border:1px solid #eee;font-size:9px;color:#888;line-height:1.4}
+.bpctw-root #bpctw-stats .s .n{font-size:16px;font-weight:700;display:block}
+</style>
+</head>
+<body>
+<div class="bpctw-root">
+<div class="title-row">
+  <span class="title-wrap">
+    <h2 id="bpctw-chart-title">AI Exposure vs. Escape Exposure</h2><button class="info-btn" id="bpctw-info-btn">i</button>
+    <div class="info-panel" id="bpctw-info-panel">
+      Each point is a high-AI occupation (&ge;50% of tasks automatable). <b>X-axis</b> = own AI exposure. <b>Y-axis</b> = weighted AI exposure of the five most likely career transitions. <b>Size</b> = workforce. The <b style="color:gray">dashed line</b> is the trap threshold: above it, escape retains &ge;60% of own exposure &mdash; moving doesn't reduce vulnerability.<br><br>
+      <span style="color:#B83028">● <b>Trapped</b></span> escape retains &ge;60% of exposure; the problem compounds. &ensp;
+      <span style="color:#0E6E5C">◆ <b>Escapable</b></span> transitions reduce exposure by &gt;40%. &ensp;
+      <span style="color:#DAA520">◆ <b>Bridge</b></span> border = connects 4+ labor-market clusters. &ensp;
+      <span style="color:gray">- - -</span> <b>Trap threshold</b> = escape exposure at 60% of own (above = trapped). &ensp;
+      <i>Scroll to zoom, drag to pan.</i>
+    </div>
+  </span>
+</div>
+<div class="subtitle" id="bpctw-subtitle">Occupations where career transitions compound &mdash; rather than reduce &mdash; AI vulnerability</div>
+<div id="bpctw-stats"></div>
+<div id="bpctw-chart-container">
+  <div class="toggle-row">
+    <button class="toggle-btn" id="bpctw-btn-moderate">Moderate</button>
+    <button class="toggle-btn active" id="bpctw-btn-aggressive">Aggressive</button>
+  </div>
+  <button class="reset-zoom" id="bpctw-reset-zoom">Reset zoom</button>
+  <svg id="bpctw-chart"></svg>
+  <div class="tooltip" id="bpctw-tooltip"></div>
+</div>
+</div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+(function(){
+const DATA = {"moderate":[{"name":"Tax Preparers","ai":62.2,"escape":16.5,"trap_score":0.265,"trapped":false,"n_high":3,"workforce":185546,"top5":"Accountants And Auditors; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Insurance Sales Agents; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Surveying And Mapping Technicians","ai":58.6,"escape":16.9,"trap_score":0.289,"trapped":false,"n_high":0,"workforce":67882,"top5":"Surveyors, Cartographers, And Photogrammetrists; Other Engineers; First-Line Supervisors Of Construction Trades And Extraction Workers; Civil Engineers; Other Managers","bridge":false},{"name":"Paralegals And Legal Assistants","ai":92.1,"escape":18.9,"trap_score":0.205,"trapped":false,"n_high":1,"workforce":617636,"top5":"Lawyers, And Judges, Magistrates, And Other Judicial Workers; Title Examiners, Abstractors, and Searchers; Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Library Technicians","ai":79.1,"escape":46.1,"trap_score":0.583,"trapped":false,"n_high":2,"workforce":31328,"top5":"Librarians And Media Collections Specialists; Library Assistants, Clerical; Customer Service Representatives; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Public Relations Specialists","ai":51.6,"escape":13.6,"trap_score":0.262,"trapped":false,"n_high":1,"workforce":134646,"top5":"Other Managers; Market Research Analysts And Marketing Specialists 89; Chief Executives And Legislators; Customer Service Representatives","bridge":false},{"name":"Pharmacy Technicians","ai":52.0,"escape":42.9,"trap_score":0.826,"trapped":true,"n_high":2,"workforce":443262,"top5":"Pharmacists; Pharmacy Aides; First-Line Supervisors Of Retail Sales Workers; Cashiers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Pharmacy Aides","ai":66.5,"escape":44.5,"trap_score":0.669,"trapped":true,"n_high":3,"workforce":36270,"top5":"Pharmacy Technicians; Pharmacists; Customer Service Representatives; Cashiers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Fish And Game Wardens And Parking Enforcement Officers","ai":51.0,"escape":10.3,"trap_score":0.203,"trapped":false,"n_high":0,"workforce":20258,"top5":"Police Officers; Other Managers; Firefighters; Parking Attendants; Biological Technicians","bridge":false},{"name":"Food Servers, Nonrestaurant","ai":51.3,"escape":14.8,"trap_score":0.289,"trapped":false,"n_high":0,"workforce":276904,"top5":"Waiters And Waitresses; Food Preparation Workers; Cooks 93; Dining Room And Cafeteria Attendants And Bartender Helpers","bridge":false},{"name":"Cashiers","ai":68.2,"escape":34.6,"trap_score":0.508,"trapped":false,"n_high":1,"workforce":3055025,"top5":"Retail Salespersons; Customer Service Representatives; Stockers And Order Fillers; Fast Food And Counter Workers; Waiters And Waitresses","bridge":true},{"name":"Counter And Rental Clerks","ai":57.0,"escape":32.5,"trap_score":0.57,"trapped":false,"n_high":1,"workforce":88534,"top5":"Customer Service Representatives; Retail Salespersons; First-Line Supervisors Of Retail Sales Workers; Laundry And Dry-Cleaning Workers","bridge":false},{"name":"Parts Salespersons","ai":52.0,"escape":28.0,"trap_score":0.538,"trapped":false,"n_high":0,"workforce":125356,"top5":"Retail Salespersons; First-Line Supervisors Of Retail Sales Workers; Automotive Service Technicians And Mechanics; Sales Representatives, Wholesale And Manufacturing; Stockers And Order Fillers","bridge":false},{"name":"Insurance Sales Agents","ai":60.6,"escape":31.6,"trap_score":0.522,"trapped":false,"n_high":2,"workforce":606971,"top5":"First-Line Supervisors Of Non-Retail Sales Workers; Insurance Claims And Policy Processing Clerks 95; Other Managers; Claims Adjusters, Appraisers, Examiners, And Investigators; Customer Service Representatives","bridge":false},{"name":"Bookkeeping, Accounting, And Auditing Clerks","ai":52.6,"escape":18.3,"trap_score":0.349,"trapped":false,"n_high":1,"workforce":1325119,"top5":"Accountants And Auditors; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Office Clerks, General; Other Managers; Financial Managers","bridge":false},{"name":"Court, Municipal, And License Clerks","ai":89.3,"escape":30.0,"trap_score":0.336,"trapped":false,"n_high":1,"workforce":94864,"top5":"Office Clerks, General; Other Managers; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; First-Line Supervisors Of Office And Administrative Support Workers","bridge":false},{"name":"Credit Authorizers, Checkers, And Clerks","ai":62.9,"escape":27.6,"trap_score":0.439,"trapped":false,"n_high":1,"workforce":42084,"top5":"Credit Counselors And Loan Officers; Financial Managers; Customer Service Representatives; Personal Financial Advisors; Loan Interviewers And Clerks","bridge":false},{"name":"Customer Service Representatives","ai":54.2,"escape":41.4,"trap_score":0.764,"trapped":true,"n_high":1,"workforce":2577778,"top5":"Retail Salespersons; Cashiers; Receptionists And Information Clerks; First-Line Supervisors Of Retail Sales Workers; Waiters And Waitresses","bridge":true},{"name":"File Clerks","ai":67.7,"escape":33.4,"trap_score":0.493,"trapped":false,"n_high":2,"workforce":125623,"top5":"Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Education And Childcare Administrators","bridge":false},{"name":"Postal Service Clerks","ai":74.6,"escape":55.7,"trap_score":0.746,"trapped":true,"n_high":3,"workforce":114906,"top5":"Postal Service Mail Sorters, Processors, And Processing Machine Operators; Postal Service Mail Carriers; Other Managers; Driver/Sales Workers And Truck Drivers; Customer Service Representatives","bridge":false},{"name":"Postal Service Mail Carriers","ai":74.9,"escape":50.9,"trap_score":0.679,"trapped":true,"n_high":3,"workforce":361293,"top5":"Couriers And Messengers; Postal Service Clerks; Driver/Sales Workers And Truck Drivers; Postal Service Mail Sorters, Processors, And Processing Machine Operators; Cashiers","bridge":false},{"name":"Postal Service Mail Sorters, Processors, And Processing Machine Operators","ai":74.1,"escape":64.6,"trap_score":0.872,"trapped":true,"n_high":3,"workforce":57199,"top5":"Postal Service Clerks; Postal Service Mail Carriers; Cashiers; Photographers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Medical Secretaries and Administrative Assistants","ai":64.5,"escape":48.1,"trap_score":0.745,"trapped":true,"n_high":2,"workforce":141148,"top5":"Receptionists And Information Clerks; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Office Clerks, General; Customer Service Representatives","bridge":false},{"name":"Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","ai":62.6,"escape":33.3,"trap_score":0.533,"trapped":false,"n_high":1,"workforce":1562248,"top5":"Office Clerks, General; First-Line Supervisors Of Office And Administrative Support Workers; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Receptionists And Information Clerks","bridge":false},{"name":"Word Processors And Typists","ai":55.6,"escape":45.7,"trap_score":0.821,"trapped":true,"n_high":2,"workforce":32540,"top5":"Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; File Clerks; Medical Transcriptionists","bridge":false},{"name":"Insurance Claims And Policy Processing Clerks 95","ai":65.4,"escape":40.0,"trap_score":0.611,"trapped":true,"n_high":2,"workforce":377504,"top5":"Customer Service Representatives; Claims Adjusters, Appraisers, Examiners, And Investigators; Insurance Sales Agents; Receptionists And Information Clerks; First-Line Supervisors Of Non-Retail Sales Workers","bridge":false},{"name":"Mail Clerks And Mail Machine Operators, Except Postal Service","ai":74.9,"escape":29.2,"trap_score":0.39,"trapped":false,"n_high":1,"workforce":45253,"top5":"Packers And Packagers, Hand; Customer Service Representatives; Office Clerks, General; Couriers And Messengers","bridge":false},{"name":"Proofreaders And Copy Markers","ai":69.2,"escape":24.9,"trap_score":0.36,"trapped":false,"n_high":1,"workforce":11225,"top5":"Editors; Bakers; Printing Press Operators; File Clerks; Recreation Workers","bridge":false},{"name":"Agricultural Inspectors","ai":82.2,"escape":19.4,"trap_score":0.236,"trapped":false,"n_high":1,"workforce":6585,"top5":"Compliance Officers; Landscaping And Groundskeeping Workers; Other Agricultural Workers; Inspectors, Testers, Sorters, Samplers, And Weighers; Business Operations Specialists, All Other","bridge":false},{"name":"Graders And Sorters, Agricultural Products","ai":60.0,"escape":13.7,"trap_score":0.229,"trapped":false,"n_high":0,"workforce":48786,"top5":"Other Agricultural Workers; Packers And Packagers, Hand; Packaging And Filling Machine Operators And Tenders; Stockers And Order Fillers","bridge":false},{"name":"Tool And Die Makers","ai":50.9,"escape":32.8,"trap_score":0.644,"trapped":true,"n_high":0,"workforce":31680,"top5":"Machinists; Computer Numerically Controlled Tool Operators And Programmers","bridge":false},{"name":"Inspectors, Testers, Sorters, Samplers, And Weighers","ai":51.4,"escape":19.9,"trap_score":0.387,"trapped":false,"n_high":0,"workforce":792590,"top5":"Laborers And Freight, Stock, And Material Movers, Hand; First-Line Supervisors Of Production And Operating Workers; Other Managers","bridge":false}],"aggressive":[{"name":"Entertainment and Recreation Managers","ai":56.2,"escape":38.8,"trap_score":0.69,"trapped":true,"n_high":0,"workforce":65700,"top5":"Other Managers; General And Operations Managers; Supervisors Of Personal Care And Service Workers; Meeting, Convention, And Event Planners; Food Service Managers","bridge":false},{"name":"Natural Sciences Managers","ai":55.0,"escape":42.2,"trap_score":0.767,"trapped":true,"n_high":1,"workforce":56090,"top5":"Other Managers; Medical And Health Services Managers; Physical Scientists, All Other; Other Life Scientists 90","bridge":false},{"name":"Emergency Management Directors","ai":78.8,"escape":44.5,"trap_score":0.565,"trapped":false,"n_high":2,"workforce":17015,"top5":"Other Managers; Medical And Health Services Managers; Management Analysts; Urban And Regional Planners; Registered Nurses","bridge":false},{"name":"Buyers And Purchasing Agents, Farm Products","ai":51.8,"escape":26.5,"trap_score":0.512,"trapped":false,"n_high":0,"workforce":7870,"top5":"Purchasing Agents, Except Wholesale, Retail, And Farm Products; Food And Tobacco Roasting, Baking, And Drying Machine Operators And Tenders; Farmers, Ranchers, And Other Agricultural Managers; Producers And Directors; Driver/Sales Workers And Truck Drivers","bridge":false},{"name":"Compliance Officers","ai":67.0,"escape":51.1,"trap_score":0.762,"trapped":true,"n_high":2,"workforce":306090,"top5":"Other Managers; Business Operations Specialists, All Other; Lawyers, And Judges, Magistrates, And Other Judicial Workers; First-Line Supervisors Of Office And Administrative Support Workers; Accountants And Auditors","bridge":false},{"name":"Management Analysts","ai":70.5,"escape":42.1,"trap_score":0.597,"trapped":false,"n_high":1,"workforce":1233330,"top5":"Other Managers; Computer Systems Analysts; Computer Support Specialists; Chief Executives And Legislators","bridge":false},{"name":"Business Operations Specialists, All Other","ai":55.7,"escape":51.7,"trap_score":0.928,"trapped":true,"n_high":3,"workforce":772376,"top5":"Other Managers; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Customer Service Representatives; Retail Salespersons; Inspectors, Testers, Sorters, Samplers, And Weighers","bridge":false},{"name":"Accountants And Auditors","ai":72.1,"escape":52.7,"trap_score":0.731,"trapped":true,"n_high":2,"workforce":1752775,"top5":"Bookkeeping, Accounting, And Auditing Clerks; Financial Managers; Other Managers; Chief Executives And Legislators; Tax Preparers","bridge":false},{"name":"Property Appraisers and Assessors","ai":63.6,"escape":29.6,"trap_score":0.465,"trapped":false,"n_high":0,"workforce":91620,"top5":"Property, Real Estate, And Community Association Managers; Other Managers; Real Estate Brokers And Sales Agents 94; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Budget Analysts","ai":73.7,"escape":49.1,"trap_score":0.666,"trapped":true,"n_high":1,"workforce":49616,"top5":"Accountants And Auditors; Computer Systems Analysts; Purchasing Managers; Receptionists And Information Clerks","bridge":false},{"name":"Credit Analysts","ai":90.4,"escape":55.1,"trap_score":0.609,"trapped":true,"n_high":2,"workforce":41572,"top5":"Credit Counselors And Loan Officers; Credit Authorizers, Checkers, And Clerks; Financial Managers; Claims Adjusters, Appraisers, Examiners, And Investigators; Animal Caretakers","bridge":false},{"name":"Insurance Underwriters","ai":59.1,"escape":52.5,"trap_score":0.888,"trapped":true,"n_high":2,"workforce":152459,"top5":"Claims Adjusters, Appraisers, Examiners, And Investigators; Insurance Sales Agents; First-Line Supervisors Of Non-Retail Sales Workers; Insurance Claims And Policy Processing Clerks 95; Security Guards And Gambling Surveillance Officers","bridge":false},{"name":"Credit Counselors And Loan Officers","ai":54.9,"escape":52.2,"trap_score":0.951,"trapped":true,"n_high":2,"workforce":380452,"top5":"Financial Managers; Loan Interviewers And Clerks; Securities, Commodities, And Financial Services Sales Agents; Credit Authorizers, Checkers, And Clerks; Other Managers","bridge":false},{"name":"Tax Preparers","ai":95.6,"escape":66.2,"trap_score":0.693,"trapped":true,"n_high":4,"workforce":185546,"top5":"Accountants And Auditors; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Insurance Sales Agents; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Information Security Analysts","ai":71.9,"escape":43.9,"trap_score":0.61,"trapped":true,"n_high":1,"workforce":306098,"top5":"Computer Occupations, All Other; Other Managers; Computer Systems Analysts; Computer Support Specialists","bridge":false},{"name":"Software Quality Assurance Analysts and Testers","ai":61.5,"escape":46.1,"trap_score":0.75,"trapped":true,"n_high":2,"workforce":72020,"top5":"Industrial Engineers, Including Health And Safety; Inspectors, Testers, Sorters, Samplers, And Weighers; Other Engineers; Business Operations Specialists, All Other","bridge":false},{"name":"Computer Support Specialists","ai":51.3,"escape":40.3,"trap_score":0.785,"trapped":true,"n_high":1,"workforce":692561,"top5":"Computer Occupations, All Other; Computer Systems Analysts; Computer And Information Systems Managers; Customer Service Representatives","bridge":false},{"name":"Computer Network Architects","ai":51.9,"escape":40.2,"trap_score":0.775,"trapped":true,"n_high":1,"workforce":100399,"top5":"Computer Occupations, All Other; Computer Support Specialists; Network And Computer Systems Administrators; Mechanical Engineers","bridge":false},{"name":"Surveyors, Cartographers, And Photogrammetrists","ai":65.5,"escape":44.8,"trap_score":0.684,"trapped":true,"n_high":1,"workforce":11411,"top5":"Surveying And Mapping Technicians; Other Managers; Computer Occupations, All Other; Civil Engineers; First-Line Supervisors Of Construction Trades And Extraction Workers","bridge":false},{"name":"Surveying And Mapping Technicians","ai":76.8,"escape":44.3,"trap_score":0.577,"trapped":false,"n_high":1,"workforce":67882,"top5":"Surveyors, Cartographers, And Photogrammetrists; Other Engineers; First-Line Supervisors Of Construction Trades And Extraction Workers; Civil Engineers; Other Managers","bridge":false},{"name":"Agricultural And Food Scientists","ai":57.0,"escape":41.4,"trap_score":0.726,"trapped":true,"n_high":2,"workforce":31727,"top5":"Business Operations Specialists, All Other; Retail Salespersons; Market Research Analysts And Marketing Specialists 89; Physical Scientists, All Other","bridge":false},{"name":"Environmental Scientists And Specialists, Including Health","ai":52.3,"escape":42.8,"trap_score":0.818,"trapped":true,"n_high":1,"workforce":69101,"top5":"Other Managers; Physical Scientists, All Other; Other Engineers; Environmental Engineers; Occupational Health And Safety Specialists and Technicians","bridge":true},{"name":"Physical Scientists, All Other","ai":56.5,"escape":35.9,"trap_score":0.635,"trapped":true,"n_high":0,"workforce":382605,"top5":"Other Life Scientists 90; Postsecondary Teachers; Other Managers","bridge":true},{"name":"Urban And Regional Planners","ai":50.7,"escape":48.9,"trap_score":0.963,"trapped":true,"n_high":1,"workforce":62357,"top5":"Other Managers; Production, Planning, And Expediting Clerks; Chief Executives And Legislators; Court, Municipal, And License Clerks","bridge":false},{"name":"Biological Technicians","ai":52.9,"escape":31.9,"trap_score":0.602,"trapped":true,"n_high":0,"workforce":16558,"top5":"Stockers And Order Fillers; Biological Scientists; Biomedical And Agricultural Engineers","bridge":false},{"name":"Probation Officers And Correctional Treatment Specialists","ai":52.2,"escape":47.6,"trap_score":0.912,"trapped":true,"n_high":1,"workforce":79449,"top5":"Correctional Officers and Jailers; Police Officers; Other Managers; Receptionists And Information Clerks","bridge":false},{"name":"Judicial Law Clerks","ai":88.6,"escape":50.9,"trap_score":0.574,"trapped":false,"n_high":1,"workforce":22538,"top5":"Lawyers, And Judges, Magistrates, And Other Judicial Workers; Court, Municipal, And License Clerks; Other Managers; Office Clerks, General; Bill And Account Collectors","bridge":false},{"name":"Paralegals And Legal Assistants","ai":98.4,"escape":58.3,"trap_score":0.593,"trapped":false,"n_high":2,"workforce":617636,"top5":"Lawyers, And Judges, Magistrates, And Other Judicial Workers; Title Examiners, Abstractors, and Searchers; Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Title Examiners, Abstractors, and Searchers","ai":96.1,"escape":77.3,"trap_score":0.804,"trapped":true,"n_high":1,"workforce":92379,"top5":"Paralegals And Legal Assistants; Lawyers, And Judges, Magistrates, And Other Judicial Workers; Other Managers; Receptionists And Information Clerks","bridge":false},{"name":"Librarians And Media Collections Specialists","ai":52.9,"escape":39.8,"trap_score":0.753,"trapped":true,"n_high":1,"workforce":169839,"top5":"Library Assistants, Clerical; Education And Childcare Administrators; Elementary And Middle School Teachers; Library Technicians; Postsecondary Teachers","bridge":false},{"name":"Library Technicians","ai":79.1,"escape":52.3,"trap_score":0.661,"trapped":true,"n_high":3,"workforce":31328,"top5":"Librarians And Media Collections Specialists; Library Assistants, Clerical; Customer Service Representatives; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","bridge":false},{"name":"Public Relations Specialists","ai":51.9,"escape":33.9,"trap_score":0.654,"trapped":true,"n_high":1,"workforce":134646,"top5":"Other Managers; Market Research Analysts And Marketing Specialists 89; Chief Executives And Legislators; Customer Service Representatives","bridge":false},{"name":"Technical Writers","ai":57.2,"escape":61.0,"trap_score":1.067,"trapped":true,"n_high":3,"workforce":92827,"top5":"Writers And Authors; Management Analysts; Paralegals And Legal Assistants; Computer Programmers; Operations Research Analysts","bridge":false},{"name":"Writers And Authors","ai":59.5,"escape":43.7,"trap_score":0.734,"trapped":true,"n_high":2,"workforce":205581,"top5":"News Analysts, Reporters, And Journalists; Other Managers; Technical Writers; Editors; Management Analysts","bridge":false},{"name":"Interpreters and Translators","ai":97.4,"escape":37.6,"trap_score":0.387,"trapped":false,"n_high":1,"workforce":103213,"top5":"Teaching Assistants; Customer Service Representatives; First-Line Supervisors Of Non-Retail Sales Workers; Receptionists And Information Clerks; Office Clerks, General","bridge":false},{"name":"Court Reporters and Simultaneous Captioners","ai":95.7,"escape":43.8,"trap_score":0.458,"trapped":false,"n_high":2,"workforce":38947,"top5":"Office Clerks, General; Writers And Authors; Court, Municipal, And License Clerks; Postsecondary Teachers","bridge":false},{"name":"Magnetic Resonance Imaging Technologists","ai":52.6,"escape":41.2,"trap_score":0.784,"trapped":true,"n_high":0,"workforce":68619,"top5":"Radiologic Technologists And Technicians; Physician Assistants; Diagnostic Medical Sonographers; Cardiovascular Technologists and Technicians","bridge":false},{"name":"Pharmacy Technicians","ai":55.9,"escape":47.4,"trap_score":0.847,"trapped":true,"n_high":2,"workforce":443262,"top5":"Pharmacists; Pharmacy Aides; First-Line Supervisors Of Retail Sales Workers; Cashiers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Medical Assistants","ai":61.9,"escape":28.8,"trap_score":0.466,"trapped":false,"n_high":0,"workforce":678639,"top5":"Registered Nurses; Nursing Assistants; Office Clerks, General; Receptionists And Information Clerks; Physician Assistants","bridge":false},{"name":"Medical Transcriptionists","ai":100.0,"escape":43.4,"trap_score":0.434,"trapped":false,"n_high":1,"workforce":44850,"top5":"Word Processors And Typists; Office Clerks, General; Maids And Housekeeping Cleaners; Nursing Assistants","bridge":false},{"name":"Pharmacy Aides","ai":66.5,"escape":51.0,"trap_score":0.767,"trapped":true,"n_high":3,"workforce":36270,"top5":"Pharmacy Technicians; Pharmacists; Customer Service Representatives; Cashiers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Firefighters","ai":55.1,"escape":22.1,"trap_score":0.4,"trapped":false,"n_high":0,"workforce":361707,"top5":"First-Line Supervisors Of Firefighting And Prevention Workers; Driver/Sales Workers And Truck Drivers; Retail Salespersons","bridge":false},{"name":"Detectives And Criminal Investigators","ai":87.8,"escape":63.7,"trap_score":0.726,"trapped":true,"n_high":3,"workforce":164168,"top5":"Police Officers; Private Detectives And Investigators; Compliance Officers; Other Managers; Security Guards And Gambling Surveillance Officers","bridge":false},{"name":"Fish And Game Wardens And Parking Enforcement Officers","ai":51.0,"escape":47.9,"trap_score":0.938,"trapped":true,"n_high":3,"workforce":20258,"top5":"Police Officers; Other Managers; Firefighters; Parking Attendants; Biological Technicians","bridge":false},{"name":"Police Officers","ai":56.5,"escape":45.2,"trap_score":0.799,"trapped":true,"n_high":1,"workforce":819557,"top5":"First-Line Supervisors Of Police And Detectives; Security Guards And Gambling Surveillance Officers; Detectives And Criminal Investigators; Correctional Officers and Jailers; Driver/Sales Workers And Truck Drivers","bridge":false},{"name":"Private Detectives And Investigators","ai":93.6,"escape":60.0,"trap_score":0.641,"trapped":true,"n_high":2,"workforce":160317,"top5":"Security Guards And Gambling Surveillance Officers; Detectives And Criminal Investigators; Claims Adjusters, Appraisers, Examiners, And Investigators; Information Security Analysts","bridge":false},{"name":"Food Servers, Nonrestaurant","ai":51.3,"escape":14.8,"trap_score":0.289,"trapped":false,"n_high":0,"workforce":276904,"top5":"Waiters And Waitresses; Food Preparation Workers; Cooks 93; Dining Room And Cafeteria Attendants And Bartender Helpers","bridge":false},{"name":"Recreation Workers","ai":51.7,"escape":24.3,"trap_score":0.471,"trapped":false,"n_high":0,"workforce":173116,"top5":"Childcare Workers; Recreational Therapists","bridge":false},{"name":"Cashiers","ai":68.2,"escape":34.8,"trap_score":0.511,"trapped":false,"n_high":1,"workforce":3055025,"top5":"Retail Salespersons; Customer Service Representatives; Stockers And Order Fillers; Fast Food And Counter Workers; Waiters And Waitresses","bridge":true},{"name":"Counter And Rental Clerks","ai":57.0,"escape":32.7,"trap_score":0.575,"trapped":false,"n_high":1,"workforce":88534,"top5":"Customer Service Representatives; Retail Salespersons; First-Line Supervisors Of Retail Sales Workers; Laundry And Dry-Cleaning Workers","bridge":false},{"name":"Parts Salespersons","ai":78.4,"escape":28.5,"trap_score":0.363,"trapped":false,"n_high":0,"workforce":125356,"top5":"Retail Salespersons; First-Line Supervisors Of Retail Sales Workers; Automotive Service Technicians And Mechanics; Sales Representatives, Wholesale And Manufacturing; Stockers And Order Fillers","bridge":false},{"name":"Advertising Sales Agents","ai":50.6,"escape":26.5,"trap_score":0.525,"trapped":false,"n_high":0,"workforce":145903,"top5":"Marketing Managers; Other Managers; Market Research Analysts And Marketing Specialists 89; Retail Salespersons","bridge":false},{"name":"Insurance Sales Agents","ai":60.7,"escape":52.7,"trap_score":0.868,"trapped":true,"n_high":2,"workforce":606971,"top5":"First-Line Supervisors Of Non-Retail Sales Workers; Insurance Claims And Policy Processing Clerks 95; Other Managers; Claims Adjusters, Appraisers, Examiners, And Investigators; Customer Service Representatives","bridge":false},{"name":"Travel Agents","ai":56.2,"escape":42.0,"trap_score":0.746,"trapped":true,"n_high":1,"workforce":29183,"top5":"Other Managers; Reservation And Transportation Ticket Agents And Travel Clerks; Customer Service Representatives; Driver/Sales Workers And Truck Drivers; Meeting, Convention, And Event Planners","bridge":false},{"name":"Sales Engineers","ai":54.6,"escape":47.0,"trap_score":0.862,"trapped":true,"n_high":2,"workforce":22939,"top5":"Sales Representatives, Wholesale And Manufacturing; Customer Service Representatives; Management Analysts; Other Engineers","bridge":false},{"name":"Bookkeeping, Accounting, And Auditing Clerks","ai":68.1,"escape":56.4,"trap_score":0.829,"trapped":true,"n_high":2,"workforce":1325119,"top5":"Accountants And Auditors; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Office Clerks, General; Other Managers; Financial Managers","bridge":false},{"name":"Payroll And Timekeeping Clerks","ai":92.8,"escape":57.0,"trap_score":0.614,"trapped":true,"n_high":3,"workforce":154120,"top5":"Accountants And Auditors; Bookkeeping, Accounting, And Auditing Clerks; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Office Clerks, General; First-Line Supervisors Of Office And Administrative Support Workers","bridge":false},{"name":"Procurement Clerks","ai":57.7,"escape":42.5,"trap_score":0.736,"trapped":true,"n_high":0,"workforce":37500,"top5":"Purchasing Managers; Purchasing Agents, Except Wholesale, Retail, And Farm Products; Production, Planning, And Expediting Clerks; Other Managers","bridge":false},{"name":"Tellers","ai":69.2,"escape":43.7,"trap_score":0.632,"trapped":true,"n_high":2,"workforce":290258,"top5":"Financial Managers; Customer Service Representatives; First-Line Supervisors Of Office And Administrative Support Workers; Cashiers; Personal Financial Advisors","bridge":true},{"name":"Court, Municipal, And License Clerks","ai":89.3,"escape":41.2,"trap_score":0.461,"trapped":false,"n_high":1,"workforce":94864,"top5":"Office Clerks, General; Other Managers; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; First-Line Supervisors Of Office And Administrative Support Workers","bridge":false},{"name":"Credit Authorizers, Checkers, And Clerks","ai":99.2,"escape":48.5,"trap_score":0.489,"trapped":false,"n_high":3,"workforce":42084,"top5":"Credit Counselors And Loan Officers; Financial Managers; Customer Service Representatives; Personal Financial Advisors; Loan Interviewers And Clerks","bridge":false},{"name":"Customer Service Representatives","ai":55.0,"escape":41.4,"trap_score":0.753,"trapped":true,"n_high":1,"workforce":2577778,"top5":"Retail Salespersons; Cashiers; Receptionists And Information Clerks; First-Line Supervisors Of Retail Sales Workers; Waiters And Waitresses","bridge":true},{"name":"Eligibility Interviewers, Government Programs","ai":75.7,"escape":41.5,"trap_score":0.549,"trapped":false,"n_high":1,"workforce":63295,"top5":"Social And Human Service Assistants; Claims Adjusters, Appraisers, Examiners, And Investigators; Customer Service Representatives; First-Line Supervisors Of Office And Administrative Support Workers","bridge":false},{"name":"File Clerks","ai":67.7,"escape":42.1,"trap_score":0.621,"trapped":true,"n_high":2,"workforce":125623,"top5":"Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Education And Childcare Administrators","bridge":false},{"name":"Interviewers, Except Eligibility And Loan","ai":72.0,"escape":47.8,"trap_score":0.664,"trapped":true,"n_high":2,"workforce":180436,"top5":"Customer Service Representatives; Receptionists And Information Clerks; Office Clerks, General; Cashiers; Medical And Health Services Managers","bridge":true},{"name":"Loan Interviewers And Clerks","ai":66.7,"escape":52.3,"trap_score":0.784,"trapped":true,"n_high":3,"workforce":98313,"top5":"Credit Counselors And Loan Officers; Customer Service Representatives; Financial Managers; Securities, Commodities, And Financial Services Sales Agents; Bookkeeping, Accounting, And Auditing Clerks","bridge":false},{"name":"Human Resources Assistants, Except Payroll And Timekeeping","ai":74.6,"escape":40.8,"trap_score":0.547,"trapped":false,"n_high":3,"workforce":137233,"top5":"Human Resources Workers; Human Resources Managers; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Customer Service Representatives; Accountants And Auditors","bridge":false},{"name":"Cargo And Freight Agents","ai":53.8,"escape":33.9,"trap_score":0.631,"trapped":true,"n_high":1,"workforce":20753,"top5":"Laborers And Freight, Stock, And Material Movers, Hand; Shipping, Receiving, And Inventory Clerks; Other Managers; Customer Service Representatives; Waiters And Waitresses","bridge":false},{"name":"Postal Service Clerks","ai":74.6,"escape":63.3,"trap_score":0.849,"trapped":true,"n_high":3,"workforce":114906,"top5":"Postal Service Mail Sorters, Processors, And Processing Machine Operators; Postal Service Mail Carriers; Other Managers; Driver/Sales Workers And Truck Drivers; Customer Service Representatives","bridge":false},{"name":"Postal Service Mail Carriers","ai":74.9,"escape":52.2,"trap_score":0.697,"trapped":true,"n_high":3,"workforce":361293,"top5":"Couriers And Messengers; Postal Service Clerks; Driver/Sales Workers And Truck Drivers; Postal Service Mail Sorters, Processors, And Processing Machine Operators; Cashiers","bridge":false},{"name":"Postal Service Mail Sorters, Processors, And Processing Machine Operators","ai":74.1,"escape":66.1,"trap_score":0.892,"trapped":true,"n_high":3,"workforce":57199,"top5":"Postal Service Clerks; Postal Service Mail Carriers; Cashiers; Photographers; Laborers And Freight, Stock, And Material Movers, Hand","bridge":false},{"name":"Medical Secretaries and Administrative Assistants","ai":68.6,"escape":48.2,"trap_score":0.702,"trapped":true,"n_high":2,"workforce":141148,"top5":"Receptionists And Information Clerks; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; Office Clerks, General; Customer Service Representatives","bridge":false},{"name":"Secretaries And Administrative Assistants, Except Legal, Medical, And Executive","ai":62.6,"escape":41.8,"trap_score":0.668,"trapped":true,"n_high":1,"workforce":1562248,"top5":"Office Clerks, General; First-Line Supervisors Of Office And Administrative Support Workers; Other Managers; Bookkeeping, Accounting, And Auditing Clerks; Receptionists And Information Clerks","bridge":false},{"name":"Data Entry Keyers","ai":61.1,"escape":46.0,"trap_score":0.752,"trapped":true,"n_high":2,"workforce":184629,"top5":"Computer Occupations, All Other; Customer Service Representatives; Office Clerks, General; Bookkeeping, Accounting, And Auditing Clerks","bridge":false},{"name":"Word Processors And Typists","ai":74.1,"escape":51.9,"trap_score":0.701,"trapped":true,"n_high":3,"workforce":32540,"top5":"Office Clerks, General; Secretaries And Administrative Assistants, Except Legal, Medical, And Executive; File Clerks; Medical Transcriptionists","bridge":false},{"name":"Insurance Claims And Policy Processing Clerks 95","ai":82.0,"escape":51.9,"trap_score":0.633,"trapped":true,"n_high":2,"workforce":377504,"top5":"Customer Service Representatives; Claims Adjusters, Appraisers, Examiners, And Investigators; Insurance Sales Agents; Receptionists And Information Clerks; First-Line Supervisors Of Non-Retail Sales Workers","bridge":false},{"name":"Mail Clerks And Mail Machine Operators, Except Postal Service","ai":74.9,"escape":35.2,"trap_score":0.471,"trapped":false,"n_high":1,"workforce":45253,"top5":"Packers And Packagers, Hand; Customer Service Representatives; Office Clerks, General; Couriers And Messengers","bridge":false},{"name":"Proofreaders And Copy Markers","ai":71.7,"escape":30.7,"trap_score":0.428,"trapped":false,"n_high":2,"workforce":11225,"top5":"Editors; Bakers; Printing Press Operators; File Clerks; Recreation Workers","bridge":false},{"name":"Statistical Assistants","ai":96.2,"escape":32.1,"trap_score":0.334,"trapped":false,"n_high":1,"workforce":54818,"top5":"Computer Occupations, All Other; Actuaries; Management Analysts; Editors","bridge":false},{"name":"Agricultural Inspectors","ai":84.7,"escape":40.7,"trap_score":0.48,"trapped":false,"n_high":3,"workforce":6585,"top5":"Compliance Officers; Landscaping And Groundskeeping Workers; Other Agricultural Workers; Inspectors, Testers, Sorters, Samplers, And Weighers; Business Operations Specialists, All Other","bridge":false},{"name":"Graders And Sorters, Agricultural Products","ai":70.0,"escape":23.8,"trap_score":0.34,"trapped":false,"n_high":0,"workforce":48786,"top5":"Other Agricultural Workers; Packers And Packagers, Hand; Packaging And Filling Machine Operators And Tenders; Stockers And Order Fillers","bridge":false},{"name":"Construction And Building Inspectors","ai":54.0,"escape":50.8,"trap_score":0.942,"trapped":true,"n_high":2,"workforce":105332,"top5":"Inspectors, Testers, Sorters, Samplers, And Weighers; Compliance Officers; Other Managers; Driver/Sales Workers And Truck Drivers; Civil Engineers","bridge":false},{"name":"Computer Numerically Controlled Tool Operators And Programmers","ai":60.3,"escape":46.8,"trap_score":0.775,"trapped":true,"n_high":0,"workforce":86187,"top5":"Machinists; Computer Programmers; First-Line Supervisors Of Production And Operating Workers","bridge":false},{"name":"Tool And Die Makers","ai":50.9,"escape":52.9,"trap_score":1.04,"trapped":true,"n_high":1,"workforce":31680,"top5":"Machinists; Computer Numerically Controlled Tool Operators And Programmers","bridge":false},{"name":"Inspectors, Testers, Sorters, Samplers, And Weighers","ai":55.5,"escape":35.8,"trap_score":0.645,"trapped":true,"n_high":0,"workforce":792590,"top5":"Laborers And Freight, Stock, And Material Movers, Hand; First-Line Supervisors Of Production And Operating Workers; Other Managers","bridge":false}]};
+
+const tip = d3.select('#bpctw-tooltip');
+const ctr = document.getElementById('bpctw-chart-container');
+const margin = {top:20, right:20, bottom:50, left:60};
+const W = 700 - margin.left - margin.right;
+const H = 520 - margin.top - margin.bottom;
+let scenario = 'aggressive';
+let showBridges = true;
+
+const svg = d3.select('#bpctw-chart')
+  .attr('width', W+margin.left+margin.right)
+  .attr('height', H+margin.top+margin.bottom);
+const g = svg.append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+
+// Scales — data values are percentages 0-100
+const x = d3.scaleLinear().domain([0, 1.05]).range([0, W]);
+const y = d3.scaleLinear().domain([0, 1.05]).range([H, 0]);
+// Size by workforce — sqrt scale so area is proportional
+const allWf = [...DATA.moderate, ...DATA.aggressive].map(d=>d.workforce);
+const rScale = d3.scaleSqrt().domain([d3.min(allWf), d3.max(allWf)]).range([3, 22]);
+
+// Grid
+g.append('g').attr('transform',`translate(0,${H})`).call(
+  d3.axisBottom(x).ticks(6).tickFormat(d3.format('.0%'))
+).call(g=>g.select('.domain').remove())
+ .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
+ .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+
+g.append('g').call(
+  d3.axisLeft(y).ticks(6).tickFormat(d3.format('.0%'))
+).call(g=>g.select('.domain').remove())
+ .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
+ .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+
+// Grid lines
+g.append('g').selectAll('line').data(x.ticks(6)).enter().append('line')
+  .attr('x1',d=>x(d)).attr('x2',d=>x(d)).attr('y1',0).attr('y2',H)
+  .attr('stroke','#EBF0F8');
+g.append('g').selectAll('line').data(y.ticks(6)).enter().append('line')
+  .attr('x1',0).attr('x2',W).attr('y1',d=>y(d)).attr('y2',d=>y(d))
+  .attr('stroke','#EBF0F8');
+
+// Axis labels
+g.append('text').attr('x',W/2).attr('y',H+40).attr('text-anchor','middle')
+  .attr('fill','#666').attr('font-size','11px').attr('font-family','Raleway')
+  .text('Own AI Exposure Score');
+g.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-45)
+  .attr('text-anchor','middle').attr('fill','#666').attr('font-size','11px')
+  .attr('font-family','Raleway').text('Weighted Escape Exposure');
+
+// Clip path for zoom
+svg.append('defs').append('clipPath').attr('id','bpctw-clip')
+  .append('rect').attr('width',W).attr('height',H);
+
+// Zoom container — everything zoomable goes here
+const zoomG = g.append('g').attr('clip-path','url(#bpctw-clip)');
+
+// Background rect for zoom events — first child so dots render on top
+zoomG.append('rect').attr('width',W).attr('height',H)
+  .attr('fill','none').attr('pointer-events','all');
+
+// Trap threshold line: y = 0.6x (trap_score = escape/own = 0.6)
+zoomG.append('line').attr('class','diag')
+  .attr('x1',x(0)).attr('y1',y(0)).attr('x2',x(1.05)).attr('y2',y(0.63))
+  .attr('stroke','gray').attr('stroke-width',1).attr('stroke-dasharray','6,4');
+
+
+// Axis direction annotations
+// X-axis: arrows
+zoomG.append('text').attr('x',x(0.05)).attr('y',H-6)
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .text('← Less exposed');
+zoomG.append('text').attr('x',x(0.95)).attr('y',H-6)
+  .attr('text-anchor','end').attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .text('More exposed →');
+// Y-axis: arrows
+zoomG.append('text').attr('x',6).attr('y',y(0.95))
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .text('Escape worsens ↑');
+zoomG.append('text').attr('x',6).attr('y',y(0.08))
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .text('Escape helps ↓');
+
+const plotG = zoomG.append('g');
+
+// Axes references for zoom update
+const xAxisG = g.select('g:first-child');
+const yAxisG = g.select('g:nth-child(2)');
+const xGridG = g.select('g:nth-child(5)');
+const yGridG = g.select('g:nth-child(6)');
+
+// D3 zoom behavior
+let currentTransform = d3.zoomIdentity;
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .translateExtent([[0,0],[W,H]])
+  .extent([[0,0],[W,H]])
+  .on('zoom', zoomed);
+
+// Apply zoom to SVG — dots keep their own pointer events
+svg.call(zoom);
+
+document.getElementById('bpctw-reset-zoom').onclick = () => {
+  svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
+};
+
+function zoomed(event) {
+  currentTransform = event.transform;
+  document.getElementById('bpctw-reset-zoom').style.display =
+    currentTransform.k === 1 ? 'none' : 'block';
+  const zx = currentTransform.rescaleX(x);
+  const zy = currentTransform.rescaleY(y);
+
+  // Update axes
+  xAxisG.call(d3.axisBottom(zx).ticks(6).tickFormat(d3.format('.0%')))
+    .call(g=>g.select('.domain').remove())
+    .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
+    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+  yAxisG.call(d3.axisLeft(zy).ticks(6).tickFormat(d3.format('.0%')))
+    .call(g=>g.select('.domain').remove())
+    .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
+    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+
+  // Update trap threshold line (y = 0.6x)
+  zoomG.select('.diag')
+    .attr('x1',zx(0)).attr('y1',zy(0)).attr('x2',zx(1.05)).attr('y2',zy(0.63));
+
+  // Reposition points
+  plotG.selectAll('.pt').each(function(d) {
+    d3.select(this).attr('transform', `translate(${zx(d.ai/100)},${zy(d.escape/100)})`);
+  });
+}
+
+function shortName(n){ return n.length > 30 ? n.substring(0,28)+'..' : n; }
+
+function render(anim){
+  const data = DATA[scenario];
+  const dur = anim ? 350 : 0;
+
+  // Update title
+  const label = scenario === 'aggressive' ? 'Aggressive' : 'Moderate';
+  document.getElementById('bpctw-chart-title').innerHTML = 'AI Exposure vs. Escape Exposure';
+
+
+
+  // Stats
+  const trapped = data.filter(d=>d.trapped);
+  const escapable = data.filter(d=>!d.trapped);
+  const trappedBridges = data.filter(d => d.bridge && d.trapped);
+  const escapableBridges = data.filter(d => d.bridge && !d.trapped);
+  const allBridges = data.filter(d => d.bridge);
+
+  document.getElementById('bpctw-stats').innerHTML =
+    `<div class="s"><span class="n" style="color:#003D6B">${data.length}</span>AI-exposed occupations</div>` +
+    `<div class="s"><span class="n" style="color:#B83028">${trapped.length}</span>Trapped (${Math.round(trapped.length/data.length*100)}%)</div>` +
+    `<div class="s"><span class="n" style="color:#0E6E5C">${escapable.length}</span>Escapable (${Math.round(escapable.length/data.length*100)}%)</div>` +
+    `<div class="s"><span class="n" style="color:#DAA520">${allBridges.length}</span>Bridges` +
+    (trappedBridges.length ? ` <span style="color:#B83028">(${trappedBridges.length} trapped)</span>` : '') +
+    (escapableBridges.length ? ` <span style="color:#0E6E5C">(${escapableBridges.length} escapable)</span>` : '') +
+    `</div>`;
+
+  // Clear
+  plotG.selectAll('*').remove();
+
+  // Draw points — trapped first (behind), then escapable
+  const sorted = [...data].sort((a,b) => b.trapped - a.trapped);
+
+  sorted.forEach(d => {
+    const zx = currentTransform.rescaleX(x);
+    const zy = currentTransform.rescaleY(y);
+    const cx = zx(d.ai/100), cy = zy(d.escape/100);
+    const r = rScale(d.workforce);
+    const pg = plotG.append('g').datum(d).attr('class','pt')
+      .attr('transform',`translate(${cx},${cy})`)
+      .style('cursor','pointer')
+      .on('mouseover', showTip).on('mousemove', moveTip).on('mouseout', hideTip);
+
+    if (d.trapped) {
+      pg.append('circle').attr('r', r)
+        .attr('fill','#B83028').attr('opacity',0.7)
+        .attr('stroke', (d.bridge && showBridges) ? '#FFD700' : 'white')
+        .attr('stroke-width', (d.bridge && showBridges) ? 2.5 : 1);
+    } else {
+      // Diamond as rotated square
+      const s = r * 1.2;
+      pg.append('rect').attr('x',-s/2).attr('y',-s/2).attr('width',s).attr('height',s)
+        .attr('transform','rotate(45)')
+        .attr('fill','#0E6E5C').attr('opacity',0.7)
+        .attr('stroke', (d.bridge && showBridges) ? '#FFD700' : 'white')
+        .attr('stroke-width', (d.bridge && showBridges) ? 2.5 : 1);
+    }
+
+    // Label
+    pg.append('text').attr('y', -r - 3).attr('text-anchor','middle')
+      .attr('fill','#555').attr('font-size','7px').attr('font-family','Raleway')
+      .text(shortName(d.name));
+  });
+}
+
+function showTip(event, d) {
+  const status = d.trapped ? '<span style="color:#B83028;font-weight:700">● TRAPPED</span>'
+    : '<span style="color:#0E6E5C;font-weight:700">◆ ESCAPABLE</span>';
+  const bridge = (d.bridge) ? ' <span style="color:#DAA520;font-weight:600">◆ BRIDGE</span>' : '';
+  const dests = d.top5.split('; ').slice(0,5).map(s=>s.trim()).join('<br>');
+  tip.html(
+    `<b>${d.name}</b> ${status}${bridge}` +
+    `<div class="t-row"><span class="t-lbl">Own AI Exposure</span><span>${(d.ai).toFixed(1)}%</span></div>` +
+    `<div class="t-row"><span class="t-lbl">Escape Exposure</span><span>${(d.escape).toFixed(1)}%</span></div>` +
+    `<div class="t-row"><span class="t-lbl">Workforce</span><span>${d.workforce.toLocaleString()}</span></div>` +
+    `<div class="t-dest"><b>Top 5 Destinations:</b><br>${dests}</div>`
+  ).style('display','block');
+}
+function moveTip(event) {
+  const r = ctr.getBoundingClientRect();
+  let tx = event.clientX - r.left + 14, ty = event.clientY - r.top - 10;
+  if (tx + 320 > r.width) tx -= 340;
+  if (ty + 200 > r.height) ty -= 200;
+  tip.style('left',tx+'px').style('top',ty+'px');
+}
+function hideTip(){ tip.style('display','none'); }
+
+
+document.getElementById('bpctw-btn-moderate').onclick = () => { scenario='moderate'; updateBtns(); render(true); };
+document.getElementById('bpctw-btn-aggressive').onclick = () => { scenario='aggressive'; updateBtns(); render(true); };
+function updateBtns(){
+  document.getElementById('bpctw-btn-moderate').classList.toggle('active', scenario==='moderate');
+  document.getElementById('bpctw-btn-aggressive').classList.toggle('active', scenario==='aggressive');
+}
+
+render(false);
+
+// Info panel toggle
+const infoBtn = document.getElementById('bpctw-info-btn');
+const infoPanel = document.getElementById('bpctw-info-panel');
+infoBtn.addEventListener('click', () => {
+  infoPanel.classList.toggle('visible');
+});
+document.addEventListener('click', (e) => {
+  if (!infoPanel.contains(e.target) && e.target !== infoBtn) {
+    infoPanel.classList.remove('visible');
+  }
+});
+})();
+</script>
+
+</body>
+</html>

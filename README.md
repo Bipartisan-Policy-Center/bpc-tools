@@ -37,6 +37,8 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 |---|---|---|
 | 501(c)(3) Organizations Explorer | `explorers/501c3/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/501c3/) |
 | 501(c)(3)–(9) Organizations Explorer | `explorers/501c3-9/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/501c3-9/) |
+| AI Exposure vs. Escape Exposure (Trapped Worker Map) | `explorers/ai-trapped-worker-map/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/ai-trapped-worker-map/) |
+| Worker Mobility Network (3D) | `explorers/worker-mobility-network/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/worker-mobility-network/) |
 
 ## Org Charts
 
