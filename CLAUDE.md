@@ -158,6 +158,30 @@ paid media, SEO audits, Snitcher setup, etc.
 
 ---
 
+### 7. OBBB Tax Provisions Explorer
+**File:** `explorers/obbb-tax/index.html`
+**Status:** Live on GitHub Pages; embed status TBD
+**Purpose:** Interactive bar chart + searchable/sortable table of all tax provisions in the
+One Big Beautiful Bill Act, scored by the Joint Committee on Taxation over the FY2025-2034
+budget window. Click any bar or row to see full detail card with description, scoring note,
+and link to BPC analysis.
+
+**Key implementation notes:**
+- Two-panel layout: Chart.js horizontal bar chart (left) + sticky detail card (right)
+- Mobile: detail card renders as a fixed modal overlay with backdrop
+- Color coding: blue = tax cut, yellow = tax increase, red = selected provision
+- Data is fully inline (no external data files to maintain)
+- Authored by Andrew Lautz; migrated from `alautz125/data-explorers` repo
+- Uses yellow header border (`#fcbb13`) rather than red (`#e43e47`) used in other explorers
+- Chart.js 4.4.1 loaded from cdnjs (not jsdelivr); no SRI integrity hash
+
+**Iframe embed for WordPress:**
+```html
+<iframe src="https://bipartisan-policy-center.github.io/bpc-tools/explorers/obbb-tax/" width="100%" height="900" frameborder="0" scrolling="auto" style="border:none;"></iframe>
+```
+
+---
+
 ## BPC brand tokens (shared across all tools)
 
 ```css
