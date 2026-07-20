@@ -3,45 +3,45 @@
 <head>
 <title>AI Exposure vs. Escape Exposure</title>
 <meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&family=Faustina:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 .bpctw-root,.bpctw-root *{box-sizing:border-box}
-.bpctw-root{font-family:'Raleway',sans-serif;background:#fff;color:#003D6B;display:flex;flex-direction:column;align-items:center;padding:12px 12px 8px;margin:0}
+.bpctw-root{font-family:'Faustina',Georgia,serif;background:#fff;color:#3c608a;display:flex;flex-direction:column;align-items:center;padding:12px 12px 8px;margin:0}
 .bpctw-root .title-row{margin-bottom:2px;text-align:center}
-.bpctw-root .title-row h2{font-size:15px;font-weight:600;color:#003D6B;display:inline;margin:0}
+.bpctw-root .title-row h2{font-family:'Roboto Slab',Georgia,serif;font-size:15px;font-weight:600;color:#3c608a;display:inline;margin:0}
 .bpctw-root .subtitle{font-size:11px;color:#888;margin-bottom:6px;text-align:center}
 .bpctw-root .toggle-row{position:absolute;top:4px;right:4px;z-index:10;display:flex;gap:0;border-radius:4px;overflow:hidden;border:1px solid #ccc}
 .bpctw-root .toggle-btn{padding:4px 16px;cursor:pointer;font-size:10px;font-weight:600;
-  background:#f8f8f8;color:#888;border:none;font-family:inherit;transition:all .15s;margin:0}
-.bpctw-root .toggle-btn.active{background:#003D6B;color:#fff}
+  background:#f8f8f8;color:#888;border:none;font-family:'Arial Narrow',Arial,sans-serif;transition:all .15s;margin:0}
+.bpctw-root .toggle-btn.active{background:#3c608a;color:#fff}
 .bpctw-root .toggle-btn:hover:not(.active){background:#eee}
 .bpctw-root #bpctw-chart-container{position:relative}
-.bpctw-root .reset-zoom{position:absolute;top:4px;right:4px;font-size:9px;font-family:'Raleway',sans-serif;
+.bpctw-root .reset-zoom{position:absolute;top:4px;right:4px;font-size:9px;font-family:'Arial Narrow',Arial,sans-serif;
   padding:3px 8px;border:1px solid #ccc;border-radius:3px;background:#f8f8f8;color:#888;
   cursor:pointer;display:none;z-index:10;margin:0}
 .bpctw-root .reset-zoom:hover{background:#eee;color:#555}
 .bpctw-root .tooltip{position:absolute;display:none;background:#fff;border:1px solid #ddd;
   border-radius:3px;padding:8px 10px;font-size:10px;color:#333;pointer-events:none;
   box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:320px;z-index:20;line-height:1.5;margin:0}
-.bpctw-root .tooltip b{color:#003D6B;font-size:11px}
+.bpctw-root .tooltip b{color:#3c608a;font-size:11px}
 .bpctw-root .tooltip .t-row{display:flex;justify-content:space-between;gap:12px}
 .bpctw-root .tooltip .t-lbl{color:#999}
 .bpctw-root .tooltip .t-dest{margin-top:4px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:3px}
 .bpctw-root .info-btn{display:inline;width:14px;height:14px;border-radius:50%;
   border:1.2px solid #aaa;background:#fff;color:#999;font-size:9px;font-weight:700;
-  font-family:'Raleway',sans-serif;cursor:pointer;line-height:1;transition:all .15s;
+  font-family:'Arial Narrow',Arial,sans-serif;cursor:pointer;line-height:1;transition:all .15s;
   vertical-align:middle;margin-left:5px;padding:0}
-.bpctw-root .info-btn:hover{border-color:#003D6B;color:#003D6B}
+.bpctw-root .info-btn:hover{border-color:#3c608a;color:#3c608a}
 .bpctw-root .info-panel{position:absolute;left:50%;transform:translateX(-50%);top:22px;
   background:rgba(255,255,255,0.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1px solid rgba(200,200,200,0.5);border-radius:4px;padding:12px 16px;font-size:10px;color:#555;
   line-height:1.5;width:600px;max-width:90vw;box-shadow:0 2px 12px rgba(0,0,0,.08);z-index:25;
-  display:none;font-family:'Raleway',sans-serif;margin:0}
-.bpctw-root .info-panel b{color:#003D6B}
+  display:none;font-family:'Faustina',Georgia,serif;margin:0}
+.bpctw-root .info-panel b{color:#3c608a}
 .bpctw-root .info-panel.visible{display:block}
 .bpctw-root .title-wrap{position:relative;display:inline-block}
 .bpctw-root #bpctw-stats{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;justify-content:center}
-.bpctw-root #bpctw-stats .s{text-align:center;padding:3px 10px;border-radius:3px;border:1px solid #eee;font-size:9px;color:#888;line-height:1.4}
+.bpctw-root #bpctw-stats .s{text-align:center;padding:3px 10px;border-radius:3px;border:1px solid #eee;font-size:9px;color:#888;line-height:1.4;font-family:'Arial Narrow',Arial,sans-serif}
 .bpctw-root #bpctw-stats .s .n{font-size:16px;font-weight:700;display:block}
 </style>
 </head>
@@ -52,9 +52,9 @@
     <h2 id="bpctw-chart-title">AI Exposure vs. Escape Exposure</h2><button class="info-btn" id="bpctw-info-btn">i</button>
     <div class="info-panel" id="bpctw-info-panel">
       Each point is a high-AI occupation (&ge;50% of tasks automatable). <b>X-axis</b> = own AI exposure. <b>Y-axis</b> = weighted AI exposure of the five most likely career transitions. <b>Size</b> = workforce. The <b style="color:gray">dashed line</b> is the trap threshold: above it, escape retains &ge;60% of own exposure &mdash; moving doesn't reduce vulnerability.<br><br>
-      <span style="color:#B83028">● <b>Trapped</b></span> escape retains &ge;60% of exposure; the problem compounds. &ensp;
-      <span style="color:#0E6E5C">◆ <b>Escapable</b></span> transitions reduce exposure by &gt;40%. &ensp;
-      <span style="color:#DAA520">◆ <b>Bridge</b></span> border = connects 4+ labor-market clusters. &ensp;
+      <span style="color:#e43e47">● <b>Trapped</b></span> escape retains &ge;60% of exposure; the problem compounds. &ensp;
+      <span style="color:#00ad4d">◆ <b>Escapable</b></span> transitions reduce exposure by &gt;40%. &ensp;
+      <span style="color:#fcbb13">◆ <b>Bridge</b></span> border = connects 4+ labor-market clusters. &ensp;
       <span style="color:gray">- - -</span> <b>Trap threshold</b> = escape exposure at 60% of own (above = trapped). &ensp;
       <i>Scroll to zoom, drag to pan.</i>
     </div>
@@ -102,13 +102,13 @@ g.append('g').attr('transform',`translate(0,${H})`).call(
   d3.axisBottom(x).ticks(6).tickFormat(d3.format('.0%'))
 ).call(g=>g.select('.domain').remove())
  .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
- .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+ .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family',"'Arial Narrow', Arial, sans-serif"));
 
 g.append('g').call(
   d3.axisLeft(y).ticks(6).tickFormat(d3.format('.0%'))
 ).call(g=>g.select('.domain').remove())
  .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
- .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+ .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family',"'Arial Narrow', Arial, sans-serif"));
 
 // Grid lines
 g.append('g').selectAll('line').data(x.ticks(6)).enter().append('line')
@@ -120,11 +120,11 @@ g.append('g').selectAll('line').data(y.ticks(6)).enter().append('line')
 
 // Axis labels
 g.append('text').attr('x',W/2).attr('y',H+40).attr('text-anchor','middle')
-  .attr('fill','#666').attr('font-size','11px').attr('font-family','Raleway')
+  .attr('fill','#666').attr('font-size','11px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
   .text('Own AI Exposure Score');
 g.append('text').attr('transform','rotate(-90)').attr('x',-H/2).attr('y',-45)
   .attr('text-anchor','middle').attr('fill','#666').attr('font-size','11px')
-  .attr('font-family','Raleway').text('Weighted Escape Exposure');
+  .attr('font-family',"'Arial Narrow', Arial, sans-serif").text('Weighted Escape Exposure');
 
 // Clip path for zoom
 svg.append('defs').append('clipPath').attr('id','bpctw-clip')
@@ -146,17 +146,17 @@ zoomG.append('line').attr('class','diag')
 // Axis direction annotations
 // X-axis: arrows
 zoomG.append('text').attr('x',x(0.05)).attr('y',H-6)
-  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
   .text('← Less exposed');
 zoomG.append('text').attr('x',x(0.95)).attr('y',H-6)
-  .attr('text-anchor','end').attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .attr('text-anchor','end').attr('fill','#aaa').attr('font-size','8px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
   .text('More exposed →');
 // Y-axis: arrows
 zoomG.append('text').attr('x',6).attr('y',y(0.95))
-  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
   .text('Escape worsens ↑');
 zoomG.append('text').attr('x',6).attr('y',y(0.08))
-  .attr('fill','#aaa').attr('font-size','8px').attr('font-family','Raleway')
+  .attr('fill','#aaa').attr('font-size','8px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
   .text('Escape helps ↓');
 
 const plotG = zoomG.append('g');
@@ -193,11 +193,11 @@ function zoomed(event) {
   xAxisG.call(d3.axisBottom(zx).ticks(6).tickFormat(d3.format('.0%')))
     .call(g=>g.select('.domain').remove())
     .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
-    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family',"'Arial Narrow', Arial, sans-serif"));
   yAxisG.call(d3.axisLeft(zy).ticks(6).tickFormat(d3.format('.0%')))
     .call(g=>g.select('.domain').remove())
     .call(g=>g.selectAll('.tick line').attr('stroke','#EBF0F8'))
-    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family','Raleway'));
+    .call(g=>g.selectAll('.tick text').attr('fill','#999').style('font-size','9px').style('font-family',"'Arial Narrow', Arial, sans-serif"));
 
   // Update trap threshold line (y = 0.6x)
   zoomG.select('.diag')
@@ -229,12 +229,12 @@ function render(anim){
   const allBridges = data.filter(d => d.bridge);
 
   document.getElementById('bpctw-stats').innerHTML =
-    `<div class="s"><span class="n" style="color:#003D6B">${data.length}</span>AI-exposed occupations</div>` +
-    `<div class="s"><span class="n" style="color:#B83028">${trapped.length}</span>Trapped (${Math.round(trapped.length/data.length*100)}%)</div>` +
-    `<div class="s"><span class="n" style="color:#0E6E5C">${escapable.length}</span>Escapable (${Math.round(escapable.length/data.length*100)}%)</div>` +
-    `<div class="s"><span class="n" style="color:#DAA520">${allBridges.length}</span>Bridges` +
-    (trappedBridges.length ? ` <span style="color:#B83028">(${trappedBridges.length} trapped)</span>` : '') +
-    (escapableBridges.length ? ` <span style="color:#0E6E5C">(${escapableBridges.length} escapable)</span>` : '') +
+    `<div class="s"><span class="n" style="color:#3c608a">${data.length}</span>AI-exposed occupations</div>` +
+    `<div class="s"><span class="n" style="color:#e43e47">${trapped.length}</span>Trapped (${Math.round(trapped.length/data.length*100)}%)</div>` +
+    `<div class="s"><span class="n" style="color:#00ad4d">${escapable.length}</span>Escapable (${Math.round(escapable.length/data.length*100)}%)</div>` +
+    `<div class="s"><span class="n" style="color:#fcbb13">${allBridges.length}</span>Bridges` +
+    (trappedBridges.length ? ` <span style="color:#e43e47">(${trappedBridges.length} trapped)</span>` : '') +
+    (escapableBridges.length ? ` <span style="color:#00ad4d">(${escapableBridges.length} escapable)</span>` : '') +
     `</div>`;
 
   // Clear
@@ -255,30 +255,30 @@ function render(anim){
 
     if (d.trapped) {
       pg.append('circle').attr('r', r)
-        .attr('fill','#B83028').attr('opacity',0.7)
-        .attr('stroke', (d.bridge && showBridges) ? '#FFD700' : 'white')
+        .attr('fill','#e43e47').attr('opacity',0.7)
+        .attr('stroke', (d.bridge && showBridges) ? '#fcbb13' : 'white')
         .attr('stroke-width', (d.bridge && showBridges) ? 2.5 : 1);
     } else {
       // Diamond as rotated square
       const s = r * 1.2;
       pg.append('rect').attr('x',-s/2).attr('y',-s/2).attr('width',s).attr('height',s)
         .attr('transform','rotate(45)')
-        .attr('fill','#0E6E5C').attr('opacity',0.7)
-        .attr('stroke', (d.bridge && showBridges) ? '#FFD700' : 'white')
+        .attr('fill','#00ad4d').attr('opacity',0.7)
+        .attr('stroke', (d.bridge && showBridges) ? '#fcbb13' : 'white')
         .attr('stroke-width', (d.bridge && showBridges) ? 2.5 : 1);
     }
 
     // Label
     pg.append('text').attr('y', -r - 3).attr('text-anchor','middle')
-      .attr('fill','#555').attr('font-size','7px').attr('font-family','Raleway')
+      .attr('fill','#555').attr('font-size','7px').attr('font-family',"'Arial Narrow', Arial, sans-serif")
       .text(shortName(d.name));
   });
 }
 
 function showTip(event, d) {
-  const status = d.trapped ? '<span style="color:#B83028;font-weight:700">● TRAPPED</span>'
-    : '<span style="color:#0E6E5C;font-weight:700">◆ ESCAPABLE</span>';
-  const bridge = (d.bridge) ? ' <span style="color:#DAA520;font-weight:600">◆ BRIDGE</span>' : '';
+  const status = d.trapped ? '<span style="color:#e43e47;font-weight:700">● TRAPPED</span>'
+    : '<span style="color:#00ad4d;font-weight:700">◆ ESCAPABLE</span>';
+  const bridge = (d.bridge) ? ' <span style="color:#fcbb13;font-weight:600">◆ BRIDGE</span>' : '';
   const dests = d.top5.split('; ').slice(0,5).map(s=>s.trim()).join('<br>');
   tip.html(
     `<b>${d.name}</b> ${status}${bridge}` +
