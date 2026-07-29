@@ -663,7 +663,8 @@ function calculate() {
   const magi  = parseDollar(document.getElementById('magi').value);
   const nii   = parseDollar(document.getElementById('nii').value);
   const year  = parseInt(document.getElementById('taxYear').value);
-  const rate  = parseFloat(document.getElementById('rateInput').value) || CURRENT_RATE;
+  const rateRaw = parseFloat(document.getElementById('rateInput').value);
+  const rate  = isNaN(rateRaw) ? CURRENT_RATE : rateRaw;  // preserve an explicit 0% (0 || fallback would wrongly revert to current law)
   const rule  = document.getElementById('baseRule').value;
   const fixM  = document.getElementById('fixMarriage').checked;
   const inf   = document.getElementById('inflationCheck').checked;
