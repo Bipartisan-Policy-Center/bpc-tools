@@ -14,6 +14,7 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 | EITC / CTC Calculator | `calculators/eitc-ctc/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/eitc-ctc/) |
 | FSTC Scholarship Calculator | `calculators/fstc-scholarship/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/fstc-scholarship/) |
 | Overtime Tax Calculator | `calculators/overtime-tax/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/overtime-tax/) |
+| NIIT Calculator | `calculators/niit/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/niit/) |
 
 ## Maps & Dashboards
 
@@ -41,6 +42,7 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 | Worker Mobility Network (3D) — **broken, superseded by v2** | `explorers/worker-mobility-network/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/worker-mobility-network/) |
 | AI Exposure vs. Escape Exposure v2 | `explorers/ai-trapped-worker-map-v2/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/ai-trapped-worker-map-v2/) |
 | Worker Mobility Network (3D) v2 | `explorers/worker-mobility-network-v2/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/worker-mobility-network-v2/) |
+| NIIT County & State Dashboard | `explorers/niit/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/explorers/niit/) |
 
 ## Org Charts
 
