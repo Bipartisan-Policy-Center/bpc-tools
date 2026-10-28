@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Federal Scholarship Tax Credit Calculator by State | Bipartisan Policy Center</title>
+<!-- Source: team artifact claude.ai/artifact/63hKnModVLnpUL5y8D1zsx, version 1793210141-8b10 (October 2026 revision).
+     Embedded in bipartisanpolicy.org/explainer/federal-scholarship-tax-credit-public-school-funding-calculator/ via pop-out iframe (page code v1.5). -->
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&family=Faustina:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #F4F1EC;
+  --surface: #FDFBF8;
+  --ink: #1C1814;
+  --muted: #7A6F62;
+  --border: #DDD6CB;
+  --accent: #2B5F8E;
+  --accent2: #C44B1A;
+  --accent3: #2E7D4F;
+  --gold: #B8860B;
+  --highlight: #EBF3FA;
+  --purple: #5B4A8A;
+  --purplelight: #F0EDF8;
+  --purpleborder: #C4B8E4;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--f-ui); background:var(--bg); color:var(--ink); min-height:100vh; }
+
+/* HEADER */
+.header { background:var(--ink); padding:40px 48px; position:relative; overflow:hidden; }
+.header::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,0.015) 20px,rgba(255,255,255,0.015) 21px); pointer-events:none; }
+.header-eyebrow { font-family:var(--f-ui); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#90B4CF; margin-bottom:10px; }
+.header h1 { font-family:var(--f-slab); font-size:clamp(20px,3vw,36px); color:#F4F1EC; line-height:1.15; max-width:820px; margin-bottom:12px; }
+.header p { font-size:13px; color:#9E9590; max-width:680px; line-height:1.65; font-weight:300; }
+
+/* LAYOUT */
+.body-wrap { max-width:1200px; margin:0 auto; padding:36px 28px 80px; }
+.grid-two { display:grid; grid-template-columns:340px 1fr; gap:22px; }
+.full { grid-column:1/-1; }
+@media(max-width:860px){ .grid-two{grid-template-columns:1fr;} .body-wrap{padding:20px 14px;} }
+
+/* CARDS */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:26px; }
+.card-eyebrow { font-family:var(--f-ui); font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent2); margin-bottom:6px; }
+.card h2 { font-family:var(--f-slab); font-size:18px; margin-bottom:20px; padding-bottom:13px; border-bottom:1px solid var(--border); }
+
+/* STATE SELECT */
+.state-select-wrap { position:relative; margin-bottom:18px; }
+.state-select-wrap select { width:100%; padding:11px 38px 11px 13px; font-family:var(--f-ui); font-size:15px; font-weight:500; background:white; border:1.5px solid var(--border); border-radius:3px; color:var(--ink); appearance:none; cursor:pointer; transition:border-color 0.2s; }
+.state-select-wrap select:focus { outline:none; border-color:var(--accent); }
+.state-select-wrap::after { content:'▾'; position:absolute; right:13px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; font-size:12px; }
+
+/* PARAMS */
+.param-block { margin-bottom:20px; }
+.param-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px; }
+.param-name { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+.param-val { font-family:var(--f-ui); font-size:15px; font-weight:500; color:var(--accent); }
+input[type=range] { width:100%; -webkit-appearance:none; height:4px; background:var(--border); border-radius:2px; outline:none; cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; background:var(--accent); border-radius:50%; cursor:pointer; transition:transform 0.15s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+.range-labels { display:flex; justify-content:space-between; font-family:var(--f-ui); font-size:10px; color:var(--muted); margin-top:4px; }
+.param-note { font-size:11px; color:#9E9080; margin-top:5px; line-height:1.5; font-style:italic; }
+
+/* FIXED ASSUMPTION CHIP */
+.fixed-chip { display:flex; align-items:center; gap:10px; background:#F0EBE2; border:1px solid var(--border); border-radius:3px; padding:10px 14px; margin-bottom:20px; }
+.fixed-chip .fc-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; flex:1; }
+.fixed-chip .fc-val { font-family:var(--f-ui); font-size:16px; font-weight:500; color:var(--accent); }
+.fixed-chip .fc-note { font-size:10px; color:var(--muted); margin-top:2px; }
+
+/* ELIGIBILITY TOGGLE */
+.elig-toggle-wrap { margin-bottom:20px; }
+.elig-toggle-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:block; }
+.elig-tabs { display:flex; border:1.5px solid var(--border); border-radius:3px; overflow:hidden; }
+.elig-tab { flex:1; padding:10px 8px; background:white; border:none; cursor:pointer; font-family:var(--f-ui); font-size:12px; font-weight:500; color:var(--muted); text-align:center; transition:all 0.18s; border-right:1px solid var(--border); line-height:1.4; }
+.elig-tab:last-child { border-right:none; }
+.elig-tab.active-frpl { background:var(--accent2); color:white; }
+.elig-tab.active-ami  { background:var(--purple); color:white; }
+.elig-tab.active-treas { background:var(--accent3); color:white; }
+.elig-tab:hover:not(.active-frpl):not(.active-ami):not(.active-treas) { background:#F5F0E8; }
+.elig-panel.panel-treas { background:#EFF7F2; border:1px solid #A8D4B5; color:#1E4A30; }
+.panel-treas .method-badge { background:var(--accent3); color:white; }
+
+.elig-panel { margin-top:12px; border-radius:3px; padding:14px; font-size:12px; line-height:1.6; }
+.elig-panel.panel-frpl { background:#FDF3EF; border:1px solid #F0BDB0; color:#5A2A10; }
+.elig-panel.panel-ami  { background:var(--purplelight); border:1px solid var(--purpleborder); color:#2E1F5A; }
+.elig-panel strong { font-weight:600; }
+.elig-panel .method-badge { display:inline-block; font-family:var(--f-ui); font-size:10px; font-weight:500; padding:2px 7px; border-radius:10px; margin-bottom:6px; }
+.panel-frpl .method-badge { background:var(--accent2); color:white; }
+.panel-ami  .method-badge { background:var(--purple); color:white; }
+
+/* Quick btn */
+.quick-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 13px; font-size:11.5px; font-weight:500; font-family:var(--f-ui); border:1.5px solid var(--accent2); background:transparent; color:var(--accent2); border-radius:20px; cursor:pointer; transition:all 0.18s; margin-top:8px; }
+.quick-btn:hover { background:var(--accent2); color:white; }
+.quick-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.quick-btn .dot { width:7px; height:7px; background:currentColor; border-radius:50%; }
+.quick-btn.purple { border-color:var(--purple); color:var(--purple); }
+.quick-btn.purple:hover { background:var(--purple); color:white; }
+
+/* RESULT CARDS */
+.result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+@media(max-width:640px){ .result-grid{grid-template-columns:1fr;} }
+.r-card { border-radius:3px; padding:16px 14px; border:1px solid transparent; }
+.r-card.blue  { background:var(--highlight); border-color:#B8D1E8; }
+.r-card.red   { background:#FDF3EF; border-color:#F0BDB0; }
+.r-card.gold  { background:#FBF8EE; border-color:#D4C07A; }
+.r-card.green { background:#EFF7F2; border-color:#A8D4B5; }
+.r-card.purple{ background:var(--purplelight); border-color:var(--purpleborder); }
+.r-num { font-family:var(--f-slab); font-size:28px; line-height:1; margin-bottom:5px; }
+.r-card.blue .r-num   { color:var(--accent); }
+.r-card.red .r-num    { color:var(--accent2); }
+.r-card.gold .r-num   { color:var(--gold); }
+.r-card.green .r-num  { color:var(--accent3); }
+.r-card.purple .r-num { color:var(--purple); }
+.r-label { font-size:11px; color:var(--muted); line-height:1.4; }
+
+.r-card.slate { background:#F0F2F5; border-color:#C9D2DC; }
+.r-card.slate .r-num { color:#3D5061; }
+.update-banner { background:#EBF3FA; border:1px solid #B8D1E8; border-radius:3px; padding:12px 16px; font-size:12.5px; color:#1F3E5C; line-height:1.55; margin-bottom:22px; }
+.update-banner strong { color:#12304D; }
+
+.grid-two > * { min-width:0; }
+.result-grid.four { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+.status-pill { display:inline-block; font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px; margin:-8px 0 14px; }
+.status-pill.in { background:#EFF7F2; color:#1E5C38; border:1px solid #A8D4B5; }
+.status-pill.out { background:#FDF3EF; color:#8A2E0C; border:1px solid #F0BDB0; }
+.callout { background:#FBF8EE; border:1px solid #D4C07A; border-radius:3px; padding:10px 13px; font-size:11.5px; color:#4A3C10; line-height:1.55; margin-top:14px; }
+.tool-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.tool-btn { padding:7px 13px; font-size:12px; font-weight:600; font-family:var(--f-ui); border:1.5px solid var(--accent); background:white; color:var(--accent); border-radius:3px; cursor:pointer; }
+.tool-btn:hover, .tool-btn:focus-visible { background:var(--accent); color:white; outline:none; }
+.tool-msg { font-size:11.5px; color:var(--accent3); align-self:center; }
+.method-steps { margin:6px 0 18px 20px; font-size:13px; line-height:1.65; color:#3A3026; }
+.method-steps li { margin-bottom:6px; }
+.src-list { margin:8px 0 0 20px; font-size:12.5px; line-height:1.7; color:#3A3026; }
+.src-list a, .data-tbl a, .callout a, .elig-panel a, .param-note a, .modal-body a { color:var(--accent); }
+.sub-h { font-family:var(--f-slab); font-size:16px; margin:22px 0 6px; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* BARS */
+.prop-section { margin-top:8px; }
+.prop-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin-bottom:10px; }
+.bar-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.bar-lbl { font-size:11.5px; color:var(--muted); width:130px; flex-shrink:0; }
+.bar-track { flex:1; height:20px; background:#EAE5DC; border-radius:2px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:2px; display:flex; align-items:center; padding-left:7px; transition:width 0.5s cubic-bezier(.4,0,.2,1); min-width:2px; }
+.bar-fill span { font-family:var(--f-ui); font-size:10px; color:white; white-space:nowrap; font-weight:500; }
+
+/* METHOD TAG on bar */
+.method-tag-inline { font-family:var(--f-ui); font-size:9px; padding:1px 5px; border-radius:8px; margin-left:4px; vertical-align:middle; }
+.tag-frpl { background:var(--accent2); color:white; }
+.tag-ami  { background:var(--purple); color:white; }
+
+/* FLOW */
+.spacer { height:20px; }
+.flow { display:flex; align-items:stretch; gap:0; margin-top:14px; overflow-x:auto; padding-bottom:4px; }
+.flow-node { flex:1; min-width:80px; padding:12px 8px; text-align:center; position:relative; }
+.flow-node:not(:last-child)::after { content:'→'; position:absolute; right:-8px; top:50%; transform:translateY(-50%); color:var(--gold); font-size:15px; z-index:1; }
+.flow-node .fn { font-family:var(--f-slab); font-size:16px; line-height:1; margin-bottom:3px; }
+.flow-node .fd { font-size:9.5px; color:var(--muted); line-height:1.4; }
+.fn1 { background:#F0F2F5; } .fn1 .fn { color:#3D5061; }
+.fn2 { background:#FDF3EF; } .fn2 .fn { color:var(--accent2); }
+.fn3 { background:#FBF8EE; } .fn3 .fn { color:var(--gold); }
+.fn4 { background:#EFF7F2; } .fn4 .fn { color:var(--accent3); }
+
+/* CONTEXT BAND */
+.context-band { background:var(--ink); color:#D4CEC8; padding:16px 20px; border-radius:3px; margin-top:18px; display:flex; gap:24px; flex-wrap:wrap; }
+.cb-item { flex:1; min-width:120px; }
+.cb-num { font-family:var(--f-slab); font-size:24px; color:white; }
+.cb-lbl { font-size:10.5px; color:#A09890; margin-top:3px; line-height:1.4; }
+
+/* REVERSE CALC */
+.rev-section { margin-top:28px; padding-top:22px; border-top:2px solid var(--border); }
+.rev-title { font-family:var(--f-slab); font-size:17px; margin-bottom:4px; }
+.rev-subtitle { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.55; }
+.rev-filer-row { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+.rev-filer-chip { background:var(--highlight); border:1px solid #B8D1E8; border-radius:3px; padding:10px 14px; display:flex; flex-direction:column; gap:2px; }
+.rfc-label { font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); font-weight:600; }
+.rfc-val { font-family:var(--f-slab); font-size:22px; color:var(--accent); }
+.rfc-sub { font-size:10.5px; color:var(--muted); }
+
+/* SCHOLARSHIP TABLE */
+.scholarship-tbl-wrap { overflow-x:auto; margin-top:4px; }
+.scholarship-tbl { width:100%; border-collapse:collapse; font-size:12.5px; min-width:460px; }
+.scholarship-tbl thead tr { background:#1C1814; }
+.scholarship-tbl thead th { padding:9px 12px; text-align:right; font-weight:500; font-size:10.5px; letter-spacing:0.04em; color:#D4CEC8; white-space:nowrap; }
+.scholarship-tbl thead th:first-child { text-align:left; }
+.scholarship-tbl tbody tr { border-bottom:1px solid #EDE8DF; transition:background 0.12s; }
+.scholarship-tbl tbody tr:hover { background:#F5F0E8; }
+.scholarship-tbl tbody td { padding:8px 12px; text-align:right; color:#3A3026; white-space:nowrap; font-size:12.5px; }
+.scholarship-tbl tbody td:first-child { text-align:left; font-family:var(--f-ui); font-size:12px; font-weight:500; color:var(--accent2); }
+.scholarship-tbl .td-students { font-weight:700; color:var(--accent3); font-size:13px; }
+.scholarship-tbl .td-pct { color:var(--muted); font-size:11.5px; }
+.scholarship-tbl .td-total { font-family:var(--f-ui); font-size:11.5px; color:var(--gold); }
+.scholarship-tbl tr.cur-row { background:#EBF7EF !important; }
+.scholarship-tbl tr.cur-row td:first-child { border-left:3px solid var(--accent); padding-left:9px; }
+.cur-tag { display:inline-block; background:var(--accent); color:white; font-size:9px; font-weight:600; padding:1px 5px; border-radius:10px; margin-left:6px; vertical-align:middle; letter-spacing:0.04em; font-family:var(--f-ui); }
+.tbl-legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; color:var(--muted); }
+.tbl-legend span { display:flex; align-items:center; gap:5px; }
+.legend-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+/* METHODOLOGY */
+.data-tbl { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:10px; }
+.data-tbl th { text-align:left; padding:8px 10px; background:#F0EBE2; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); border-bottom:1px solid var(--border); }
+.data-tbl td { padding:9px 10px; border-bottom:1px solid #EDE8DF; vertical-align:top; line-height:1.5; color:#3A3026; }
+.data-tbl td:first-child { font-weight:500; color:var(--ink); width:210px; font-size:12px; }
+.data-tbl tr:last-child td { border-bottom:none; }
+.mono { font-family:var(--f-ui); font-size:11px; color:var(--accent); background:var(--highlight); padding:1px 5px; border-radius:2px; }
+.note-sm { font-size:10.5px; color:var(--muted); font-style:italic; line-height:1.6; }
+.warn-box { background:#FDF8EE; border:1px solid #E0C97A; border-radius:3px; padding:12px 14px; font-size:11.5px; color:#5A4A10; line-height:1.6; margin-top:14px; }
+.warn-box strong { color:#3A2800; }
+
+/* EXPENSES BUTTON */
+.expenses-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 18px;
+  font-size:12.5px; font-weight:600; font-family:var(--f-ui);
+  background:transparent; border:2px solid #90B4CF; color:#90B4CF;
+  border-radius:3px; cursor:pointer; transition:all 0.2s;
+  margin-top:14px; letter-spacing:0.02em;
+}
+.expenses-btn:hover { background:#90B4CF; color:var(--ink); }
+
+/* MODAL */
+.modal-overlay {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(28,24,20,0.65); backdrop-filter:blur(3px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--surface); border-radius:6px; max-width:640px; width:100%;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  animation: modalIn 0.2s ease-out;
+}
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.modal-header {
+  background:var(--ink); padding:24px 28px 20px;
+  border-radius:6px 6px 0 0; position:sticky; top:0; z-index:1;
+}
+.modal-eyebrow { font-family:var(--f-ui); font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:#90B4CF; margin-bottom:6px; }
+.modal-header h3 { font-family:var(--f-slab); font-size:22px; color:#F4F1EC; line-height:1.2; margin-bottom:4px; }
+.modal-header p { font-size:12px; color:#9E9590; line-height:1.5; }
+.modal-close {
+  position:absolute; top:18px; right:20px;
+  background:none; border:none; color:#9E9590; cursor:pointer;
+  font-size:24px; line-height:1; padding:4px 8px; border-radius:3px;
+  transition:color 0.15s;
+}
+.modal-close:hover { color:#F4F1EC; }
+.modal-body { padding:28px; }
+.expense-group { margin-bottom:24px; }
+.expense-group:last-child { margin-bottom:0; }
+.expense-group-title {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.1em; color:var(--muted); margin-bottom:12px;
+  padding-bottom:6px; border-bottom:1px solid var(--border);
+}
+.expense-items { display:flex; flex-direction:column; gap:8px; }
+.expense-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:10px 12px; background:#F7F4EF;
+  border-radius:3px; border-left:3px solid var(--border);
+}
+.expense-item.grp1 { border-left-color:#2B5F8E; }
+.expense-item.grp2 { border-left-color:#2E7D4F; }
+.expense-item.grp3 { border-left-color:#B8860B; }
+.expense-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+.expense-text { font-size:13px; color:var(--ink); line-height:1.5; }
+.expense-text strong { font-weight:600; display:block; margin-bottom:2px; }
+.expense-text span { font-size:11.5px; color:var(--muted); }
+.modal-caveat {
+  margin-top:20px; padding:12px 14px;
+  background:#FDF8EE; border:1px solid #E0C97A; border-radius:3px;
+  font-size:11.5px; color:#5A4A10; line-height:1.6;
+}
+.modal-caveat strong { color:#3A2800; }
+
+/* ─── STEP HEADERS ─── */
+.step-header {
+  display: flex; align-items: center; gap: 10px;
+  margin: 20px 0 10px;
+}
+.step-num {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  background: var(--ink); color: #F4F1EC;
+  border-radius: 50%;
+  font-family: var(--f-ui); font-size: 12px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-title {
+  font-size: 12px; font-weight: 600; color: var(--ink);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* ─── OPTION TABS (A/B/C) ─── */
+.option-tabs {
+  display: flex; gap: 6px; margin-bottom: 12px;
+}
+.option-tab {
+  flex: 1; padding: 9px 6px; background: white;
+  border: 1.5px solid var(--border); border-radius: 3px;
+  cursor: pointer; font-family: var(--f-ui);
+  transition: all 0.18s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.option-tab:hover:not(.active) { background: #F5F0E8; border-color: #C0B8AE; }
+.option-tab.active {
+  background: var(--ink); border-color: var(--ink); color: white;
+}
+.opt-num {
+  font-family: var(--f-ui); font-size: 13px; font-weight: 500;
+}
+.opt-label {
+  font-size: 10px; font-weight: 500; line-height: 1.3;
+}
+
+/* ─── OPTION PANELS ─── */
+.option-panel {
+  background: #F7F4EF; border: 1px solid var(--border);
+  border-radius: 3px; padding: 14px; margin-bottom: 4px;
+}
+.opt-desc {
+  font-size: 11.5px; color: var(--muted); line-height: 1.55;
+  margin-bottom: 12px; font-style: italic;
+}
+
+
+/* ─── OCT 27 REVISIONS ─── */
+.learn-more { background:none; border:none; padding:0; font:inherit; font-size:11.5px; color:var(--accent); text-decoration:underline; cursor:pointer; }
+.measure-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.measure-opt { display:flex; align-items:center; gap:10px; background:white; border:1.5px solid var(--border); border-radius:3px; padding:9px 11px; cursor:pointer; }
+.measure-opt:hover { border-color:#C0B8AE; }
+.measure-opt.on { background:var(--purplelight); border-color:var(--purple); }
+.measure-opt input { accent-color:var(--purple); flex-shrink:0; }
+.measure-opt .mo-text { flex:1; display:flex; flex-direction:column; gap:2px; }
+.measure-opt .mo-name { font-size:12.5px; font-weight:600; color:var(--ink); }
+.measure-opt .mo-sub { font-size:10.5px; color:var(--muted); line-height:1.4; }
+.measure-opt .learn-more { flex-shrink:0; font-size:11px; }
+.num-input-wrap { display:flex; align-items:center; gap:6px; }
+.num-input-wrap input { width:110px; padding:8px 10px; font-family:var(--f-ui); font-size:15px; border:1.5px solid var(--border); border-radius:3px; background:white; color:var(--ink); }
+.num-input-wrap input:focus { border-color:var(--accent); outline:none; }
+.num-input-wrap span { font-family:var(--f-ui); font-size:15px; color:var(--muted); }
+.lead { font-size:15px; line-height:1.6; color:var(--ink); margin-bottom:4px; }
+.lead b, .lead-sub b, .elig-line b { font-family:var(--f-slab); font-weight:400; font-size:19px; color:var(--accent); }
+.lead-sub { font-size:15px; line-height:1.6; color:var(--muted); margin:0 0 16px 20px; }
+.kicker { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin:18px 0 6px; padding-top:14px; border-top:1px solid var(--border); }
+.elig-line { font-size:14px; line-height:1.6; margin-bottom:14px; }
+.ifthen { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:stretch; margin-bottom:12px; }
+.it-box.fund.standalone { margin-bottom:20px; }
+@media(max-width:1100px){ .ifthen{ grid-template-columns:1fr; } .ifthen .it-arrow{ transform:rotate(90deg); justify-self:center; } }
+@media(max-width:640px){ .ifthen{ grid-template-columns:1fr; } .ifthen .it-arrow{ transform:rotate(90deg); justify-self:center; } }
+.it-box { border-radius:3px; padding:14px; }
+.it-box.if { background:var(--highlight); border:1px solid #B8D1E8; }
+.it-box.then { background:#EFF7F2; border:1px solid #A8D4B5; }
+.it-box.fund { background:#FBF8EE; border:1px solid #D4C07A; }
+.it-box.fund .it-pct { color:var(--gold); }
+.it-tag { font-family:var(--f-ui); font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.it-pct { font-family:var(--f-slab); font-size:30px; line-height:1; }
+.it-box.if .it-pct { color:var(--accent); }
+.it-box.then .it-pct { color:var(--accent3); }
+.it-num { font-family:var(--f-ui); font-size:14px; color:var(--ink); margin-top:4px; }
+.it-lbl { font-size:12px; color:var(--muted); line-height:1.45; margin-top:6px; }
+.it-arrow { align-self:center; font-size:22px; color:var(--gold); }
+.pop-toggle { display:inline-flex; border:1.5px solid var(--border); border-radius:3px; overflow:hidden; margin-bottom:12px; }
+.pop-toggle button { padding:6px 12px; font-family:var(--f-ui); font-size:11.5px; font-weight:500; background:white; color:var(--muted); border:none; border-right:1px solid var(--border); cursor:pointer; }
+.pop-toggle button:last-child { border-right:none; }
+.pop-toggle button.active { background:var(--ink); color:white; }
+.share-line { font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.5; }
+.flow-node .fd b { color:var(--ink); font-weight:600; }
+.bar-track { overflow:visible; }
+.bar-fill { position:relative; }
+.bar-fill span.out { color:#3A3026; position:absolute; left:calc(100% + 6px); }
+.method-short p { font-size:13px; line-height:1.7; color:#3A3026; margin-bottom:10px; max-width:860px; }
+</style>
+
+<style id="bpc-brand">
+/* BPC Brand Guidelines, February 2025
+   Colors: Red #e43e47, Blue #3c608a, Dark Gray #333638, Light Gray #d3d8d6 (primary);
+           Cornflower #1b83c6, Strong Red #b91f24, Dark Blue #1f476c, Yellow #fcbb13 (secondary)
+   Type:   Roboto Slab (titles), Styrene (design elements, tables, callouts), Faustina (body text).
+           Styrene is a licensed font and is not hosted here; it renders where installed and falls back to DM Sans. */
+:root{
+  --f-ui:"Styrene B","Styrene A","DM Sans",system-ui,sans-serif;
+  --f-slab:"Roboto Slab",Georgia,serif;
+  --f-body:"Faustina",Georgia,serif;
+  --bpc-red:#e43e47; --bpc-blue:#3c608a; --bpc-dgray:#333638; --bpc-lgray:#d3d8d6;
+  --bpc-cornflower:#1b83c6; --bpc-strongred:#b91f24; --bpc-darkblue:#1f476c; --bpc-yellow:#fcbb13;
+  --bg:#f2f4f3; --surface:#ffffff; --ink:#333638; --muted:#5b6063; --border:#d3d8d6;
+  --accent:#3c608a; --accent2:#b91f24; --accent3:#1b83c6; --gold:#fcbb13;
+  --highlight:#eaf0f6; --purple:#1f476c; --purplelight:#eaf0f6; --purpleborder:#9db3cb;
+}
+body{font-family:var(--f-ui);background:var(--bg);color:var(--ink);}
+
+/* Header: logo row, black rule, Roboto Slab title with red accent bar */
+.header{background:#fff;padding:0;overflow:visible;border-bottom:1px solid var(--bpc-lgray);}
+.header::after{display:none;}
+.header-top{padding:20px 48px 18px;border-bottom:1px solid #000;}
+.brand-logo{display:inline-block;line-height:0;}
+.brand-logo svg{height:58px;width:auto;display:block;}
+.header-main{padding:30px 48px 38px;}
+.header-eyebrow{font-family:var(--f-ui);font-weight:500;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--bpc-blue);margin-bottom:12px;}
+.header h1{font-family:var(--f-slab);font-weight:700;font-size:clamp(24px,3vw,36px);line-height:1.2;color:#000;max-width:820px;margin-bottom:0;}
+.header h1::after{content:'';display:block;width:56px;height:4px;background:var(--bpc-red);margin:16px 0;}
+.header p{font-family:var(--f-ui);font-size:14px;font-weight:400;color:var(--ink);max-width:680px;line-height:1.65;}
+@media(max-width:860px){.header-top,.header-main{padding-left:20px;padding-right:20px;}.brand-logo svg{height:48px;}}
+
+/* Cards and headings */
+.card{border-color:var(--bpc-lgray);}
+.card-eyebrow{font-family:var(--f-ui);font-weight:600;color:var(--bpc-strongred);letter-spacing:0.14em;}
+.card h2{font-family:var(--f-slab);font-weight:500;font-size:20px;color:#000;}
+.sub-h{font-family:var(--f-slab);font-weight:500;font-size:17px;color:#000;}
+
+/* Numerals in Roboto Slab Bold */
+.lead b,.lead-sub b,.elig-line b{font-family:var(--f-slab);font-weight:700;font-size:19px;color:var(--bpc-blue);}
+.it-pct,.r-num,.flow-node .fn,.rfc-val,.cb-num{font-family:var(--f-slab);font-weight:700;}
+.it-num,.param-val,.num-input-wrap input,.bar-fill span{font-variant-numeric:tabular-nums;}
+
+/* Controls */
+.fixed-chip{background:#eef1f0;border-color:var(--bpc-lgray);}
+.param-note{color:var(--muted);}
+.option-panel{background:#f4f6f5;}
+.option-tab:hover:not(.active),.measure-opt:hover{background:#eef1f0;border-color:#a9b0ad;}
+.option-tab.active,.pop-toggle button.active{background:var(--bpc-darkblue);border-color:var(--bpc-darkblue);color:#fff;}
+.step-num{background:var(--bpc-darkblue);color:#fff;}
+.measure-opt.on{background:#eaf0f6;border-color:var(--bpc-darkblue);}
+.measure-opt input{accent-color:var(--bpc-darkblue);}
+input[type=range]{accent-color:var(--bpc-blue);}
+
+/* If / then / funding boxes */
+.it-box.if{background:#eaf0f6;border:1px solid #b5c5d8;}
+.it-box.if .it-pct{color:var(--bpc-blue);}
+.it-box.then{background:#e8f3fb;border:1px solid #a9cfe9;}
+.it-box.then .it-pct{color:var(--bpc-cornflower);}
+.it-box.fund{background:#fef8e0;border:1px solid var(--bpc-yellow);}
+.it-box.fund .it-pct{color:var(--ink);}
+.it-tag{color:var(--muted);}
+.it-arrow,.flow-node:not(:last-child)::after{color:var(--bpc-red);}
+
+/* Funding calculation flow */
+.fn1{background:#eef1f0;} .fn1 .fn{color:var(--ink);}
+.fn2{background:#fcecee;} .fn2 .fn{color:var(--bpc-strongred);}
+.fn3{background:#fef8e0;} .fn3 .fn{color:var(--ink);}
+.fn4{background:#e8f3fb;} .fn4 .fn{color:var(--bpc-darkblue);}
+
+/* Population bars */
+.bar-track{background:#e4e8e6;}
+.bar-fill span{font-weight:600;}
+.bar-fill span.out{color:var(--ink);}
+.bar-fill span.below{position:absolute;top:calc(100% + 4px);left:-140px;white-space:normal;width:max-content;max-width:min(300px,80vw);color:var(--ink);line-height:1.3;}
+.bar-row.has-below{margin-bottom:34px;}
+
+/* Body text in Faustina */
+.method-short p,.src-list,.modal-body p,.note-sm{font-family:var(--f-body);}
+.method-short p{font-size:14.5px;line-height:1.7;color:var(--ink);}
+.src-list{font-size:13px;line-height:1.65;color:var(--ink);max-width:840px;}
+
+/* Modals */
+.modal-overlay{background:rgba(51,54,56,0.65);}
+.modal-header{background:var(--bpc-darkblue);}
+.modal-eyebrow{color:var(--bpc-lgray);}
+.modal-header h3{font-family:var(--f-slab);font-weight:700;color:#fff;}
+.modal-header p{color:var(--bpc-lgray);}
+.modal-close{color:var(--bpc-lgray);}
+.modal-close:hover{color:#fff;}
+.expense-item{background:#f4f6f5;}
+.expense-item.grp1{border-left-color:var(--bpc-blue);}
+.expense-item.grp2{border-left-color:var(--bpc-cornflower);}
+.expense-item.grp3{border-left-color:var(--bpc-yellow);}
+.status-pill.out{background:#fcecee;border-color:#f2b8bc;color:#8f1a1f;}
+
+/* Cost slider markers */
+.slider-row{display:flex;align-items:flex-start;gap:10px;}
+.slider-wrap{flex:1;min-width:0;}
+.slider-end{flex-shrink:0;font-family:var(--f-ui);font-size:11px;line-height:1;margin-top:-3px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.slider-marks{position:relative;height:40px;margin-top:10px;}
+.slider-mark{position:absolute;top:0;width:96px;margin-left:-48px;height:40px;padding:0;background:none;border:0;cursor:pointer;font-family:var(--f-ui);text-align:center;color:var(--muted);}
+.slider-mark::before{content:'';position:absolute;top:0;left:50%;width:2px;height:9px;margin-left:-1px;background:#7a8185;}
+.slider-mark.edge-l{margin-left:-12px;text-align:left;}
+.slider-mark.edge-l::before{left:12px;}
+.slider-mark .sm-val,.slider-mark .sm-lbl{display:block;line-height:1.25;}
+.slider-mark .sm-val{margin-top:12px;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink);}
+.slider-mark .sm-lbl{font-size:10px;}
+.slider-mark:hover .sm-val{color:var(--bpc-blue);}
+.slider-mark.on::before{background:var(--bpc-blue);height:11px;width:3px;margin-left:-1.5px;}
+.slider-mark.on .sm-val{color:var(--bpc-blue);}
+.slider-mark:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px;}
+/* Layout: wider config column, tighter spacing, collapsible notes */
+@media(min-width:861px){.grid-two{grid-template-columns:380px 1fr;}}
+.card{padding:22px;}
+.param-block{margin-bottom:16px;}
+.step-header{margin:16px 0 8px;}
+.option-panel{padding:12px;}
+.opt-desc{margin-bottom:10px;}
+.measure-group{gap:5px;margin-bottom:10px;}
+.measure-opt{padding:7px 10px;}
+.fixed-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.fixed-row .fixed-chip{display:flex;flex-direction:column;justify-content:space-between;gap:4px;margin-bottom:0;padding:9px 12px;}
+.fixed-row .fc-label{flex:none;font-size:10px;line-height:1.3;}
+.fixed-row .fc-val{font-size:18px;font-family:var(--f-slab);font-weight:700;}
+.fixed-notes{margin-bottom:14px;font-size:11px;font-style:italic;}
+.fixed-notes summary,.qe-note summary{cursor:pointer;color:var(--accent);font-size:11.5px;text-decoration:underline;list-style-position:inside;}
+.fixed-notes .fc-note{font-size:11px;}
+.fixed-notes[open] .fc-note{margin-bottom:8px;}
+.qe-note{margin-top:8px;font-style:italic;}
+.qe-note p{margin-top:6px;}
+#results-title.has-state{font-size:clamp(26px,3vw,34px);font-weight:700;line-height:1.15;color:var(--bpc-blue);}
+</style>
+
+<header class="header">
+  <div class="header-top"><a class="brand-logo" href="https://bipartisanpolicy.org" target="_blank" rel="noopener"><svg role="img" aria-label="Bipartisan Policy Center" focusable="false" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 242.73 74.48">
+<defs>
+<g>
+<g id="glyph-0-0">
+<path d="M 1.671875 0 L 8.265625 0 C 11.078125 0 12.515625 -1.34375 12.515625 -3.46875 C 12.515625 -5.0625 11.53125 -6.046875 10.40625 -6.390625 C 11.328125 -6.703125 12.234375 -7.5625 12.234375 -8.859375 C 12.234375 -10.890625 10.796875 -12.140625 8.171875 -12.140625 L 1.671875 -12.140625 Z M 7.921875 -10.1875 C 9.21875 -10.1875 9.875 -9.71875 9.875 -8.703125 C 9.875 -7.71875 9.203125 -7.21875 7.921875 -7.21875 L 3.9375 -7.21875 L 3.9375 -10.1875 Z M 8 -5.28125 C 9.46875 -5.28125 10.171875 -4.703125 10.171875 -3.625 C 10.171875 -2.546875 9.46875 -1.953125 8 -1.953125 L 3.9375 -1.953125 L 3.9375 -5.28125 Z M 8 -5.28125 "/>
+</g>
+<g id="glyph-0-1">
+<path d="M 1.390625 -10.03125 L 3.65625 -10.03125 L 3.65625 -12.625 L 1.390625 -12.625 Z M 1.4375 0 L 3.625 0 L 3.625 -8.65625 L 1.4375 -8.65625 Z M 1.4375 0 "/>
+</g>
+<g id="glyph-0-2">
+<path d="M 3.578125 -1.3125 C 3.75 -0.96875 4.6875 0.1875 6.5625 0.1875 C 8.828125 0.1875 10.671875 -1.484375 10.671875 -4.328125 C 10.671875 -7.140625 8.828125 -8.84375 6.5625 -8.84375 C 4.6875 -8.84375 3.75 -7.609375 3.59375 -7.28125 L 3.59375 -8.65625 L 1.421875 -8.65625 L 1.421875 3.625 L 3.578125 3.625 Z M 3.5625 -4.328125 C 3.5625 -5.8125 4.515625 -6.921875 6 -6.921875 C 7.5 -6.921875 8.46875 -5.8125 8.46875 -4.328125 C 8.46875 -2.859375 7.5 -1.71875 6 -1.71875 C 4.515625 -1.71875 3.5625 -2.859375 3.5625 -4.328125 Z M 3.5625 -4.328125 "/>
+</g>
+<g id="glyph-0-3">
+<path d="M 7.84375 -1.375 L 7.84375 0 L 10.015625 0 L 10.015625 -8.65625 L 7.828125 -8.65625 L 7.828125 -7.34375 C 7.640625 -7.703125 6.765625 -8.84375 4.9375 -8.84375 C 2.703125 -8.84375 0.859375 -7.125 0.859375 -4.328125 C 0.859375 -1.484375 2.703125 0.1875 4.921875 0.1875 C 6.828125 0.1875 7.671875 -1.015625 7.84375 -1.375 Z M 7.859375 -4.328125 C 7.859375 -2.859375 6.921875 -1.71875 5.5 -1.71875 C 4.03125 -1.71875 3.078125 -2.859375 3.078125 -4.328125 C 3.078125 -5.796875 4.03125 -6.921875 5.5 -6.921875 C 6.921875 -6.921875 7.859375 -5.796875 7.859375 -4.328125 Z M 7.859375 -4.328125 "/>
+</g>
+<g id="glyph-0-4">
+<path d="M 3.59375 -4.546875 C 3.59375 -5.921875 4.25 -6.53125 6.109375 -6.53125 L 8.40625 -6.53125 L 8.40625 -8.703125 L 6.390625 -8.703125 C 4.484375 -8.703125 3.8125 -7.6875 3.59375 -7.203125 L 3.59375 -8.65625 L 1.421875 -8.65625 L 1.421875 0 L 3.59375 0 Z M 3.59375 -4.546875 "/>
+</g>
+<g id="glyph-0-5">
+<path d="M 8.234375 -1.953125 L 6.578125 -1.953125 C 5.40625 -1.953125 5.046875 -2.40625 5.046875 -3.484375 L 5.046875 -6.78125 L 8.234375 -6.78125 L 8.234375 -8.65625 L 5.046875 -8.65625 L 5.046875 -12.140625 L 2.859375 -12.140625 L 2.859375 -8.65625 L 0.484375 -8.65625 L 0.484375 -6.78125 L 2.859375 -6.78125 L 2.859375 -2.828125 C 2.859375 -0.96875 3.8125 0 5.84375 0 L 8.234375 0 Z M 8.234375 -1.953125 "/>
+</g>
+<g id="glyph-0-6">
+<path d="M 5.59375 -3.390625 C 6.5625 -3.28125 6.875 -2.9375 6.875 -2.40625 C 6.875 -1.859375 6.296875 -1.453125 5.09375 -1.453125 C 3.625 -1.453125 3.09375 -2.21875 3.015625 -2.421875 L 0.671875 -2.421875 C 0.84375 -1.625 1.875 0.234375 5.09375 0.234375 C 7.71875 0.234375 9.09375 -0.890625 9.09375 -2.5 C 9.09375 -4.1875 8.140625 -5.09375 5.796875 -5.296875 L 4.328125 -5.453125 C 3.453125 -5.5625 3.09375 -5.875 3.09375 -6.359375 C 3.09375 -6.875 3.640625 -7.234375 4.6875 -7.234375 C 5.96875 -7.234375 6.5 -6.625 6.625 -6.4375 L 8.9375 -6.4375 C 8.734375 -7.28125 7.796875 -8.890625 4.703125 -8.890625 C 2.375 -8.890625 0.890625 -7.859375 0.890625 -6.234375 C 0.890625 -4.546875 2.171875 -3.6875 4.0625 -3.53125 C 4.671875 -3.46875 4.96875 -3.4375 5.59375 -3.390625 Z M 5.59375 -3.390625 "/>
+</g>
+<g id="glyph-0-7">
+<path d="M 3.59375 -4.609375 C 3.59375 -5.953125 4.4375 -6.890625 5.765625 -6.890625 C 7.046875 -6.890625 7.859375 -5.984375 7.859375 -4.609375 L 7.859375 0 L 10.0625 0 L 10.0625 -5.046875 C 10.0625 -7.25 8.625 -8.84375 6.46875 -8.84375 C 4.890625 -8.84375 3.921875 -7.8125 3.59375 -7.203125 L 3.59375 -8.65625 L 1.421875 -8.65625 L 1.421875 0 L 3.59375 0 Z M 3.59375 -4.609375 "/>
+</g>
+<g id="glyph-0-8">
+</g>
+<g id="glyph-0-9">
+<path d="M 1.671875 0 L 3.96875 0 L 3.96875 -4.65625 L 8.375 -4.65625 C 11.09375 -4.65625 12.609375 -6.078125 12.609375 -8.421875 C 12.609375 -10.8125 11.09375 -12.140625 8.375 -12.140625 L 1.671875 -12.140625 Z M 8.25 -10.078125 C 9.609375 -10.078125 10.25 -9.484375 10.25 -8.390625 C 10.25 -7.390625 9.59375 -6.703125 8.25 -6.703125 L 3.96875 -6.703125 L 3.96875 -10.078125 Z M 8.25 -10.078125 "/>
+</g>
+<g id="glyph-0-10">
+<path d="M 5.5 -8.875 C 2.84375 -8.875 0.84375 -6.953125 0.84375 -4.328125 C 0.84375 -1.6875 2.84375 0.21875 5.5 0.21875 C 8.140625 0.21875 10.15625 -1.6875 10.15625 -4.328125 C 10.15625 -6.953125 8.140625 -8.875 5.5 -8.875 Z M 5.5 -1.71875 C 4.03125 -1.71875 3.046875 -2.875 3.046875 -4.328125 C 3.046875 -5.78125 4.03125 -6.921875 5.5 -6.921875 C 6.953125 -6.921875 7.953125 -5.796875 7.953125 -4.328125 C 7.953125 -2.859375 6.953125 -1.71875 5.5 -1.71875 Z M 5.5 -1.71875 "/>
+</g>
+<g id="glyph-0-11">
+<path d="M 1.453125 0 L 3.640625 0 L 3.640625 -12.578125 L 1.453125 -12.578125 Z M 1.453125 0 "/>
+</g>
+<g id="glyph-0-12">
+<path d="M 7.375 -5.796875 L 9.53125 -5.796875 C 9.40625 -6.75 8.359375 -8.875 5.28125 -8.875 C 2.78125 -8.875 0.84375 -6.984375 0.84375 -4.328125 C 0.84375 -1.65625 2.796875 0.21875 5.296875 0.21875 C 8.390625 0.21875 9.4375 -1.953125 9.53125 -2.859375 L 7.40625 -2.859375 C 7.28125 -2.609375 6.75 -1.703125 5.328125 -1.703125 C 3.984375 -1.703125 3.0625 -2.875 3.0625 -4.328125 C 3.0625 -5.78125 3.984375 -6.9375 5.3125 -6.9375 C 6.703125 -6.9375 7.25 -6.03125 7.375 -5.796875 Z M 7.375 -5.796875 "/>
+</g>
+<g id="glyph-0-13">
+<path d="M 10 -8.65625 L 7.78125 -8.65625 L 5.234375 -2.765625 L 2.6875 -8.65625 L 0.21875 -8.65625 L 4.125 -0.15625 L 2.484375 3.640625 L 4.671875 3.640625 Z M 10 -8.65625 "/>
+</g>
+<g id="glyph-0-14">
+<path d="M 7.140625 0.203125 C 11.046875 0.203125 12.515625 -2.46875 12.796875 -3.75 L 10.484375 -3.75 C 10.15625 -3.125 9.265625 -1.890625 7.140625 -1.890625 C 4.859375 -1.890625 3.40625 -3.796875 3.40625 -6.0625 C 3.40625 -8.34375 4.859375 -10.234375 7.140625 -10.234375 C 9.078125 -10.234375 10.109375 -9.0625 10.4375 -8.40625 L 12.796875 -8.40625 C 12.484375 -9.828125 10.890625 -12.34375 7.140625 -12.34375 C 3.59375 -12.34375 1.03125 -9.625 1.03125 -6.0625 C 1.03125 -2.515625 3.59375 0.203125 7.140625 0.203125 Z M 7.140625 0.203125 "/>
+</g>
+<g id="glyph-0-15">
+<path d="M 5.375 -8.875 C 2.71875 -8.875 0.84375 -7.015625 0.84375 -4.328125 C 0.84375 -1.71875 2.71875 0.21875 5.53125 0.21875 C 8.484375 0.21875 9.65625 -1.640625 9.796875 -2.53125 L 7.640625 -2.53125 C 7.484375 -2.296875 6.921875 -1.59375 5.53125 -1.59375 C 4.109375 -1.59375 3.125 -2.609375 3.03125 -3.96875 L 9.890625 -3.96875 L 9.890625 -4.203125 C 9.890625 -7.046875 8.03125 -8.875 5.375 -8.875 Z M 5.375 -7.171875 C 6.484375 -7.171875 7.296875 -6.5625 7.609375 -5.46875 L 3.09375 -5.46875 C 3.375 -6.53125 4.1875 -7.171875 5.375 -7.171875 Z M 5.375 -7.171875 "/>
+</g>
+</g>
+</defs>
+<path fill-rule="nonzero" fill="rgb(93.122864%, 11.709595%, 24.172974%)" fill-opacity="1" d="M 125.128906 8.386719 C 140.5 10.523438 149.515625 23.816406 153.203125 44.113281 L 168.632812 44.113281 C 162.449219 24.757812 150.605469 13.945312 137.378906 8.90625 C 133.554688 7.792969 129.472656 7.066406 125.128906 6.761719 L 125.128906 8.386719 "/>
+<path fill-rule="nonzero" fill="rgb(21.487427%, 36.878967%, 57.826233%)" fill-opacity="1" d="M 88.109375 44.113281 C 91.804688 23.777344 100.847656 10.472656 116.277344 8.375 L 116.277344 6.753906 C 111.898438 7.054688 107.785156 7.785156 103.9375 8.90625 C 90.714844 13.945312 78.867188 24.757812 72.679688 44.113281 L 88.109375 44.113281 "/>
+<g fill="rgb(34.524536%, 35.687256%, 36.810303%)" fill-opacity="1">
+<use xlink:href="#glyph-0-0" x="8.900587" y="65.211431"/>
+<use xlink:href="#glyph-0-1" x="22.467747" y="65.211431"/>
+<use xlink:href="#glyph-0-2" x="27.508442" y="65.211431"/>
+<use xlink:href="#glyph-0-3" x="39.025149" y="65.211431"/>
+<use xlink:href="#glyph-0-4" x="50.439333" y="65.211431"/>
+<use xlink:href="#glyph-0-5" x="59.375887" y="65.211431"/>
+<use xlink:href="#glyph-0-1" x="68.414965" y="65.211431"/>
+<use xlink:href="#glyph-0-6" x="73.45566" y="65.211431"/>
+</g>
+<g fill="rgb(34.524536%, 35.687256%, 36.810303%)" fill-opacity="1">
+<use xlink:href="#glyph-0-3" x="83.330932" y="65.211431"/>
+<use xlink:href="#glyph-0-7" x="94.745116" y="65.211431"/>
+<use xlink:href="#glyph-0-8" x="106.108039" y="65.211431"/>
+<use xlink:href="#glyph-0-9" x="110.516512" y="65.211431"/>
+</g>
+<g fill="rgb(34.524536%, 35.687256%, 36.810303%)" fill-opacity="1">
+<use xlink:href="#glyph-0-10" x="123.502546" y="65.211431"/>
+<use xlink:href="#glyph-0-11" x="134.489552" y="65.211431"/>
+<use xlink:href="#glyph-0-1" x="139.564422" y="65.211431"/>
+<use xlink:href="#glyph-0-12" x="144.605117" y="65.211431"/>
+<use xlink:href="#glyph-0-13" x="154.874465" y="65.211431"/>
+<use xlink:href="#glyph-0-8" x="165.10964" y="65.211431"/>
+<use xlink:href="#glyph-0-14" x="169.518112" y="65.211431"/>
+<use xlink:href="#glyph-0-15" x="183.239055" y="65.211431"/>
+<use xlink:href="#glyph-0-7" x="193.901407" y="65.211431"/>
+</g>
+<g fill="rgb(34.524536%, 35.687256%, 36.810303%)" fill-opacity="1">
+<use xlink:href="#glyph-0-5" x="205.00748" y="65.211431"/>
+</g>
+<g fill="rgb(34.524536%, 35.687256%, 36.810303%)" fill-opacity="1">
+<use xlink:href="#glyph-0-15" x="213.961555" y="65.211431"/>
+<use xlink:href="#glyph-0-4" x="224.623907" y="65.211431"/>
+</g>
+</svg>
+</a></div>
+  <div class="header-main">
+    <div class="header-eyebrow">Federal Scholarship Tax Credit · State-Level Calculator</div>
+    <h1>Federal Scholarship Tax Credit Calculator by State</h1>
+    <p>Select any state to model the number of contributors needed to fund scholarships for high-impact tutoring or other services. Updated October 2026 to reflect Treasury’s temporary and proposed regulations.</p>
+  </div>
+</header>
+
+<div class="body-wrap">
+<div class="grid-two">
+
+  <!-- LEFT: Controls -->
+  <div>
+    <div class="card">
+      <div class="card-eyebrow">Configuration</div>
+      <h2>Select State &amp; Set Parameters</h2>
+
+      <!-- State selector -->
+      <div class="state-select-wrap" style="margin-bottom:6px;">
+        <label for="stateSelect" class="param-name" style="display:block;margin-bottom:6px;">State</label>
+        <select id="stateSelect" onchange="update()" aria-describedby="optin-legend">
+          <option value="">Choose a state</option>
+        </select>
+      </div>
+      <div id="optin-legend" class="param-note" style="margin:0 0 16px;">✓ = on the <a href="https://www.irs.gov/government-entities/federal-state-local-governments/federal-scholarship-tax-credit-fstc-participating-states" target="_blank" rel="noopener">IRS list of states participating for 2027</a> (as of October 22, 2026).</div>
+
+      <!-- Fixed assumptions -->
+      <div class="fixed-row">
+        <div class="fixed-chip"><div class="fc-label">Federal credit per donor</div><div class="fc-val">$1,700</div></div>
+        <div class="fixed-chip"><div class="fc-label">SGO administrative costs (fixed)</div><div class="fc-val">10%</div></div>
+      </div>
+      <details class="fixed-notes">
+        <summary>About these assumptions</summary>
+        <div class="fc-note" style="margin-top:6px; color:#333638; line-height:1.5;">Under Treasury’s proposed rule, each spouse on a joint return can give and claim up to $1,700 (up to $3,400 per couple), subject to the couple’s combined tax liability. <button class="learn-more" style="font-size:10px;" onclick="openModal('donorNoteModal')">More info</button></div>
+        <div class="fc-note" style="margin-top:6px; line-height:1.5;"><a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title26-section25F&num=0&edition=prelim" target="_blank" rel="noopener">Federal law</a> requires SGOs to spend at least 90% of income on scholarships. The calculator assumes each SGO keeps the maximum 10% of donations for administration.</div>
+      </details>
+
+      <!-- ── STEP 1 ── -->
+      <div class="step-header">
+        <span class="step-num">1</span>
+        <span class="step-title">Set average scholarship cost per student</span>
+      </div>
+      <div class="param-block">
+        <div class="param-header">
+          <span class="param-name">Cost per student / year</span>
+          <span class="param-val" id="v-cost">$1,750</span>
+        </div>
+        <div class="slider-row"><span class="slider-end">$500</span><div class="slider-wrap"><input type="range" id="r-cost" aria-label="Cost per student per year" min="500" max="15000" step="50" value="1750" oninput="update()">
+        <div class="slider-marks">
+          <button type="button" class="slider-mark edge-l" data-v="1750" style="left:calc(8.62069% + 7.03px)" onclick="setCost(1750)" aria-label="Set cost per student to $1,750, the tutoring estimate"><span class="sm-val">$1,750</span><span class="sm-lbl">tutoring</span></button>
+          <button type="button" class="slider-mark" data-v="12000" style="left:calc(79.31034% - 4.98px)" onclick="setCost(12000)" aria-label="Set cost per student to $12,000, the private school estimate"><span class="sm-val">$12,000</span><span class="sm-lbl">private school</span></button>
+        </div>
+        </div><span class="slider-end">$15,000</span></div>
+        <div class="param-note">$1,750 is an estimate of the cost of high-impact tutoring (<a href="https://nssa.stanford.edu/district-playbook/section-2/developing-budget" target="_blank" rel="noopener">Stanford’s National Student Support Accelerator</a> advises districts to expect roughly $1,200–$2,500), and $12,000 is an estimate of the cost to attend private school in participating states (<a href="https://www.federalregister.gov/documents/2026/10/02/2026-20277/federal-scholarship-tax-credit#footnote-6-p62838" target="_blank" rel="noopener">Treasury</a> analysis).</div>
+        <details class="param-note qe-note"><summary>Qualified expenses and payment rules</summary><p>Qualified expenses include tuition and fees, tutoring, and special needs services. Treasury will issue separate guidance defining qualified expenses. Under the proposed regulations, tuition and fees a school charges must be paid directly to the school, other providers may be paid directly if verified, and payments to families are allowed only as reimbursements backed by receipts.</p></details>
+      </div>
+
+      <!-- ── STEP 2 ── -->
+      <div class="step-header">
+        <span class="step-num">2</span>
+        <span class="step-title">Set population reached</span>
+      </div>
+
+      <div class="option-tabs" role="tablist">
+        <button class="option-tab active" id="opt-tab-a" role="tab" onclick="setOption('A')">
+          <span class="opt-num">A</span>
+          <span class="opt-label">Student side</span>
+        </button>
+        <button class="option-tab" id="opt-tab-c" role="tab" onclick="setOption('C')">
+          <span class="opt-num">B</span>
+          <span class="opt-label">Donor side</span>
+        </button>
+      </div>
+
+      <!-- OPTION A: Student side -->
+      <div class="option-panel" id="opt-panel-a">
+        <div class="opt-desc">Set what share of eligible students to serve, then see how many taxpayers would need to contribute.</div>
+        <div class="param-name" style="margin-bottom:7px;">Income eligibility measure</div>
+        <div class="measure-group" role="radiogroup" aria-label="Income eligibility measure">
+          <label class="measure-opt" id="measure-ami">
+            <input type="radio" name="elig" value="ami" onchange="setEligMethod('ami')">
+            <span class="mo-text"><span class="mo-name">300% of area median income</span><span class="mo-sub">Census ACS proxy: children below 300% of poverty (state-specific)</span></span>
+            <button type="button" class="learn-more" onclick="event.preventDefault(); openModal('amiModal')">Learn more</button>
+          </label>
+          <label class="measure-opt" id="measure-treas">
+            <input type="radio" name="elig" value="treas" onchange="setEligMethod('treas')">
+            <span class="mo-text"><span class="mo-name">Treasury national estimate</span><span class="mo-sub">96% of children ages 5–17 (same rate for every state)</span></span>
+            <button type="button" class="learn-more" onclick="event.preventDefault(); openModal('treasModal')">Learn more</button>
+          </label>
+          <label class="measure-opt" id="measure-qct">
+            <input type="radio" name="elig" value="qct" onchange="setEligMethod('qct')">
+            <span class="mo-text"><span class="mo-name">Schools in qualified census tracts</span><span class="mo-sub">Public school students at schools located in 2027 QCTs (safe harbor for tutoring and special needs services)</span></span>
+            <button type="button" class="learn-more" onclick="event.preventDefault(); openModal('qctModal')">Learn more</button>
+          </label>
+        </div>
+        <div class="param-block" style="margin-bottom:0;">
+          <div class="param-header">
+            <span class="param-name">% of eligible students to serve</span>
+            <span class="param-val" id="v-pct-a">100%</span>
+          </div>
+          <input type="range" id="r-pct-a" aria-label="Percent of eligible students to serve" min="1" max="100" step="1" value="100" oninput="update()">
+          <div class="range-labels"><span>1%</span><span>100%</span></div>
+        </div>
+      </div>
+
+      <!-- OPTION B (internal id C): Donor side -->
+      <div class="option-panel" id="opt-panel-c" style="display:none;">
+        <div class="opt-desc">Set what share of tax-liable taxpayers contribute $1,700 each, then see how many students can be served at the current scholarship cost.</div>
+        <div class="param-block" style="margin-bottom:0;">
+          <label class="param-name" for="r-filer-pct" style="display:block; margin-bottom:7px;">% of tax-liable taxpayers who contribute</label>
+          <div class="num-input-wrap">
+            <input type="number" id="r-filer-pct" min="0.01" max="100" step="0.01" value="5" inputmode="decimal" oninput="update()">
+            <span>%</span>
+          </div>
+          <div class="param-note">Enter any value from 0.01% to 100%. Applies to estimated individual taxpayers with enough federal tax liability for a $1,700 credit, counting both spouses on joint returns with enough combined liability for $3,400 (IRS tax year 2023).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div>
+    <div class="card">
+      <div class="card-eyebrow">Results</div>
+      <h2 id="results-title">Select a state to see results</h2>
+      <div id="status-pill" class="status-pill" style="display:none;" role="status"></div>
+
+      <div id="no-state-msg" style="color:var(--muted); font-size:14px; padding:20px 0;">
+        Choose a state from the dropdown to begin the analysis.
+      </div>
+
+      <div id="results-body" style="display:none;" aria-live="polite">
+
+        <p class="lead" id="lead"></p>
+        <p class="lead-sub" id="lead-sub"></p>
+
+        <div class="kicker">At your selected parameters</div>
+        <p class="elig-line" id="elig-line"></p>
+
+        <div class="ifthen">
+          <div class="it-box if">
+            <div class="it-tag">If</div>
+            <div class="it-pct" id="if-pct">—</div>
+            <div class="it-num" id="if-num">—</div>
+            <div class="it-lbl" id="if-lbl"></div>
+          </div>
+          <div class="it-arrow" aria-hidden="true">→</div>
+          <div class="it-box then">
+            <div class="it-tag">Then</div>
+            <div class="it-pct" id="then-pct">—</div>
+            <div class="it-num" id="then-num">—</div>
+            <div class="it-lbl" id="then-lbl"></div>
+          </div>
+        </div>
+
+        <div class="it-box fund standalone">
+          <div class="it-tag">Funding generated</div>
+          <div class="it-pct" id="fund-pct">—</div>
+          <div class="it-num" id="fund-num">—</div>
+          <div class="it-lbl" id="fund-lbl"></div>
+        </div>
+
+        <!-- Funding flow -->
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin-bottom:8px;">Funding calculation (each donor gives the $1,700 maximum)</div>
+        <div class="flow" id="flow"></div>
+
+        <div class="spacer"></div>
+
+        <!-- Population bars -->
+        <div class="prop-section">
+          <div class="prop-title">Student population breakdown</div>
+          <div class="pop-toggle" role="group" aria-label="Student population">
+            <button id="pop-all" class="active" onclick="setUniverse('all')">All children ages 5–17</button>
+            <button id="pop-public" onclick="setUniverse('public')">Public school students</button>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl" id="bar-total-lbl">Children ages 5–17</div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-total" style="width:100%; background:#333638;"><span id="bl-total">—</span></div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl" id="bar-elig-lbl">Income-eligible</div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-elig" style="width:50%; background:var(--purple);"><span id="bl-elig">—</span></div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl">Students served</div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-served" style="width:25%; background:#b91f24;"><span id="bl-served">—</span></div>
+            </div>
+          </div>
+          <div class="share-line" id="share-line"></div>
+        </div>
+
+        
+        <div class="tool-row">
+          <button class="tool-btn" id="btn-copy-results" onclick="copyResults()">Copy results (CSV)</button>
+          <span class="tool-msg" id="tool-msg" aria-live="polite"></span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL: Methodology -->
+  <div class="full">
+    <div class="card method-short">
+      <div class="card-eyebrow">Methodology &amp; Data Sources</div>
+      <h2>How This Is Calculated</h2>
+      <p>The calculator estimates how many taxpayers would need to give the maximum creditable amount to fund scholarships for a given number of students (student side), or how many students a given share of taxpayers could fund (donor side).</p>
+      <p><strong>Students.</strong> The default population is all children ages 5–17; public school enrollment (2024–25, excluding full-virtual schools) is an alternative. Income eligibility is approximated by the share of children ages 6–17 in households below 300% of the federal poverty line, a conservative proxy for the program’s 300% of area median income limit. Alternatives are Treasury’s 96% national estimate and public school students at schools located in 2027 qualified census tracts, which qualify for tutoring and special needs scholarships under the proposed high-poverty safe harbor.</p>
+      <p><strong>Qualified census tracts.</strong> The QCT option counts students enrolled at public schools located in a 2027 qualified census tract (QCT), based on a BPC spatial join of NCES EDGE 2024–25 school locations and enrollment to Census TIGER/Line 2020 census tracts (2023 tracts for Connecticut) and HUD’s 2027 QCT list. It includes schools reporting enrollment above zero and excludes full-virtual schools. Every student at a school in a QCT is treated as eligible without an income test. Private schools and schools that would qualify under the proposed 80% residency test are not counted, so the estimate understates the students the safe harbor could reach.</p>
+      <p><strong>Donors.</strong> Potential donors are taxpayers with enough federal tax liability to use a $1,700 credit, estimated from IRS returns by income: all returns with adjusted gross income of $50,000 or more, half at $25,000–$50,000, and 10% at $10,000–$25,000. A second spouse is added for joint returns likely to owe enough for a $3,400 credit. These weights are BPC assumptions.</p>
+      <p><strong>Funding.</strong> Each donor gives $1,700 and SGOs keep 10%: <span class="mono">students served = donors × $1,700 × 0.90 ÷ scholarship cost</span>. The funding box compares total donations with each state’s public K–12 revenue from federal, state, and local sources. Results assume donations are spread evenly and do not account for state tax credits or other uses of SGO funds.</p>
+
+      <div class="sub-h">Sources</div>
+      <ol class="src-list">
+        <li>26 U.S.C. § 25F, Federal Scholarship Tax Credit. <a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title26-section25F&num=0&edition=prelim" target="_blank" rel="noopener">uscode.house.gov</a></li>
+        <li>Department of the Treasury and Internal Revenue Service, “Federal Scholarship Tax Credit,” temporary regulations, TD 10057, Federal Register, October 2, 2026. <a href="https://www.federalregister.gov/d/2026-20264" target="_blank" rel="noopener">federalregister.gov/d/2026-20264</a></li>
+        <li>Department of the Treasury and Internal Revenue Service, “Federal Scholarship Tax Credit,” proposed regulations, REG-117199-25, Federal Register, October 2, 2026 (per-person credit, proposed § 1.25F-2(b)(2); eligibility estimate, economic analysis, Table 2). <a href="https://www.federalregister.gov/d/2026-20277" target="_blank" rel="noopener">federalregister.gov/d/2026-20277</a></li>
+        <li>Internal Revenue Service, “Federal Scholarship Tax Credit (FSTC)—Participating States,” as of October 22, 2026. <a href="https://www.irs.gov/government-entities/federal-state-local-governments/federal-scholarship-tax-credit-fstc-participating-states" target="_blank" rel="noopener">irs.gov</a></li>
+        <li>Internal Revenue Service, Statistics of Income, Historic Table 2, tax year 2023 (<a href="https://www.irs.gov/pub/irs-soi/23in55cmcsv.csv" target="_blank" rel="noopener">23in55cmcsv.csv</a>). <a href="https://www.irs.gov/statistics/soi-tax-stats-historic-table-2" target="_blank" rel="noopener">irs.gov</a></li>
+        <li>U.S. Census Bureau, Vintage 2025 Population Estimates, state characteristics by single year of age and sex, civilian population, July 1, 2025 (<a href="https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/state/asrh/sc-est2025-agesex-civ.csv" target="_blank" rel="noopener">sc-est2025-agesex-civ.csv</a>). <a href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-detail.html" target="_blank" rel="noopener">census.gov</a></li>
+        <li>U.S. Census Bureau, American Community Survey 2020–2024 5-year estimates, Table B17024, “Age by Ratio of Income to Poverty Level in the Past 12 Months.” <a href="https://data.census.gov/table/ACSDT5Y2024.B17024" target="_blank" rel="noopener">data.census.gov</a></li>
+        <li>U.S. Census Bureau, 2024 Annual Survey of School System Finances, Summary Table 1, elementary-secondary revenue by source, fiscal year 2024. <a href="https://www.census.gov/data/tables/2024/econ/school-finances/secondary-education-finance.html" target="_blank" rel="noopener">census.gov</a></li>
+        <li>Department of Housing and Urban Development, Qualified Census Tracts, 2027 (QCT2027.csv). <a href="https://www.huduser.gov/portal/datasets/qct.html" target="_blank" rel="noopener">huduser.gov</a></li>
+        <li>National Center for Education Statistics, Education Demographic and Geographic Estimates (EDGE), public school locations and enrollment (membership), 2024–25, excluding full-virtual schools; Census Bureau, TIGER/Line census tracts (2020; 2023 for Connecticut). <a href="https://nces.ed.gov/programs/edge/Geographic/SchoolLocations" target="_blank" rel="noopener">nces.ed.gov</a></li>
+        <li>Department of Housing and Urban Development, Income Limits. <a href="https://www.huduser.gov/portal/datasets/il.html" target="_blank" rel="noopener">huduser.gov</a></li>
+        <li>National Student Support Accelerator, Stanford University, “Developing a Budget.” <a href="https://nssa.stanford.edu/district-playbook/section-2/developing-budget" target="_blank" rel="noopener">nssa.stanford.edu</a></li>
+      </ol>
+      <p class="note-sm" style="margin-top:14px;">Last updated October 2026. Calculator estimates are illustrative and depend on the assumptions described above.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ─── STATE DATA ───
+// c517 = Census Bureau Vintage 2025 population estimates, civilian population ages 5–17, July 1, 2025 (sc-est2025-agesex-civ.csv) — the student universe
+// e = public K–12 enrollment. Values below are NCES Digest Table 203.20 (fall 2023) but are overwritten at runtime with
+//     NCES EDGE 2024–25 membership excluding full-virtual schools (see QCT block).
+// frpl (retained for reference; no longer used in calculations as of Oct. 2026 revision) = NCES Digest Table 204.10 (2023 edition), share of public school students eligible for FRPL, 2022–23
+// dc = 1 if the state reported only direct-certification counts for 2022–23 (Table 204.10, footnote 3)
+// optin = 1 if on the IRS list of states that made an advance election for 2027 (as of October 22, 2026; unchanged from September 14)
+// ami300 = ACS 2020–2024 5-year estimates, Table B17024: share of children ages 6–17 (all children, not only public school students) in households with income below 300% of the poverty line. Proxy for 300% AMI eligibility (conservative). Updated Oct. 2026; the June version's values were not supported by this table.
+// fTotal = IRS SOI TY2023 total individual returns (N1, AGI_STUB=0)
+const STATE_DATA = {
+  // e=NCES enrollment, frpl=FRPL rate, ami300=ACS 300% poverty proxy,
+  // fElig = est. returns with enough tax liability for one $1,700 credit
+  //       = (AGI≥$50k × 100%) + ($25–50k × 50%) + ($10–25k × 10%) — IRS SOI TY2023 (23in55cmcsv.csv)
+  // jElig = est. joint returns with enough combined liability for a second spouse's $1,700 credit ($3,400 total)
+  //       = MARS2 × [(AGI≥$100k × 100%) + ($75–100k × 50%) + ($50–75k × 10%)] — IRS SOI TY2023
+  // Eligible individual taxpayers (per-person basis) = fElig + jElig
+  "Alabama":              { e: 748650   , c517: 821813   , frpl: 0.602, ami300: 0.605, fElig: 1281811  , jElig: 437690   , fTotal: 2140840, dc: 0, optin: 1 },
+  "Alaska":               { e: 131243   , c517: 126945   , frpl: 0.395, ami300: 0.476, fElig: 233494   , jElig: 83464    , fTotal: 347930, dc: 0, optin: 1 },
+  "Arizona":              { e: 1117630  , c517: 1198788  , frpl: 0.503, ami300: 0.558, fElig: 2164365  , jElig: 700073   , fTotal: 3391030, dc: 0, optin: 0 },
+  "Arkansas":             { e: 484978   , c517: 518963   , frpl: 0.640, ami300: 0.643, fElig: 758777   , jElig: 252042   , fTotal: 1292190, dc: 0, optin: 1 },
+  "California":           { e: 5924113  , c517: 6122513  , frpl: 0.582, ami300: 0.519, fElig: 12149386 , jElig: 3887317  , fTotal: 18482300, dc: 0, optin: 0 },
+  "Colorado":             { e: 865661   , c517: 902279   , frpl: 0.424, ami300: 0.427, fElig: 2045206  , jElig: 722516   , fTotal: 3086830, dc: 0, optin: 1 },
+  "Connecticut":          { e: 512652   , c517: 535530   , frpl: 0.419, ami300: 0.417, fElig: 1226339  , jElig: 439502   , fTotal: 1822410, dc: 0, optin: 0 },
+  "Delaware":             { e: 141842   , c517: 155571   , frpl: 0.252, ami300: 0.501, fElig: 330515   , jElig: 113788   , fTotal: 507390, dc: 1, optin: 0 },
+  "District of Columbia": { e: 92794    , c517: 85990    , frpl: 0.497, ami300: 0.486, fElig: 252536   , jElig: 48343    , fTotal: 348640, dc: 1, optin: 0 },
+  "Florida":              { e: 2872335  , c517: 3297478  , frpl: 0.522, ami300: 0.572, fElig: 6675742  , jElig: 2047044  , fTotal: 11218030, dc: 0, optin: 1 },
+  "Georgia":              { e: 1749701  , c517: 1865214  , frpl: 0.596, ami300: 0.572, fElig: 2912450  , jElig: 941942   , fTotal: 4881840, dc: 1, optin: 1 },
+  "Hawaii":               { e: 169308   , c517: 207807   , frpl: 0.461, ami300: 0.433, fElig: 454279   , jElig: 149716   , fTotal: 695470, dc: 0, optin: 0 },
+  "Idaho":                { e: 316414   , c517: 355513   , frpl: 0.351, ami300: 0.563, fElig: 569879   , jElig: 218371   , fTotal: 884660, dc: 0, optin: 1 },
+  "Illinois":             { e: 1846264  , c517: 1971661  , frpl: 0.537, ami300: 0.492, fElig: 3976472  , jElig: 1352009  , fTotal: 6100250, dc: 0, optin: 0 },
+  "Indiana":              { e: 1032723  , c517: 1171159  , frpl: 0.509, ami300: 0.562, fElig: 1998643  , jElig: 700690   , fTotal: 3241920, dc: 0, optin: 1 },
+  "Iowa":                 { e: 508112   , c517: 535686   , frpl: 0.417, ami300: 0.507, fElig: 987068   , jElig: 378792   , fTotal: 1482000, dc: 0, optin: 1 },
+  "Kansas":               { e: 483505   , c517: 509672   , frpl: 0.481, ami300: 0.526, fElig: 870526   , jElig: 325789   , fTotal: 1366100, dc: 0, optin: 1 },
+  "Kentucky":             { e: 657520   , c517: 750538   , frpl: 0.574, ami300: 0.600, fElig: 1191971  , jElig: 405352   , fTotal: 1980840, dc: 0, optin: 1 },
+  "Louisiana":            { e: 708190   , c517: 774092   , frpl: 0.624, ami300: 0.624, fElig: 1101680  , jElig: 347568   , fTotal: 1932540, dc: 0, optin: 1 },
+  "Maine":                { e: 172545   , c517: 183992   , frpl: 0.372, ami300: 0.486, fElig: 452096   , jElig: 154705   , fTotal: 712110, dc: 0, optin: 0 },
+  "Maryland":             { e: 890122   , c517: 994225   , frpl: 0.507, ami300: 0.409, fElig: 2061382  , jElig: 690494   , fTotal: 3100200, dc: 0, optin: 0 },
+  "Massachusetts":        { e: 914958   , c517: 980047   , frpl: 0.423, ami300: 0.376, fElig: 2463363  , jElig: 871549   , fTotal: 3595730, dc: 1, optin: 0 },
+  "Michigan":             { e: 1426491  , c517: 1548721  , frpl: 0.533, ami300: 0.545, fElig: 2946140  , jElig: 1035320  , fTotal: 4872330, dc: 0, optin: 0 },
+  "Minnesota":            { e: 869967   , c517: 961798   , frpl: 0.434, ami300: 0.431, fElig: 1949013  , jElig: 742971   , fTotal: 2902640, dc: 0, optin: 0 },
+  "Mississippi":          { e: 436523   , c517: 486331   , frpl: 0.997, ami300: 0.665, fElig: 682265   , jElig: 206720   , fTotal: 1229590, dc: 0, optin: 1 },
+  "Missouri":             { e: 891248   , c517: 1013670  , frpl: 0.476, ami300: 0.553, fElig: 1787377  , jElig: 624462   , fTotal: 2870290, dc: 0, optin: 1 },
+  "Montana":              { e: 149291   , c517: 175193   , frpl: 0.187, ami300: 0.540, fElig: 346224   , jElig: 124805   , fTotal: 553910, dc: 1, optin: 1 },
+  "Nebraska":             { e: 329162   , c517: 355233   , frpl: 0.482, ami300: 0.502, fElig: 617835   , jElig: 234344   , fTotal: 951450, dc: 0, optin: 1 },
+  "Nevada":               { e: 479574   , c517: 510870   , frpl: 0.815, ami300: 0.586, fElig: 987588   , jElig: 287643   , fTotal: 1564590, dc: 0, optin: 1 },
+  "New Hampshire":        { e: 166594   , c517: 183177   , frpl: 0.234, ami300: 0.343, fElig: 515980   , jElig: 200319   , fTotal: 732250, dc: 0, optin: 1 },
+  "New Jersey":           { e: 1392567  , c517: 1468133  , frpl: 0.361, ami300: 0.413, fElig: 3105216  , jElig: 1109587  , fTotal: 4654080, dc: 0, optin: 0 },
+  "New Mexico":           { e: 311719   , c517: 333722   , frpl: 0.752, ami300: 0.642, fElig: 565794   , jElig: 163882   , fTotal: 980620, dc: 0, optin: 0 },
+  "New York":             { e: 2533449  , c517: 2861177  , frpl: 0.571, ami300: 0.513, fElig: 6224948  , jElig: 1751364  , fTotal: 9789330, dc: 0, optin: 0 },
+  "North Carolina":       { e: 1544289  , c517: 1736879  , frpl: 0.625, ami300: 0.566, fElig: 3070681  , jElig: 1062107  , fTotal: 4923710, dc: 0, optin: 1 },
+  "North Dakota":         { e: 119033   , c517: 134603   , frpl: 0.308, ami300: 0.440, fElig: 253555   , jElig: 98367    , fTotal: 371320, dc: 0, optin: 1 },
+  "Ohio":                 { e: 1675300  , c517: 1883977  , frpl: 0.361, ami300: 0.542, fElig: 3583384  , jElig: 1130911  , fTotal: 5678870, dc: 0, optin: 1 },
+  "Oklahoma":             { e: 698761   , c517: 712139   , frpl: 0.603, ami300: 0.634, fElig: 1024266  , jElig: 349377   , fTotal: 1702930, dc: 0, optin: 1 },
+  "Oregon":               { e: 572624   , c517: 613931   , frpl: 0.553, ami300: 0.497, fElig: 1352701  , jElig: 469651   , fTotal: 2067600, dc: 1, optin: 0 },
+  "Pennsylvania":         { e: 1692829  , c517: 1917537  , frpl: 0.566, ami300: 0.505, fElig: 4021232  , jElig: 1413177  , fTotal: 6301140, dc: 0, optin: 0 },
+  "Rhode Island":         { e: 136154   , c517: 146389   , frpl: 0.461, ami300: 0.455, fElig: 367324   , jElig: 113181   , fTotal: 570860, dc: 0, optin: 0 },
+  "South Carolina":       { e: 793860   , c517: 850360   , frpl: 0.700, ami300: 0.594, fElig: 1506741  , jElig: 512864   , fTotal: 2487890, dc: 0, optin: 1 },
+  "South Dakota":         { e: 141467   , c517: 163185   , frpl: 0.326, ami300: 0.541, fElig: 290483   , jElig: 111454   , fTotal: 444890, dc: 0, optin: 1 },
+  "Tennessee":            { e: 1004625  , c517: 1153674  , frpl: 0.301, ami300: 0.594, fElig: 2015735  , jElig: 688329   , fTotal: 3259560, dc: 1, optin: 1 },
+  "Texas":                { e: 5532518  , c517: 5607806  , frpl: 0.632, ami300: 0.572, fElig: 8376580  , jElig: 2815748  , fTotal: 13671450, dc: 0, optin: 1 },
+  "Utah":                 { e: 689883   , c517: 693030   , frpl: 0.291, ami300: 0.467, fElig: 1014991  , jElig: 410613   , fTotal: 1542530, dc: 0, optin: 1 },
+  "Vermont":              { e: 82455    , c517: 83567    , frpl: 0.311, ami300: 0.441, fElig: 214633   , jElig: 75034    , fTotal: 335140, dc: 0, optin: 0 },
+  "Virginia":             { e: 1258852  , c517: 1381034  , frpl: 0.546, ami300: 0.438, fElig: 2781122  , jElig: 1032872  , fTotal: 4168070, dc: 0, optin: 1 },
+  "Washington":           { e: 1093745  , c517: 1212532  , frpl: 0.496, ami300: 0.442, fElig: 2683242  , jElig: 1004203  , fTotal: 3781890, dc: 0, optin: 0 },
+  "West Virginia":        { e: 246883   , c517: 258608   , frpl: 0.515, ami300: 0.610, fElig: 461338   , jElig: 154100   , fTotal: 777490, dc: 1, optin: 1 },
+  "Wisconsin":            { e: 814202   , c517: 919208   , frpl: 0.405, ami300: 0.488, fElig: 1934269  , jElig: 716546   , fTotal: 2944630, dc: 0, optin: 0 },
+  "Wyoming":              { e: 91036    , c517: 96723    , frpl: 0.345, ami300: 0.503, fElig: 185750   , jElig: 71406    , fTotal: 282340, dc: 0, optin: 1 }
+};
+
+// ─── NATIONAL TOTALS ───
+// Counts are sums of the 50 states and D.C. above. Rates use published national figures:
+//   frpl 0.533 = NCES Digest Table 204.10, United States, 2022–23 (includes NCES imputation for nonreporting states)
+//   ami300 0.527 = ACS 2020–2024 5-year Table B17024, United States, children ages 6–17 below 300% of poverty
+// rev = total public elementary-secondary revenue from federal, state, and local sources, FY2024, thousands of dollars
+//   (Census Bureau, 2024 Annual Survey of School System Finances, Summary Table 1). D.C. has no state source.
+const K12_REV = {"United States": 994922042, "Alabama": 12865601, "Alaska": 2873840, "Arizona": 13858937, "Arkansas": 7274695, "California": 138508659, "Colorado": 16612533, "Connecticut": 14068555, "Delaware": 2904663, "District of Columbia": 1926103, "Florida": 44557767, "Georgia": 31703886, "Hawaii": 4119294, "Idaho": 3780731, "Illinois": 48034330, "Indiana": 16986190, "Iowa": 8830356, "Kansas": 8857046, "Kentucky": 11234085, "Louisiana": 12425410, "Maine": 3741382, "Maryland": 21328964, "Massachusetts": 23264561, "Michigan": 28437404, "Minnesota": 17045237, "Mississippi": 6595071, "Missouri": 15251416, "Montana": 2496466, "Nebraska": 6106544, "Nevada": 7606816, "New Hampshire": 4037660, "New Jersey": 41522434, "New Mexico": 6820219, "New York": 92237051, "North Carolina": 19911392, "North Dakota": 2491793, "Ohio": 31534772, "Oklahoma": 9347179, "Oregon": 12083413, "Pennsylvania": 41572901, "Rhode Island": 3105270, "South Carolina": 14299976, "South Dakota": 2321396, "Tennessee": 15157181, "Texas": 83243298, "Utah": 8651130, "Vermont": 2643353, "Virginia": 24378947, "Washington": 23779055, "West Virginia": 4747274, "Wisconsin": 15618396, "Wyoming": 2121410};
+// qct = [public school enrollment in schools located in HUD 2027 Qualified Census Tracts, total public enrollment, schools in QCTs]
+//   BPC spatial join of NCES EDGE 2024–25 public school locations and membership to Census TIGER/Line 2020 tracts
+//   (2023 tracts for Connecticut) and HUD QCT2027.csv. Includes schools with enrollment > 0; excludes full-virtual schools.
+//   Matches BPC workbook FSTC_Safe_Harbor_QCT_Schools_by_State.xlsx (October 14, 2026). Excludes the 80% residency test and private schools.
+const QCT = {"Alabama": [125618, 731025, 277], "Alaska": [11367, 126855, 97], "Arizona": [157240, 1078695, 399], "Arkansas": [73551, 480623, 178], "California": [998477, 5748460, 1871], "Colorado": [112282, 845697, 257], "Connecticut": [89468, 490969, 180], "Delaware": [19338, 142156, 35], "District of Columbia": [26775, 93231, 77], "Florida": [469081, 2820492, 801], "Georgia": [250193, 1721467, 396], "Hawaii": [31395, 167071, 57], "Idaho": [16294, 315433, 41], "Illinois": [284329, 1843051, 618], "Indiana": [102796, 1027148, 212], "Iowa": [26686, 492593, 58], "Kansas": [46248, 461652, 108], "Kentucky": [121903, 651751, 283], "Louisiana": [127792, 659931, 303], "Maine": [9010, 165422, 30], "Maryland": [143481, 890667, 253], "Massachusetts": [149269, 911127, 282], "Michigan": [172878, 1347273, 464], "Minnesota": [60885, 859474, 208], "Mississippi": [86811, 433073, 210], "Missouri": [128103, 876463, 353], "Montana": [14153, 147298, 84], "Nebraska": [25996, 330318, 62], "Nevada": [76383, 466370, 136], "New Hampshire": [13023, 162644, 44], "New Jersey": [175348, 1355569, 263], "New Mexico": [55859, 307715, 189], "New York": [457668, 2503408, 959], "North Carolina": [249826, 1538487, 513], "North Dakota": [13422, 122513, 47], "Ohio": [236444, 1620024, 635], "Oklahoma": [98363, 662353, 245], "Oregon": [47668, 529707, 97], "Pennsylvania": [215979, 1601367, 384], "Rhode Island": [22769, 133879, 53], "South Carolina": [109727, 780233, 219], "South Dakota": [19304, 146265, 88], "Tennessee": [138079, 989556, 308], "Texas": [855504, 5481976, 1647], "Utah": [30049, 663509, 65], "Vermont": [5822, 77536, 16], "Virginia": [94348, 1250621, 177], "Washington": [125065, 1080168, 288], "West Virginia": [34291, 239311, 103], "Wisconsin": [74908, 795236, 192], "Wyoming": [3728, 90108, 10]};
+QCT['United States'] = Object.values(QCT).reduce((a, v) => [a[0]+v[0], a[1]+v[1], a[2]+v[2]], [0,0,0]);
+// Public enrollment (e) is replaced with NCES EDGE 2024–25 membership for schools reporting enrollment above zero,
+// excluding full-virtual schools (same school universe as the QCT counts).
+Object.keys(STATE_DATA).forEach(s => { if (QCT[s]) STATE_DATA[s].e = QCT[s][1]; });
+const NATIONAL = 'United States';
+(function () {
+  const sum = k => Object.values(STATE_DATA).reduce((a, d) => a + d[k], 0);
+  STATE_DATA[NATIONAL] = { e: sum('e'), c517: sum('c517'), frpl: 0.533, ami300: 0.527,
+    fElig: sum('fElig'), jElig: sum('jElig'), fTotal: sum('fTotal'), dc: 0, optin: null, national: true,
+    nIn: Object.values(STATE_DATA).filter(d => d.optin).length };
+})();
+
+const MAX_DONATION = 1700;
+const ADMIN_SHARE = 0.10;   // SGOs assumed to keep the 10% maximum for administration (26 U.S.C. § 25F(d)(1)(B))
+const TREASURY_ELIG = 0.96; // REG-117199-25, economic analysis Table 2
+
+let currentOption = 'A';       // 'A' = student side, 'C' = donor side (shown to users as Method B)
+let currentEligMethod = 'ami'; // 'ami' (default), 'treas', or 'qct'
+let currentUniverse = 'all';   // 'all' = children ages 5–17, 'public' = public K–12 enrollment
+
+// Populate state dropdown
+const sel = document.getElementById('stateSelect');
+{ const opt = document.createElement('option'); opt.value = NATIONAL; opt.textContent = 'United States (national totals)'; sel.appendChild(opt); }
+Object.keys(STATE_DATA).filter(s => s !== NATIONAL).sort().forEach(s => {
+  const opt = document.createElement('option');
+  opt.value = s; opt.textContent = s + (STATE_DATA[s].optin ? '  ✓' : '');
+  sel.appendChild(opt);
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+function applyOptionUI() {
+  ['A','C'].forEach(o => {
+    const on = o === currentOption;
+    const tab = document.getElementById('opt-tab-' + o.toLowerCase());
+    tab.classList.toggle('active', on); tab.setAttribute('aria-selected', on);
+    document.getElementById('opt-panel-' + o.toLowerCase()).style.display = on ? 'block' : 'none';
+  });
+}
+function applyEligUI() {
+  ['ami','treas','qct'].forEach(m => {
+    const on = currentEligMethod === m;
+    document.querySelector('input[name="elig"][value="' + m + '"]').checked = on;
+    document.getElementById('measure-' + m).classList.toggle('on', on);
+  });
+}
+function applyUniverseUI() {
+  document.getElementById('pop-all').classList.toggle('active', currentUniverse === 'all');
+  document.getElementById('pop-public').classList.toggle('active', currentUniverse === 'public');
+}
+function setOption(o) { currentOption = o; applyOptionUI(); update(); }
+function setEligMethod(m) { currentEligMethod = m; applyEligUI(); update(); }
+function setUniverse(u) { currentUniverse = u; applyUniverseUI(); update(); }
+
+const fmtC = n => Math.round(n).toLocaleString('en-US');
+function fmtD(n) {
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + (n/1000).toFixed(0) + 'K';
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+function fmtP(x) { // x is a fraction
+  const p = x * 100;
+  if (p === 0) return '0%';
+  if (p < 1) return p.toFixed(2) + '%';
+  if (p < 10) return p.toFixed(1) + '%';
+  return Math.round(p) + '%';
+}
+
+function setCost(v) { document.getElementById('r-cost').value = v; update(); }
+
+function placeBarLabel(span, pct) {
+  const track = span.closest('.bar-track'), row = span.closest('.bar-row');
+  span.classList.remove('out', 'below'); row.classList.remove('has-below'); span.style.maxWidth = '';
+  const need = span.offsetWidth + 14, trackW = track.clientWidth, fillW = trackW * Math.min(100, pct) / 100;
+  if (fillW >= need) return;                                  // fits inside the bar
+  if (trackW - fillW >= need + 6) { span.classList.add('out'); return; }  // fits to the right of the bar
+  span.classList.add('below'); row.classList.add('has-below'); span.style.maxWidth = row.clientWidth + 'px'; // otherwise sits under the bar
+}
+
+let lastResult = null;
+
+function update() {
+  const stateName = sel.value;
+  const cost = parseInt(document.getElementById('r-cost').value, 10);
+  const pctA = parseFloat(document.getElementById('r-pct-a').value) / 100;
+  let filerRaw = parseFloat(document.getElementById('r-filer-pct').value);
+  if (!isFinite(filerRaw) || filerRaw < 0) filerRaw = 0;
+  if (filerRaw > 100) filerRaw = 100;
+  const filerPct = filerRaw / 100;
+
+  document.getElementById('v-cost').textContent = '$' + cost.toLocaleString('en-US');
+  document.getElementById('v-pct-a').textContent = Math.round(pctA * 100) + '%';
+  document.querySelectorAll('.slider-mark').forEach(m => m.classList.toggle('on', parseInt(m.dataset.v, 10) === cost));
+
+  if (!stateName) {
+    document.getElementById('results-title').textContent = 'Select a state to see results';
+    document.getElementById('results-title').classList.remove('has-state');
+    document.getElementById('no-state-msg').style.display = 'block';
+    document.getElementById('results-body').style.display = 'none';
+    document.getElementById('status-pill').style.display = 'none';
+    lastResult = null; writeHash(); return;
+  }
+
+  const d = STATE_DATA[stateName];
+  const place = d.national ? 'the United States' : stateName;
+  const Place = d.national ? 'The United States' : stateName;
+  const pub = currentUniverse === 'public';
+  const base = pub ? d.e : d.c517;
+  const baseName = pub ? 'public school students' : 'children ages 5–17';
+  const isQ = currentEligMethod === 'qct';
+  const qctN = QCT[d.national ? 'United States' : stateName][0];
+  const eligN = isQ ? qctN : Math.round(base * (currentEligMethod === 'ami' ? d.ami300 : TREASURY_ELIG));
+  const eligPct = base > 0 ? eligN / base : 0;
+  const taxpayers = d.fElig + d.jElig;
+  const admin = ADMIN_SHARE;
+
+  let servedN, donors, donations, available;
+  if (currentOption === 'A') {
+    servedN = Math.round(eligN * pctA);
+    available = servedN * cost;
+    donations = available / (1 - admin);
+    donors = Math.ceil(donations / MAX_DONATION);
+  } else {
+    donors = Math.round(taxpayers * filerPct);
+    donations = donors * MAX_DONATION;
+    available = donations * (1 - admin);
+    servedN = Math.floor(available / cost);
+  }
+  const donorShare = taxpayers > 0 ? donors / taxpayers : 0;
+  const k12Rev = (K12_REV[d.national ? 'United States' : stateName] || 0) * 1000;
+  const revShare = k12Rev > 0 ? donations / k12Rev : 0;
+  const servedShareBase = base > 0 ? servedN / base : 0;
+  const servedShareElig = eligN > 0 ? servedN / eligN : 0;
+
+  document.getElementById('results-title').textContent = d.national ? 'United States' : stateName;
+  document.getElementById('results-title').classList.add('has-state');
+  document.getElementById('no-state-msg').style.display = 'none';
+  document.getElementById('results-body').style.display = 'block';
+
+  // i. Participation status
+  const pill = document.getElementById('status-pill');
+  pill.style.display = 'inline-block';
+  pill.className = 'status-pill ' + (d.national || d.optin ? 'in' : 'out');
+  pill.textContent = d.national
+    ? `National totals for all 50 states and D.C. ${d.nIn} states are participating for 2027; students in other states can receive FSTC scholarships only if their state opts in.`
+    : d.optin ? '✓ Participating for 2027'
+    : 'Not on IRS list of participating states. Students here can receive FSTC scholarships only if the state opts in. Residents can still give to SGOs in participating states.';
+
+  // ii. Context
+  document.getElementById('lead').innerHTML =
+    `${Place} has <b>${fmtC(d.c517)}</b> children ages 5–17 and <b>${fmtC(taxpayers)}</b> taxpayers estimated to have enough tax liability for the full $1,700 credit.`;
+  document.getElementById('lead-sub').innerHTML = `<b>${fmtC(d.e)}</b> students are enrolled in public schools.`;
+
+  // iv. Eligibility
+  const measure = currentEligMethod === 'ami' ? '300% of area median income, Census ACS proxy' : currentEligMethod === 'treas' ? 'Treasury’s 96% national estimate' : 'public schools located in 2027 qualified census tracts';
+  document.getElementById('elig-line').innerHTML = isQ
+    ? `<b>${fmtC(eligN)}</b> public school students attend schools located in 2027 qualified census tracts, where tutoring and special needs scholarships can use the high-poverty safe harbor instead of household income verification.`
+    : `An estimated <b>${fmtC(eligN)}</b> ${baseName} meet the income eligibility requirement (${measure}).`;
+
+  // v. If/then (order swaps with method)
+  const studentsLbl = `of ${baseName} in ${place} receive $${cost.toLocaleString('en-US')} scholarships`;
+  const donorsLbl = 'of tax-liable taxpayers contribute $1,700';
+  const setBox = (k, pct, num, lbl) => {
+    document.getElementById(k + '-pct').textContent = pct;
+    document.getElementById(k + '-num').textContent = num;
+    document.getElementById(k + '-lbl').textContent = lbl;
+  };
+  if (currentOption === 'C') {
+    setBox('if', fmtP(donorShare), 'or ' + fmtC(donors) + ' taxpayers', donorsLbl);
+    setBox('then', fmtP(servedShareBase), 'or ' + fmtC(servedN) + ' students', studentsLbl + (servedN > eligN ? (isQ ? '. This exceeds enrollment in QCT schools.' : '. This exceeds the estimated eligible population.') : ''));
+  } else {
+    setBox('if', fmtP(servedShareBase), 'or ' + fmtC(servedN) + ' students', studentsLbl + ` (${Math.round(pctA*100)}% of those ${isQ ? 'in QCT schools' : 'eligible'})`);
+    setBox('then', fmtP(donorShare), 'or ' + fmtC(donors) + ' taxpayers', 'of tax-liable taxpayers must contribute $1,700');
+  }
+
+  document.getElementById('fund-pct').textContent = fmtD(donations);
+  document.getElementById('fund-num').textContent = fmtP(revShare) + ' of K–12 revenue';
+  document.getElementById('fund-lbl').textContent = `Total donations, compared with ${d.national ? 'total U.S.' : stateName + '’s total'} public K–12 revenue from federal, state, and local sources (${fmtD(k12Rev)}, FY2024)`;
+
+  // Bars
+  document.getElementById('bar-elig-lbl').textContent = isQ ? 'In QCT schools' : 'Income-eligible';
+  document.getElementById('bar-total-lbl').textContent = pub ? 'Public school students' : 'Children ages 5–17';
+  const eligBar = Math.min(100, eligPct * 100);
+  const servedBar = Math.min(100, servedShareBase * 100);
+  document.getElementById('bar-elig').style.width = eligBar + '%';
+  document.getElementById('bar-served').style.width = servedBar + '%';
+  document.getElementById('bl-total').textContent = fmtC(base);
+  document.getElementById('bl-elig').textContent = fmtC(eligN) + ' (' + fmtP(eligPct) + ')';
+  const allLbl = pub ? 'of all public school students' : 'of all children';
+  const blServed = document.getElementById('bl-served');
+  blServed.textContent = fmtC(servedN) + ' (' + fmtP(servedShareElig) + ' of eligible, ' + fmtP(servedShareBase) + ' ' + allLbl + ')';
+  placeBarLabel(blServed, servedBar);
+  document.getElementById('bl-elig').classList.toggle('out', eligBar < 22);
+  document.querySelectorAll('.bar-fill').forEach(f => f.style.overflow = 'visible');
+  document.getElementById('share-line').textContent =
+    `Students served equal ${fmtP(servedN / d.c517)} of all children ages 5–17 and ${fmtP(servedN / d.e)} of public school enrollment` +
+    (servedShareElig > 1 ? (isQ ? '; this exceeds enrollment in QCT schools.' : '; this exceeds the income-eligible population.') : '.') +
+    (isQ ? ' The QCT count covers public school students only (NCES, 2024–25); private schools in QCTs and schools qualifying under the 80% residency test are not counted.'
+         : pub ? ' The eligibility rate for all children is applied to public school enrollment.' : '');
+
+  // vi. Funding flow (order swaps with method)
+  const node = (cls, n, lbl) => `<div class="flow-node ${cls}"><div class="fn">${n}</div><div class="fd">${lbl}</div></div>`;
+  const nodes = currentOption === 'C' ? [
+    node('fn1', fmtC(taxpayers), 'Tax-liable taxpayers'),
+    node('fn2', fmtP(donorShare), 'Participate'),
+    node('fn1', fmtC(donors), 'Taxpayers contribute $1,700'),
+    node('fn3', fmtD(donations), 'Donations'),
+    node('fn2', fmtD(available), 'Available for students (after 10% admin)'),
+    node('fn4', fmtC(servedN), `Students receive $${cost.toLocaleString('en-US')} scholarships`)
+  ] : [
+    node('fn4', fmtC(servedN), `Students receive $${cost.toLocaleString('en-US')} scholarships`),
+    node('fn2', fmtD(available), 'Needed for scholarships'),
+    node('fn3', fmtD(donations), 'Donations needed (incl. 10% admin)'),
+    node('fn1', fmtC(donors), 'Taxpayers contribute $1,700'),
+    node('fn2', fmtP(donorShare), `Of ${fmtC(taxpayers)} tax-liable taxpayers`)
+  ];
+  document.getElementById('flow').innerHTML = nodes.join('');
+
+  lastResult = { state: d.national ? 'United States' : stateName, participating: d.national ? 'n/a (national)' : (d.optin ? 'Yes' : 'No'),
+    method: currentOption === 'C' ? 'B: Donor side' : 'A: Student side',
+    measure, population: pub ? 'Public school students' : 'All children ages 5–17',
+    cost, pctA: currentOption === 'A' ? Math.round(pctA*100) + '%' : '', filerPct: currentOption === 'C' ? filerRaw + '%' : '',
+    c517: d.c517, e: d.e, base, eligN, taxpayers, donors, donorShare: fmtP(donorShare), donations: Math.round(donations),
+    available: Math.round(available), k12Rev, revShare: fmtP(revShare), servedN, servedShareBase: fmtP(servedShareBase) };
+  writeHash();
+}
+
+// ─── Share link & CSV ───
+function writeHash() {
+  const p = new URLSearchParams({ s: sel.value, o: currentOption, m: currentEligMethod, u: currentUniverse,
+    c: document.getElementById('r-cost').value, a: document.getElementById('r-pct-a').value,
+    f: document.getElementById('r-filer-pct').value });
+  try { history.replaceState(null, '', '#' + p.toString()); } catch (e) {}
+}
+function readHash() {
+  try {
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (!p.has('s')) return;
+    const set = (id, k) => { if (p.has(k)) document.getElementById(id).value = p.get(k); };
+    set('stateSelect','s'); set('r-cost','c'); set('r-pct-a','a'); set('r-filer-pct','f');
+    currentEligMethod = ['treas','qct'].includes(p.get('m')) ? p.get('m') : 'ami';   // older links with 'frpl' fall back to the default
+    if (['A','C'].includes(p.get('o'))) currentOption = p.get('o');
+    if (['all','public'].includes(p.get('u'))) currentUniverse = p.get('u');
+  } catch (e) {}
+}
+function toolMsg(t) { const m = document.getElementById('tool-msg'); m.textContent = t; setTimeout(() => { m.textContent = ''; }, 4000); }
+function resultsCSV() {
+  const r = lastResult; if (!r) return '';
+  const rows = [
+    ['Federal Scholarship Tax Credit calculator (BPC), copied ' + new Date().toISOString().slice(0,10)], [],
+    ['State', r.state], ['Participating for 2027 (IRS list, October 22, 2026)', r.participating],
+    ['Method', r.method], ['Eligibility measure', r.measure], ['Student population', r.population],
+    ['Scholarship cost per student', r.cost], ['Share of eligible students served (Method A)', r.pctA],
+    ['Share of tax-liable taxpayers contributing (Method B)', r.filerPct],
+    ['Credit per donor', '$1,700 per person'], ['SGO administrative share (fixed)', '10%'], [],
+    ['Children ages 5–17', r.c517], ['Public school enrollment, 2024–25 (excl. full-virtual schools)', r.e], ['Student population used', r.base],
+    ['Eligible students', r.eligN], ['Est. tax-liable taxpayers', r.taxpayers],
+    ['Taxpayers contributing $1,700', r.donors], ['Share of tax-liable taxpayers', r.donorShare],
+    ['Donations', r.donations], ['Public K–12 revenue, federal + state + local (FY2024)', r.k12Rev], ['Donations as share of public K–12 revenue', r.revShare],
+    ['Available for scholarships after 10% admin', r.available],
+    ['Students served', r.servedN], ['Students served as share of student population', r.servedShareBase]];
+  return rows.map(row => row.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
+}
+function copyResults() {
+  const csv = resultsCSV(); if (!csv) return;
+  const fallback = () => {
+    const ta = document.createElement('textarea'); ta.value = csv; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove(); toolMsg(ok ? 'Results copied. Paste into a spreadsheet.' : 'Copy is not available in this viewer.');
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(csv).then(() => toolMsg('Results copied. Paste into a spreadsheet.'), fallback);
+    } else fallback();
+  } catch (e) { fallback(); }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+readHash();
+applyOptionUI(); applyEligUI(); applyUniverseUI();
+update();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => update());
+let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(update, 150); });
+</script>
+
+<!-- 300% AMI MODAL -->
+<div class="modal-overlay" id="amiModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="amiModalTitle">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('amiModal').classList.remove('open')" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">Income eligibility · Default measure</div>
+      <h3 id="amiModalTitle">300% of Area Median Income (Proxy)</h3>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14.5px; line-height:1.65;">The FSTC uses <strong>300% of HUD Area Median Income</strong>, which varies by metropolitan area and county; there is no single statewide number. This calculator uses the <strong>Census ACS share of children ages 6–17 in households below 300% of the federal poverty line</strong> (2020–2024 five-year estimates, <a href="https://data.census.gov/table/ACSDT5Y2024.B17024" target="_blank" rel="noopener">ACS Table B17024</a>) as a conservative proxy. Because the poverty line is lower than AMI in most areas, this proxy understates the true AMI-eligible population.</p>
+    </div>
+  </div>
+</div>
+
+<!-- QCT MODAL -->
+<div class="modal-overlay" id="qctModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="qctModalTitle">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('qctModal').classList.remove('open')" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">Eligibility · High-poverty safe harbor</div>
+      <h3 id="qctModalTitle">Schools in Qualified Census Tracts</h3>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14.5px; line-height:1.65; margin-bottom:12px;">Under Treasury’s proposed regulations, an SGO that funds individual academic tutoring or special needs services for students selected by their school based on need may treat those students as income-eligible without verifying household income if the school is located in a HUD qualified census tract or certifies that at least 80% of its students live in one. The SGO must obtain an annual third-party audit (<a href="https://www.federalregister.gov/d/2026-20277" target="_blank" rel="noopener">REG-117199-25</a>, proposed § 1.25F-3(c)(6)(iii)(C)). The safe harbor does not apply to tuition.</p>
+      <p style="font-size:14.5px; line-height:1.65;">This option counts public school students enrolled in schools located in a <a href="https://www.huduser.gov/portal/datasets/qct.html" target="_blank" rel="noopener">2027 qualified census tract</a>, based on a BPC match of NCES 2024–25 school locations and enrollment to census tracts. It excludes full-virtual schools and does not count private schools or schools that would qualify under the 80% residency test, so it understates the students the safe harbor could reach. Most students in these schools would also meet the income limit; Treasury estimates the safe harbor makes about 170,000 additional children eligible nationally.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TREASURY MODAL -->
+<div class="modal-overlay" id="treasModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="treasModalTitle">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('treasModal').classList.remove('open')" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">Income eligibility · Alternative measure</div>
+      <h3 id="treasModalTitle">Treasury’s National Estimate (96%)</h3>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14.5px; line-height:1.65;">Treasury estimates that <strong>96% of children ages 5–17</strong> in states that had opted in as of July 2026 would be eligible under the proposed regulations (<a href="https://www.federalregister.gov/d/2026-20277" target="_blank" rel="noopener">REG-117199-25</a>, economic analysis, Table 2). Treasury modeled the actual 300% of area median income limit using 2024 ACS microdata and HUD income limits but did not publish state-level estimates. This calculator applies the 96% to every state; actual shares will be lower in high-income states and higher in low-income states.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DONOR NOTE MODAL -->
+<div class="modal-overlay" id="donorNoteModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('donorNoteModal').classList.remove('open')" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">FSTC · §25F · Treasury Proposed Rule</div>
+      <h3>$1,700 Credit Limit: Per Person, Not Per Return</h3>
+      <p>How Treasury’s proposed regulations treat married couples filing jointly.</p>
+    </div>
+    <div class="modal-body">
+      <div class="expense-item grp1" style="margin-bottom:16px; align-items:flex-start;">
+        <div class="expense-icon">📄</div>
+        <div class="expense-text">
+          <strong>What the proposed rule says</strong>
+          <span>Treasury and the IRS “interpret section 25F to limit the credit amount that may be claimed to $1,700 per individual taxpayer, allowing married couples filing jointly to potentially claim up to $3,400 on their joint tax return provided that each spouse has made qualified contributions of up to $1,700.” The combined credit is limited by the couple’s tax liability. (REG-117199-25, proposed § 1.25F-2(b)(2), Federal Register, October 2, 2026.)</span>
+        </div>
+      </div>
+      <div class="expense-item grp2" style="margin-bottom:16px; align-items:flex-start;">
+        <div class="expense-icon">⚖️</div>
+        <div class="expense-text">
+          <strong>Status</strong>
+          <span>This provision is in the proposed rule, not the binding temporary rule. Taxpayers may rely on the proposed rule for contributions made on or after January 1, 2027, until final regulations are issued. Comments are due December 1, 2026.</span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

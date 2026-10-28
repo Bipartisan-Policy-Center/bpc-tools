@@ -13,6 +13,7 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 | Auto Loan Interest Deduction | `calculators/auto-loan-interest/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/auto-loan-interest/) |
 | EITC / CTC Calculator | `calculators/eitc-ctc/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/eitc-ctc/) |
 | FSTC Scholarship Calculator | `calculators/fstc-scholarship/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/fstc-scholarship/) |
+| FSTC Calculator by State (Oct 2026 Treasury-regs update) | `calculators/fstc-scholarship-v2/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/fstc-scholarship-v2/) |
 | Overtime Tax Calculator | `calculators/overtime-tax/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/overtime-tax/) |
 | NIIT Calculator | `calculators/niit/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/calculators/niit/) |
 
