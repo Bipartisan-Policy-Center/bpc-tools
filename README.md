@@ -23,6 +23,7 @@ Hosted via GitHub Pages at: `https://bipartisan-policy-center.github.io/bpc-tool
 |---|---|---|
 | Childcare Map | `maps/childcare/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/maps/childcare/) |
 | Childcare Dashboard | `maps/childcare/dashboard.html` | [View](https://bipartisan-policy-center.github.io/bpc-tools/maps/childcare/dashboard.html) |
+| Manufactured Homes in Rural Counties | `maps/rural-manufactured-homes/` | [View](https://bipartisan-policy-center.github.io/bpc-tools/maps/rural-manufactured-homes/) |
 
 ## Tables
 
