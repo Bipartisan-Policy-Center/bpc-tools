@@ -1244,7 +1244,7 @@
           c.fillStyle = track; c.fillRect(barX, by, barW, 30);
           c.fillStyle = bar; c.fillRect(barX, by, Math.max(2, barW * r.value / spec.max), 30);
           if (r.tick != null) { c.fillStyle = ink; c.fillRect(barX + barW * r.tick / spec.max - 1.5, by - 5, 3, 40); }
-          c.font = "700 22px " + sans; c.textAlign = "right";
+          c.font = "700 22px " + sans; c.textAlign = "right"; c.fillStyle = ink;
           c.fillText(r.text, W - PAD, by + 4);
           c.textAlign = "left";
         }
@@ -1270,6 +1270,8 @@
     layout(true);
     cv.toBlob(function (blob) {
       if (!blob) return;
+      /* a host page that can't download (the workbench artifact) can show the image instead */
+      if (typeof window.BPCP_ON_IMAGE === "function") { window.BPCP_ON_IMAGE(blob, spec.file + ".png"); return; }
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = spec.file + ".png";
@@ -1334,7 +1336,7 @@
     document.querySelectorAll(".bpcp details").forEach(function (d) { d.open = true; });
   });
 
-  window.BPCPoll = { mount: mount, mountScrolly: mountScrolly, mountAll: mountAll, replayAll: replayAll, icons: ICONS, version: "0.5.0" };
+  window.BPCPoll = { mount: mount, mountScrolly: mountScrolly, mountAll: mountAll, replayAll: replayAll, icons: ICONS, version: "0.5.1" };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
