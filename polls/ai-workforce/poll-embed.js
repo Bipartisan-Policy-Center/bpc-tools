@@ -18,7 +18,8 @@
  *           with a tick marking all respondents.
  *   hero    one headline number with a 10 x 10 waffle.
  *
- * Motion: bars grow in once when a card scrolls into view, the headline
+ * Motion: bars grow in once when a card scrolls into view (every time, with
+ * window.BPCP_REPLAY = true), the headline
  * number counts up, and filter changes animate widths. All of it is off
  * under prefers-reduced-motion (or the .bpcp-reduce class, for testing).
  */
@@ -38,9 +39,10 @@
     "Sector Group (placeholder)": "Sector"
   };
 
-  /* Placeholder line icons, 24 x 24, stroke = currentColor. The Noun Project
-     set replaces these; swap the SVG strings here and every card follows. */
+  /* Placeholder line icons, 24 x 24, stroke = currentColor. A final set from
+     any one consistent source replaces these; swap the SVG strings here and every card follows. */
   var ICONS = {
+    download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
     spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.5 2.5M15.2 15.2l2.5 2.5M6.3 17.7l2.5-2.5M15.2 8.8l2.5-2.5"/>',
     briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
     cap: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5M22 9v6"/>',
@@ -112,6 +114,7 @@
     buildShell(ctx);
     view.render(ctx, false);
     renderTable(ctx);
+    addDownload(ctx);
     arm(ctx);
     root.__bpcp = ctx;
     return ctx;
@@ -286,23 +289,36 @@
   /* ---------- motion ---------- */
 
   var observer = null;
+  // Replay mode (window.BPCP_REPLAY = true; the workbench sets it for review):
+  // a card resets when it leaves the screen and plays again when it returns.
+  // Off on live pages, where each card animates once.
+  function replayMode() { return window.BPCP_REPLAY === true; }
+  function reset(ctx) {
+    ctx.card.classList.add("bpcp-pre");
+    if (ctx.view === hero) heroReset(ctx);
+    ctx.waiting = true;
+  }
   function arm(ctx) {
     if (reduced() || !("IntersectionObserver" in window)) { ctx.played = true; return; }
     var r = ctx.root.getBoundingClientRect();
-    if (r.top < window.innerHeight && r.bottom > 0) {
-      play(ctx);  /* already on screen: grow in right away */
-      return;
-    }
-    ctx.card.classList.add("bpcp-pre");
+    var onScreen = r.top < window.innerHeight && r.bottom > 0;
+    if (onScreen) play(ctx);  /* already on screen: grow in right away */
+    else { ctx.card.classList.add("bpcp-pre"); ctx.waiting = true; }
+    if (onScreen && !replayMode()) return;
     if (!observer) {
       observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
-          if (en.isIntersecting) {
-            observer.unobserve(en.target);
-            play(en.target.__bpcp);
+          var c = en.target.__bpcp;
+          if (!c) return;
+          if (en.isIntersecting && en.intersectionRatio >= 0.3 && c.waiting) {
+            c.waiting = false;
+            if (!replayMode()) observer.unobserve(en.target);
+            play(c);
+          } else if (!en.isIntersecting && replayMode() && !c.waiting) {
+            reset(c);
           }
         });
-      }, { threshold: 0.3 });
+      }, { threshold: [0, 0.3] });
     }
     observer.observe(ctx.root);
   }
@@ -394,14 +410,20 @@
     var v = row.values[a] || 0;
     var w = (v / segDenom(sp, scale, a)) * 100;
     var label = t0.answers[a].label;
-    var tip = esc(label) + "<br>" + esc(row.label) + ": <b>" + pct(v) + "</b>";
+    var tip = segTip(label, row, v);
     return '<div class="bpcp-seg c-' + (sp.colors[a] || "s3") + '" data-a="' + a + '" data-label="' + pct(v) + '" style="width:' + w.toFixed(2) +
       '%;--i:' + i + '" data-tip="' + esc(tip) + '" tabindex="0" aria-label="' + esc(label + ", " + row.label + ": " + pct(v)) + '">' +
       "</div>";
   }
 
+  /* The group's n sits in the tooltip and the numbers table, not under the label. */
+  function segTip(label, row, v) {
+    return esc(label) + "<br>" + esc(row.label) + ": <b>" + pct(v) + "</b><br>n = " + fmtN(row.n);
+  }
+
   function rowInner(ctx, row, sp, scale, i) {
-    var lab = '<div class="bpcp-rlab"><span class="bpcp-name">' + esc(row.label) + '</span><span class="bpcp-n">n = ' + fmtN(row.n) + "</span></div>";
+    var lab = '<div class="bpcp-rlab" data-tip="' + esc(esc(row.label) + "<br>n = " + fmtN(row.n)) + '"><span class="bpcp-name">' + esc(row.label) +
+      '</span><span class="bpcp-n">n = ' + fmtN(row.n) + "</span></div>";
     if (row.small) {
       return lab + '<div class="bpcp-toofew">Too few respondents to report (n = ' + fmtN(row.n) + ")</div>";
     }
@@ -418,7 +440,7 @@
         sp.order.map(function (a) { return segHTML(ctx, row, a, sp, scale, i); }).join("") + "</div></div>";
     }
     var side = sp.side.length ? '<div class="bpcp-side" title="' + esc(sp.side.map(function (a) { return ctx.q.tables[0].answers[a].label; }).join(", ")) + '">' +
-      (ctx.cfg.sideLabel || "DK") + " " + pct(sum(row.values, sp.side)) + "</div>" : "";
+      '<span class="bpcp-sw c-dk"></span><span class="bpcp-side-v">' + (ctx.cfg.sideLabel || "DK") + " " + pct(sum(row.values, sp.side)) + "</span></div>" : "";
     return lab + track + side;
   }
 
@@ -444,12 +466,13 @@
             var label = t0.answers[a].label;
             seg.style.width = w.toFixed(2) + "%";
             seg.dataset.label = pct(v);
-            seg.dataset.tip = esc(label) + "<br>" + esc(row.label) + ": <b>" + pct(v) + "</b>";
+            seg.dataset.tip = segTip(label, row, v);
             seg.setAttribute("aria-label", label + ", " + row.label + ": " + pct(v));
           });
           el.querySelector(".bpcp-n").textContent = "n = " + fmtN(row.n);
+          el.querySelector(".bpcp-rlab").dataset.tip = esc(row.label) + "<br>n = " + fmtN(row.n);
           var sd = el.querySelector(".bpcp-side");
-          if (sd && sp.side.length) sd.textContent = (ctx.cfg.sideLabel || "DK") + " " + pct(sum(row.values, sp.side));
+          if (sd && sp.side.length) sd.querySelector(".bpcp-side-v").textContent = (ctx.cfg.sideLabel || "DK") + " " + pct(sum(row.values, sp.side));
           ctx.plot.appendChild(el);  /* keeps DOM order equal to row order */
         } else {
           if (el) el.remove();
@@ -502,6 +525,7 @@
       var top = cfg.top || idx.length;
       var shown = ctx.state.expanded ? idx : idx.slice(0, top);
       var gLabel = g === 0 ? "All respondents" : ctx.banner[g].label;
+      ctx.rankDrawn = { t: t, g: g, shown: shown, max: max, gLabel: gLabel };
 
       setLegend(ctx, g === 0 ? [{ label: "All respondents", color: "s2" }]
         : [{ label: gLabel, color: "s2" }, { label: "All respondents", tick: true }]);
@@ -524,7 +548,7 @@
         }
         var fill = el.querySelector(".bpcp-rfill"), tick = el.querySelector(".bpcp-rtick");
         el.querySelector(".bpcp-rval").textContent = pct(v);
-        var tip = esc(a.label) + "<br>" + esc(gLabel) + ": <b>" + pct(v) + "</b>" + (g ? "<br>All respondents: " + pct(tot) : "");
+        var tip = esc(a.label) + "<br>" + esc(gLabel) + ": <b>" + pct(v) + "</b>" + (g ? "<br>All respondents: " + pct(tot) : "") + "<br>n = " + fmtN(t.n_unweighted[g]);
         el.querySelector(".bpcp-rbar").dataset.tip = tip;
         wrap.appendChild(el);
         requestAnimationFrame(function () {
@@ -550,6 +574,24 @@
       var note = ctx.q.kind === "multi" ? "Respondents could choose more than one answer, so totals add to more than 100%." : null;
       setFoot(ctx, t.n_unweighted[g], note);
     },
+    image: function (ctx) {
+      var d = ctx.rankDrawn, t = d.t, g = d.g;
+      var notes = [];
+      if (ctx.q.kind === "multi") notes.push("Respondents could choose more than one answer, so totals add to more than 100%.");
+      notes.push("Asked of: " + baseLabel(t.base) + ". n = " + fmtN(t.n_unweighted[g]) + " (unweighted).");
+      notes.push(ctx.cfg.source || "Source: PF Global poll for the Bipartisan Policy Center. PLACEHOLDER DATA.");
+      return {
+        eyebrow: "Question " + ctx.q.id.replace(/^Q/, "") + " \u00b7 " + baseLabel(ctx.q.tables[0].base),
+        title: ctx.cfg.title || ctx.q.title.replace(/^Q\d+\.\s*/, ""),
+        group: d.gLabel, tickLabel: g ? "All respondents" : null, max: d.max,
+        rows: d.shown.map(function (i) {
+          var a = t.answers[i];
+          return { label: a.label, value: a.values[g] || 0, text: pct(a.values[g] || 0), tick: g ? (a.values[0] || 0) : null };
+        }),
+        notes: notes,
+        file: "bpc-ai-workforce-poll-" + ctx.q.id.toLowerCase() + "-" + d.gLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+      };
+    },
     table: function (ctx) {
       var t = ctx.q.tables[ctx.cfg.table || 0], g = ctx.state.group;
       var head = ["Answer", "All respondents"];
@@ -566,67 +608,87 @@
 
   /* ---------- view: hero (headline number + waffle) ---------- */
 
-  function heroValue(ctx, col) {
-    var t = ctx.q.tables[ctx.cfg.table || 0];
-    return sum(t.answers.map(function (a) { return a.values[col]; }), ctx.cfg.sum || [0]);
+  /* cfg.items: [{table, sum, says, label}, ...] puts two or three headline
+     numbers side by side under one set of filters; without it, the card's own
+     table/sum/says make a single one. */
+  function heroParts(ctx) {
+    var c = ctx.cfg;
+    return c.items || [{ table: c.table, sum: c.sum, says: c.says }];
+  }
+
+  function heroValue(ctx, col, part) {
+    part = part || heroParts(ctx)[0];
+    var t = ctx.q.tables[part.table || 0];
+    return sum(t.answers.map(function (a) { return a.values[col]; }), part.sum || [0]);
   }
 
   var hero = {
     oneGroup: true,
     render: function (ctx, animate) {
-      var g = ctx.state.group, v = heroValue(ctx, g), cells = Math.round(v * 100);
-      var t = ctx.q.tables[ctx.cfg.table || 0];
-      var box = ctx.plot.querySelector(".bpcp-hero");
-      if (!box) {
-        box = h("div", "bpcp-hero",
-          '<div><div class="bpcp-big" aria-live="polite"></div><p class="bpcp-says"></p><p class="bpcp-compare"></p></div>' +
-          '<div class="bpcp-waffle" role="img"></div>');
-        var waffle = box.querySelector(".bpcp-waffle");
-        for (var i = 0; i < 100; i++) waffle.appendChild(h("span", "bpcp-cell"));
+      var g = ctx.state.group, parts = heroParts(ctx), multi = parts.length > 1;
+      if (!ctx.heroBoxes) {
+        var wrap = h("div", "bpcp-heroes" + (multi ? " is-multi" : ""));
+        ctx.heroBoxes = parts.map(function (part) {
+          var box = h("div", "bpcp-hero",
+            '<div><div class="bpcp-big" aria-live="polite"></div><p class="bpcp-says"></p><p class="bpcp-compare"></p></div>' +
+            '<div class="bpcp-waffle" role="img"></div>');
+          var waffle = box.querySelector(".bpcp-waffle");
+          for (var i = 0; i < 100; i++) waffle.appendChild(h("span", "bpcp-cell"));
+          wrap.appendChild(box);
+          return { el: box, part: part, shown: 0, target: 0, raf: 0 };
+        });
         ctx.plot.innerHTML = "";
-        ctx.plot.appendChild(box);
+        ctx.plot.appendChild(wrap);
       }
       setLegend(ctx, []);
       ctx.legend.hidden = true;
       var gLabel = g === 0 ? "All respondents" : ctx.banner[g].label;
-      box.querySelector(".bpcp-says").textContent = ctx.cfg.says || "";
-      box.querySelector(".bpcp-compare").textContent = g === 0 ? "Among all respondents" :
-        "Among " + gLabel + " (all respondents: " + pct(heroValue(ctx, 0)) + ")";
-      box.querySelector(".bpcp-waffle").setAttribute("aria-label", cells + " of 100 squares filled");
-      ctx.heroTarget = v;
-      if (animate && ctx.played && !reduced()) countTo(ctx, v); else setHero(ctx, v);
-      setFoot(ctx, t.n_unweighted[g]);
-    },
-    intro: function (ctx) { countTo(ctx, ctx.heroTarget, 0); },
-    settle: function (ctx) { setHero(ctx, ctx.heroTarget); },
-    table: function (ctx) {
-      var rows = [0].concat(ctx.colsFor(ctx.state.dim)).map(function (col) {
-        var t = ctx.q.tables[ctx.cfg.table || 0];
-        var small = t.n_unweighted[col] < ctx.minN;
-        return [col === 0 ? "All respondents" : ctx.banner[col].label, small ? "—" : pct(heroValue(ctx, col)), fmtN(t.n_unweighted[col])];
+      ctx.heroBoxes.forEach(function (b) {
+        var v = heroValue(ctx, g, b.part);
+        b.el.querySelector(".bpcp-says").textContent = b.part.says || "";
+        b.el.querySelector(".bpcp-compare").textContent = g === 0 ? "Among all respondents" :
+          "Among " + gLabel + " (all respondents: " + pct(heroValue(ctx, 0, b.part)) + ")";
+        b.el.querySelector(".bpcp-waffle").setAttribute("aria-label", Math.round(v * 100) + " of 100 squares filled");
+        b.target = v;
+        if (animate && ctx.played && !reduced()) countTo(b, v); else setHero(b, v);
       });
-      return { head: ["Group", ctx.cfg.tableLabel || "Share", "n"], rows: rows };
+      setFoot(ctx, ctx.q.tables[parts[0].table || 0].n_unweighted[g]);
+    },
+    intro: function (ctx) { ctx.heroBoxes.forEach(function (b) { countTo(b, b.target, 0); }); },
+    settle: function (ctx) { ctx.heroBoxes.forEach(function (b) { setHero(b, b.target); }); },
+    table: function (ctx) {
+      var parts = heroParts(ctx);
+      var head = ["Group"].concat(parts.map(function (p) {
+        return p.label || (parts.length > 1 ? ctx.q.tables[p.table || 0].item : ctx.cfg.tableLabel || "Share");
+      }), ["n"]);
+      var rows = [0].concat(ctx.colsFor(ctx.state.dim)).map(function (col) {
+        var t = ctx.q.tables[parts[0].table || 0];
+        var small = t.n_unweighted[col] < ctx.minN;
+        return [col === 0 ? "All respondents" : ctx.banner[col].label]
+          .concat(parts.map(function (p) { return small ? "—" : pct(heroValue(ctx, col, p)); }), [fmtN(t.n_unweighted[col])]);
+      });
+      return { head: head, rows: rows };
     }
   };
 
-  function setHero(ctx, v) {
-    var box = ctx.plot.querySelector(".bpcp-hero");
-    box.querySelector(".bpcp-big").textContent = pct(v);
+  function heroReset(ctx) { (ctx.heroBoxes || []).forEach(function (b) { setHero(b, 0); }); }
+
+  function setHero(b, v) {
+    b.el.querySelector(".bpcp-big").textContent = pct(v);
     var on = Math.round(v * 100);
-    box.querySelectorAll(".bpcp-cell").forEach(function (c, i) {
+    b.el.querySelectorAll(".bpcp-cell").forEach(function (c, i) {
       c.style.transitionDelay = "0s";
       c.classList.toggle("on", i < on);
     });
-    ctx.heroShown = v;
+    b.shown = v;
   }
 
-  function countTo(ctx, v, from) {
-    var box = ctx.plot.querySelector(".bpcp-hero");
-    var big = box.querySelector(".bpcp-big");
-    var start = from != null ? from : (ctx.heroShown || 0);
+  function countTo(b, v, from) {
+    var big = b.el.querySelector(".bpcp-big");
+    var start = from != null ? from : (b.shown || 0);
     var t0 = null, dur = 900;
-    if (ctx.raf) cancelAnimationFrame(ctx.raf);
-    var cells = box.querySelectorAll(".bpcp-cell"), on = Math.round(v * 100), prev = Math.round(start * 100);
+    if (b.raf) cancelAnimationFrame(b.raf);
+    var cells = b.el.querySelectorAll(".bpcp-cell"), on = Math.round(v * 100), prev = Math.round(start * 100);
     cells.forEach(function (c, i) {
       var lo = Math.min(on, prev), d = Math.abs(i - lo);
       c.style.transitionDelay = (i >= Math.min(on, prev) && i < Math.max(on, prev) ? d * 8 : 0) + "ms";
@@ -637,10 +699,10 @@
       if (t0 == null) t0 = ts;
       var p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3);
       big.textContent = pct(start + (v - start) * e);
-      if (p < 1) ctx.raf = requestAnimationFrame(step);
+      if (p < 1) b.raf = requestAnimationFrame(step);
     }
-    ctx.raf = requestAnimationFrame(step);
-    ctx.heroShown = v;
+    b.raf = requestAnimationFrame(step);
+    b.shown = v;
   }
 
   /* ---------- view: flow (AP VoteCast-style flow chart) ----------
@@ -1110,6 +1172,113 @@
     }
   }
 
+  /* ---------- download image (cfg.download) ----------
+   * Draws the card's current view onto a canvas from the data, not from the
+   * page, so it works the same in every browser and needs no library. Only
+   * views with an image() method offer it (rank, for now). The PNG carries
+   * the question, the group shown, the bars, and the source line.
+   */
+  function addDownload(ctx) {
+    if (!ctx.cfg.download || !ctx.view.image || !window.HTMLCanvasElement) return;
+    var b = h("button", "bpcp-btn bpcp-dl", icon("download") + "<span>Download image</span>");
+    b.type = "button";
+    b.addEventListener("click", function () {
+      var go = function () { saveImage(ctx); };
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); else go();
+    });
+    ctx.card.insertBefore(b, ctx.foot);  /* right under the chart, above the notes */
+  }
+
+  function wrapText(c, text, maxW) {
+    var words = String(text).split(/\s+/), lines = [], line = "";
+    words.forEach(function (w) {
+      var test = line ? line + " " + w : w;
+      if (c.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function cssVar(ctx, name) { return getComputedStyle(ctx.root).getPropertyValue(name).trim(); }
+
+  function saveImage(ctx) {
+    var spec = ctx.view.image(ctx);
+    var W = 1200, PAD = 56, S = 1;
+    var sans = cssVar(ctx, "--bpcp-sans") || "Arial, sans-serif";
+    var serif = cssVar(ctx, "--bpcp-serif") || "Georgia, serif";
+    var ink = cssVar(ctx, "--bpcp-ink") || "#16202b", muted = cssVar(ctx, "--bpcp-muted") || "#566372";
+    var bar = cssVar(ctx, "--bpcp-bar") || "#2f6299", track = cssVar(ctx, "--bpcp-track") || "#eef1f4";
+    var navy = cssVar(ctx, "--bpcp-navy") || "#1f476c";
+    var cv = document.createElement("canvas"), c = cv.getContext("2d");
+    var labelW = 430, barX = PAD + labelW + 24, valW = 80, barW = W - PAD - valW - barX;
+
+    // measure pass, then draw pass, so the canvas is exactly as tall as the content
+    function layout(draw) {
+      var y = PAD;
+      c.textBaseline = "top";
+      c.font = "600 20px " + sans;
+      if (draw) { c.fillStyle = muted; c.fillText(spec.eyebrow.toUpperCase(), PAD, y); }
+      y += 34;
+      c.font = "700 34px " + serif;
+      wrapText(c, spec.title, W - 2 * PAD).forEach(function (l) { if (draw) { c.fillStyle = ink; c.fillText(l, PAD, y); } y += 44; });
+      y += 10;
+      c.font = "600 22px " + sans;
+      if (draw) {
+        c.fillStyle = bar; c.fillRect(PAD, y + 4, 18, 18);
+        c.fillStyle = ink; c.fillText(spec.group, PAD + 28, y + 2);
+        if (spec.tickLabel) {
+          var x = PAD + 28 + c.measureText(spec.group).width + 36;
+          c.fillStyle = ink; c.fillRect(x + 8, y, 3, 26);
+          c.fillText(spec.tickLabel, x + 24, y + 2);
+        }
+      }
+      y += 48;
+      spec.rows.forEach(function (r) {
+        c.font = "400 22px " + sans;
+        var lines = wrapText(c, r.label, labelW);
+        var rowH = Math.max(36, lines.length * 28) + 14;
+        if (draw) {
+          c.fillStyle = ink;
+          lines.forEach(function (l, i) { c.fillText(l, PAD, y + i * 28 + (rowH - 14 - lines.length * 28) / 2 + 2); });
+          var by = y + (rowH - 14 - 30) / 2;
+          c.fillStyle = track; c.fillRect(barX, by, barW, 30);
+          c.fillStyle = bar; c.fillRect(barX, by, Math.max(2, barW * r.value / spec.max), 30);
+          if (r.tick != null) { c.fillStyle = ink; c.fillRect(barX + barW * r.tick / spec.max - 1.5, by - 5, 3, 40); }
+          c.font = "700 22px " + sans; c.textAlign = "right";
+          c.fillText(r.text, W - PAD, by + 4);
+          c.textAlign = "left";
+        }
+        y += rowH;
+      });
+      y += 18;
+      c.font = "400 17px " + sans;
+      spec.notes.forEach(function (n) {
+        wrapText(c, n, W - 2 * PAD).forEach(function (l) { if (draw) { c.fillStyle = muted; c.fillText(l, PAD, y); } y += 24; });
+      });
+      y += 16;
+      if (draw) { c.fillStyle = navy; c.fillRect(PAD, y, W - 2 * PAD, 3); }
+      y += 16;
+      c.font = "700 19px " + sans;
+      if (draw) { c.fillStyle = navy; c.fillText("Bipartisan Policy Center", PAD, y); }
+      y += 28 + PAD - 16;
+      return y;
+    }
+    var H = layout(false);
+    cv.width = W * S; cv.height = H * S;
+    c.scale(S, S);
+    c.fillStyle = "#ffffff"; c.fillRect(0, 0, W, H);
+    layout(true);
+    cv.toBlob(function (blob) {
+      if (!blob) return;
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = spec.file + ".png";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    }, "image/png");
+  }
+
   /* ---------- public API ---------- */
 
   function mountAll(scope, data) {
@@ -1127,7 +1296,7 @@
     document.querySelectorAll(".bpcp").forEach(function (el) {
       var ctx = el.__bpcp;
       if (!ctx) return;
-      if (ctx.view === hero) setHero(ctx, 0);
+      if (ctx.view === hero) heroReset(ctx);
       play(ctx);
     });
   }
@@ -1165,7 +1334,7 @@
     document.querySelectorAll(".bpcp details").forEach(function (d) { d.open = true; });
   });
 
-  window.BPCPoll = { mount: mount, mountScrolly: mountScrolly, mountAll: mountAll, replayAll: replayAll, icons: ICONS, version: "0.4.0" };
+  window.BPCPoll = { mount: mount, mountScrolly: mountScrolly, mountAll: mountAll, replayAll: replayAll, icons: ICONS, version: "0.5.0" };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
